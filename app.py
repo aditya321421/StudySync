@@ -44,7 +44,7 @@ if generate_btn:
     if not uploaded_file:
         st.sidebar.error("Please upload a course document first!")
     else:
-        with st.spinner("Analyzing syllabus and crafting descriptive study targets..."):
+        with st.spinner("Analyzing syllabus and crafting an extended 45-50 day roadmap..."):
             try:
                 # Read text from the target document
                 reader = pypdf.PdfReader(uploaded_file)
@@ -55,21 +55,22 @@ if generate_btn:
                 start_str = start_time.strftime("%I:%M %p")
                 end_str = end_time.strftime("%I:%M %p")
                 
-                # STRICTOR TUTOR PROMPT: Focuses on single-topic descriptions and drops "Part-X"
+                # ENFORCED COUNT PROMPT: Mandates a minimum of 45-50 items in the roadmap array
                 prompt = f"""
                 You are a helpful personal academic tutor. Analyze this syllabus snippet:
                 ---
                 {pdf_text[:5000]}
                 ---
                 
-                Create a day-by-day sequential study roadmap. 
+                Create an extensive day-by-day sequential study roadmap. 
                 Daily study session windows: {start_str} to {end_str}.
                 
                 STRICT COMPLIANCE DIRECTIVES:
-                1. For the 'Focus Topic' field, write ONLY the Subject Name and Unit Number (e.g., "Fundamentals of Computers - Unit I"). NEVER append structural suffixes like "(Part-1)", "(Part 2)", or "(Part-A)". If a single unit spans multiple days, keep the text string completely identical across those days.
-                2. For the 'Suggested Activity' field, isolate exactly ONE core topic or concept from that unit for the day. Write a clear, student-friendly explanation describing exactly what specific concept they need to study, define, or learn. Avoid a long comma-separated list of random keywords.
-                3. Step through the units and topics sequentially in the exact logical order they appear in the text.
-                4. Increment the 'Scheduled Date' string field by exactly 1 calendar day for each progressive milestone entry row starting from 2026-07-01.
+                1. You MUST generate a comprehensive roadmap containing between 45 to 50 distinct daily entries. Do not stop at 20 entries.
+                2. For the 'Focus Topic' field, write ONLY the Subject Name and Unit Number (e.g., "Fundamentals of Computers - Unit I"). Do not append structural suffixes like "(Part-1)" or "(Part 2)".
+                3. For the 'Suggested Activity' field, isolate exactly ONE core topic or concept from that unit for that day. Write a clear, student-friendly explanation describing exactly what specific concept they need to study, define, or learn.
+                4. Break down each Unit micro-step by micro-step over multiple consecutive days so you can easily satisfy the 45-50 day requirements. Step through the units sequentially in the exact logical order they appear in the text.
+                5. Increment the 'Scheduled Date' string field by exactly 1 calendar day for each progressive milestone entry row starting from 2026-07-01 (e.g., 2026-07-01, 2026-07-02 ... up to at least 2026-08-15).
                 
                 Respond ONLY with a valid JSON object matching this structural layout blueprint without markdown wrapper code blocks:
                 {{
@@ -91,7 +92,7 @@ if generate_btn:
                 response = client.chat.completions.create(
                     model="llama-3.1-8b-instant",
                     messages=[
-                        {"role": "system", "content": "You are a precise data parser who outputs raw, strict JSON without commentary."},
+                        {"role": "system", "content": "You are a precise data parser who outputs raw, strict JSON without commentary. You follow item count parameters exactly."},
                         {"role": "user", "content": prompt}
                     ],
                     response_format={"type": "json_object"},
