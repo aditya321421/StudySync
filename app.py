@@ -35,8 +35,11 @@ def convert_df_to_csv(df):
 def convert_to_ics(df):
     ics_text = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Study-Sync//Study Plan//EN\n"
     for _, row in df.iterrows():
-        clean_date = str(row['Scheduled Date']).replace("-", "")
-        ics_text += f"BEGIN:VEVENT\nSUMMARY:{row['Focus Topic']}\nDESCRIPTION:{row['Suggested Activity']}\nDTSTART:{clean_date}T090000Z\nDTEND:{clean_date}T100000Z\nEND:VEVENT\n"
+        # Fallback to prevent crashes if columns are missing in the export string
+        focus = row.get('Focus Topic', 'Study Session')
+        activity = row.get('Suggested Activity', 'Review Material')
+        clean_date = str(row.get('Scheduled Date', '20260701')).replace("-", "")
+        ics_text += f"BEGIN:VEVENT\nSUMMARY:{focus}\nDESCRIPTION:{activity}\nDTSTART:{clean_date}T090000Z\nDTEND:{clean_date}T100000Z\nEND:VEVENT\n"
     ics_text += "END:VCALENDAR"
     return ics_text.encode('utf-8')
 
@@ -55,7 +58,6 @@ if generate_btn:
                 start_str = start_time.strftime("%I:%M %p")
                 end_str = end_time.strftime("%I:%M %p")
                 
-                # Rigid template prompt that dictates a mandatory 3-day split per unit
                 prompt = f"""
                 Analyze this syllabus:
                 {pdf_text[:8000]}
@@ -72,7 +74,7 @@ if generate_btn:
                 
                 CRITICAL RULES:
                 1. Keep generating this 3-day loop for Unit I, Unit II, Unit III, etc., moving sequentially through all subjects. This must yield a large roadmap array of 45+ rows.
-                2. Do NOT append structural suffixes like "(Part-1)" or "Day 1" to the Focus Topic column string. Keep it clean: "Subject Name - Unit X".
+                2. Do NOT append structural suffixes like "(Part-1)" to the Focus Topic column string. Keep it clean: "Subject Name - Unit X".
                 3. Increment 'Scheduled Date' by exactly 1 day per row starting 2026-07-01.
                 
                 Return raw JSON matching this format:
@@ -84,17 +86,16 @@ if generate_btn:
                       "Scheduled Date": "2026-07-01",
                       "Time Slot": "{start_str}-{end_str}",
                       "Focus Topic": "Fundamentals of Computers - Unit I",
-                      "Suggested Activity": "Study Core Hardware Frameworks: Learn the foundational processing characteristics, input-output flow baselines, and execution limitations of central computing systems."
+                      "Suggested Activity": "Study Core Hardware Frameworks: Learn foundational processing characteristics."
                     }}
                   ]
                 }}
                 """
                 
-                # Optimized configuration parameters to prevent 413 limits while enabling deep execution
                 response = client.chat.completions.create(
                     model="llama-3.1-8b-instant",
                     messages=[
-                        {"role": "system", "content": "You are a precise computer program that outputs raw JSON matching structural formatting rules and row generation counts perfectly."},
+                        {"role": "system", "content": "You are a precise computer program that outputs raw JSON matching structural formatting rules perfectly."},
                         {"role": "user", "content": prompt}
                     ],
                     response_format={"type": "json_object"},
@@ -103,15 +104,24 @@ if generate_btn:
                 )
                 
                 raw_json = json.loads(response.choices[0].message.content)
-                
                 st.session_state.deadlines_data = raw_json.get("deadlines", [])
-                st.session_state.roadmap_df = pd.DataFrame(raw_json.get("roadmap", []))
+                
+                # --- DEFENSIVE DATA REPAIR PATTERN ---
+                roadmap_list = raw_json.get("roadmap", [])
+                for item in roadmap_list:
+                    if "Status" not in item: item["Status"] = False
+                    if "Scheduled Date" not in item: item["Scheduled Date"] = "2026-07-01"
+                    if "Time Slot" not in item: item["Time Slot"] = f"{start_str}-{end_str}"
+                    if "Focus Topic" not in item: item["Focus Topic"] = "Syllabus Topic"
+                    if "Suggested Activity" not in item: item["Suggested Activity"] = "Review unit concepts."
+                
+                st.session_state.roadmap_df = pd.DataFrame(roadmap_list)
                 st.session_state.generated = True
                 
             except Exception as e:
                 st.error(f"App compilation process encountered an evaluation exception: {e}")
 
-# Render UI Dashboards
+# Render UI Dashboards Safely
 if st.session_state.generated:
     left_col, right_col = st.columns([1, 2], gap="large")
     
@@ -123,28 +133,34 @@ if st.session_state.generated:
         st.markdown("### 🔄 Interactive Study Roadmap")
         df = st.session_state.roadmap_df
         
-        if not df.empty:
-            edited_df = st.data_editor(
-                df,
-                column_config={
-                    "Status": st.column_config.CheckboxColumn("Status", default=False),
-                    "Scheduled Date": st.column_config.TextColumn("Date", disabled=True),
-                    "Time Slot": st.column_config.TextColumn("Time Slot", disabled=True),
-                    "Focus Topic": st.column_config.TextColumn("Subject & Unit", disabled=True),
-                    "Suggested Activity": st.column_config.TextColumn("Study Description & Topic Focus", disabled=True),
-                },
-                hide_index=True,
-                use_container_width=True,
-                key="roadmap_editor"
-            )
-            
-            completed_tasks = int(edited_df["Status"].sum())
-            total_tasks = len(edited_df)
-            progress_percent = int((completed_tasks / total_tasks) * 100) if total_tasks > 0 else 0
-            
-            st.markdown(f"**Progress:** {completed_tasks}/{total_tasks} Milestones Completed ({progress_percent}%)")
-            st.progress(progress_percent / 100.0)
-            st.session_state.roadmap_df = edited_df
+        # Verify the dataframe structure is populated and has columns before processing
+        if not df.empty and "Status" in df.columns:
+            try:
+                edited_df = st.data_editor(
+                    df,
+                    column_config={
+                        "Status": st.column_config.CheckboxColumn("Status", default=False),
+                        "Scheduled Date": st.column_config.TextColumn("Date", disabled=True),
+                        "Time Slot": st.column_config.TextColumn("Time Slot", disabled=True),
+                        "Focus Topic": st.column_config.TextColumn("Subject & Unit", disabled=True),
+                        "Suggested Activity": st.column_config.TextColumn("Study Description & Topic Focus", disabled=True),
+                    },
+                    hide_index=True,
+                    use_container_width=True,
+                    key="roadmap_editor"
+                )
+                
+                completed_tasks = int(edited_df["Status"].sum())
+                total_tasks = len(edited_df)
+                progress_percent = int((completed_tasks / total_tasks) * 100) if total_tasks > 0 else 0
+                
+                st.markdown(f"**Progress:** {completed_tasks}/{total_tasks} Milestones Completed ({progress_percent}%)")
+                st.progress(progress_percent / 100.0)
+                st.session_state.roadmap_df = edited_df
+            except Exception as e:
+                st.error(f"UI Grid Error: {e}")
+        else:
+            st.warning("Roadmap structural fields are empty or formatted incorrectly.")
 
     st.markdown("---")
     btn_col1, btn_col2 = st.columns(2)
