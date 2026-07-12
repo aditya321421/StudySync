@@ -37,7 +37,7 @@ if generate_btn:
     if not uploaded_file:
         st.sidebar.error("Please upload a course document first!")
     else:
-        with st.spinner("Analyzing syllabus and crafting your safe 45-50 day timeline..."):
+        with st.spinner("Analyzing syllabus and crafting an extended 45-50 day roadmap..."):
             try:
                 # Read text from the target document
                 reader = pypdf.PdfReader(uploaded_file)
@@ -48,28 +48,48 @@ if generate_btn:
                 start_str = start_time.strftime("%I:%M %p")
                 end_str = end_time.strftime("%I:%M %p")
                 
+                # Capped text size to 7000 to keep the input + long output safely under Groq's 6,000 token ceiling
                 prompt = f"""
-                Analyze this syllabus:
-                {pdf_text[:9000]}
+                Analyze this syllabus text:
+                {pdf_text[:7000]}
                 
-                Create a daily study roadmap from {start_str} to {end_str}.
+                Create a highly extensive daily study roadmap from {start_str} to {end_str}.
                 
-                RULES:
-                1. You MUST generate between 45 to 50 entries in the roadmap array.
-                2. 'Focus Topic' must ONLY be Subject Name and Unit (e.g., "Fundamentals of Computers - Unit I"). No structural suffixes like "(Part-1)".
-                3. 'Suggested Activity' must be ONE specific topic with a short, helpful 1-sentence explanation of what to learn. No comma lists.
-                4. Split units sequentially over multiple days to easily hit the 45-50 row requirement.
-                5. Increment 'Scheduled Date' by 1 day per row starting 2026-07-01.
+                CRITICAL QUANTITY MANDATE:
+                You MUST generate between 45 to 50 distinct daily entries in the roadmap array. Do not compress or summarize the units.
                 
-                Return raw JSON matching this format:
+                UNIT BREAKDOWN RULES:
+                For every single Unit identified, you MUST generate exactly 3 consecutive daily rows to thoroughly cover the material:
+                - Day 1 of Unit: Cover core definitions and foundational elements.
+                - Day 2 of Unit: Cover deep technical concepts, algorithms, or inner mechanisms.
+                - Day 3 of Unit: Cover practical exercises, code structures, or numerical applications.
+                
+                FORMAT CONSTRAINTS:
+                1. 'Focus Topic' must ONLY be the Subject Name and Unit (e.g., "Fundamentals of Computers - Unit I"). NEVER append structural tags like "(Part-1)", "Day 1", or "Part A". The string name must be perfectly identical across all consecutive days dedicated to that unit.
+                2. 'Suggested Activity' must be a clear 1-sentence description explaining the specific concept to learn that day.
+                3. Increment 'Scheduled Date' by 1 day per row starting 2026-07-01.
+                
+                Follow this exact multi-day structural example format when building the array:
                 {{
-                  "deadlines": [{{"Subject": "Name", "due_date": "2027-01-20"}}],
+                  "deadlines": [{{"Subject": "Fundamentals of Computers", "due_date": "2027-01-20"}}],
                   "roadmap": [
                     {{
                       "Scheduled Date": "2026-07-01",
                       "Time Slot": "{start_str}-{end_str}",
                       "Focus Topic": "Fundamentals of Computers - Unit I",
-                      "Suggested Activity": "Study Computer System Characteristics: Learn core hardware processing capabilities and operational limitations."
+                      "Suggested Activity": "Study Core System Characteristics: Learn the processing speeds, data capacities, and fundamental design limitations of computer hardware."
+                    }},
+                    {{
+                      "Scheduled Date": "2026-07-02",
+                      "Time Slot": "{start_str}-{end_str}",
+                      "Focus Topic": "Fundamentals of Computers - Unit I",
+                      "Suggested Activity": "Examine Machine Classifications: Understand architectural and processing performance variations between micro, mini, and mainframe systems."
+                    }},
+                    {{
+                      "Scheduled Date": "2026-07-03",
+                      "Time Slot": "{start_str}-{end_str}",
+                      "Focus Topic": "Fundamentals of Computers - Unit I",
+                      "Suggested Activity": "Review Computing History: Trace hardware generations from initial electronic vacuum tubes to modern microprocessors."
                     }}
                   ]
                 }}
@@ -78,12 +98,12 @@ if generate_btn:
                 response = client.chat.completions.create(
                     model="llama-3.1-8b-instant",
                     messages=[
-                        {"role": "system", "content": "You are a data parser outputting raw JSON objects without code blocks or filler text."},
+                        {"role": "system", "content": "You are a precise computer program that outputs raw JSON objects without code blocks or conversational text. You match array length instructions perfectly."},
                         {"role": "user", "content": prompt}
                     ],
                     response_format={"type": "json_object"},
                     temperature=0.2,
-                    max_tokens=2000 
+                    max_tokens=2500  # Gives the model maximum space to write out 50 complete entries
                 )
                 
                 raw_json = json.loads(response.choices[0].message.content)
@@ -118,12 +138,11 @@ if st.session_state.generated:
             
             completed_count = 0
             
-            # Loop through rows to generate native checkboxes instead of using the complex data_editor
+            # Loop through rows to generate native checklists
             for i, item in enumerate(roadmap):
                 r_col1, r_col2, r_col3, r_col4 = st.columns([0.5, 1.2, 2.3, 4.0])
                 
                 with r_col1:
-                    # Maintain individual checked states persistently in session memory
                     is_checked = st.checkbox("", key=f"task_{i}")
                     if is_checked:
                         completed_count += 1
@@ -135,7 +154,7 @@ if st.session_state.generated:
                 with r_col4:
                     st.write(item.get('Suggested Activity', ''))
             
-            # Progress Tracking Header Metrics
+            # Progress Tracking Metrics
             total_tasks = len(roadmap)
             progress_percent = int((completed_count / total_tasks) * 100) if total_tasks > 0 else 0
             
