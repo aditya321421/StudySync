@@ -19,8 +19,8 @@ if "generated" not in st.session_state:
     st.session_state.generated = False
 if "deadlines_data" not in st.session_state:
     st.session_state.deadlines_data = []
-if "roadmap_df" not in st.session_state:
-    st.session_state.roadmap_df = pd.DataFrame()
+if "roadmap_list" not in st.session_state:
+    st.session_state.roadmap_list = []
 
 # Sidebar Controls
 st.sidebar.header("⚡ Configuration Panel")
@@ -29,24 +29,15 @@ start_time = st.sidebar.time_input("Preferred Daily Start Time")
 end_time = st.sidebar.time_input("Preferred Daily End Time")
 generate_btn = st.sidebar.button("Generate Complete Roadmap", type="primary", use_container_width=True)
 
-def convert_df_to_csv(df):
+def convert_to_csv(data_list):
+    df = pd.DataFrame(data_list)
     return df.to_csv(index=False).encode('utf-8')
-
-def convert_to_ics(df):
-    ics_text = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Study-Sync//Study Plan//EN\n"
-    for _, row in df.iterrows():
-        focus = row.get('Focus Topic', 'Study Session')
-        activity = row.get('Suggested Activity', 'Review Material')
-        clean_date = str(row.get('Scheduled Date', '20260701')).replace("-", "")
-        ics_text += f"BEGIN:VEVENT\nSUMMARY:{focus}\nDESCRIPTION:{activity}\nDTSTART:{clean_date}T090000Z\nDTEND:{clean_date}T100000Z\nEND:VEVENT\n"
-    ics_text += "END:VCALENDAR"
-    return ics_text.encode('utf-8')
 
 if generate_btn:
     if not uploaded_file:
         st.sidebar.error("Please upload a course document first!")
     else:
-        with st.spinner("Executing strict multi-day unit split roadmap generation..."):
+        with st.spinner("Analyzing syllabus and crafting your safe 45-50 day timeline..."):
             try:
                 # Read text from the target document
                 reader = pypdf.PdfReader(uploaded_file)
@@ -59,33 +50,26 @@ if generate_btn:
                 
                 prompt = f"""
                 Analyze this syllabus:
-                {pdf_text[:8000]}
+                {pdf_text[:9000]}
                 
-                Create a sequential study roadmap from {start_str} to {end_str}.
+                Create a daily study roadmap from {start_str} to {end_str}.
                 
-                STRICT GENERATION FORMULA:
-                For EVERY single Unit identified in the text, you MUST generate EXACTLY 3 separate, consecutive daily rows. Do not lump a unit into 1 day.
-                
-                Follow this exact 3-day split pattern for every unit:
-                - Day 1 of the Unit: Focus Topic = "Subject - Unit X". Suggested Activity = Describe and explain the core foundational concepts and introductory definitions found in the first part of this unit.
-                - Day 2 of the Unit: Focus Topic = "Subject - Unit X". Suggested Activity = Describe and explain the advanced theories, specific subtopics, or key mechanisms found in the middle part of this unit.
-                - Day 3 of the Unit: Focus Topic = "Subject - Unit X". Suggested Activity = Describe the practical applications, formula derivations, numerical problems, or coding practice related to this unit.
-                
-                CRITICAL RULES:
-                1. Keep generating this 3-day loop for Unit I, Unit II, Unit III, etc., moving sequentially through all subjects. This must yield a large roadmap array of 45+ rows.
-                2. Do NOT append structural suffixes like "(Part-1)" to the Focus Topic column string. Keep it clean: "Subject Name - Unit X".
-                3. Increment 'Scheduled Date' by exactly 1 day per row starting 2026-07-01.
+                RULES:
+                1. You MUST generate between 45 to 50 entries in the roadmap array.
+                2. 'Focus Topic' must ONLY be Subject Name and Unit (e.g., "Fundamentals of Computers - Unit I"). No structural suffixes like "(Part-1)".
+                3. 'Suggested Activity' must be ONE specific topic with a short, helpful 1-sentence explanation of what to learn. No comma lists.
+                4. Split units sequentially over multiple days to easily hit the 45-50 row requirement.
+                5. Increment 'Scheduled Date' by 1 day per row starting 2026-07-01.
                 
                 Return raw JSON matching this format:
                 {{
                   "deadlines": [{{"Subject": "Name", "due_date": "2027-01-20"}}],
                   "roadmap": [
                     {{
-                      "Status": false,
                       "Scheduled Date": "2026-07-01",
                       "Time Slot": "{start_str}-{end_str}",
                       "Focus Topic": "Fundamentals of Computers - Unit I",
-                      "Suggested Activity": "Study Core Hardware Frameworks: Learn foundational processing characteristics."
+                      "Suggested Activity": "Study Computer System Characteristics: Learn core hardware processing capabilities and operational limitations."
                     }}
                   ]
                 }}
@@ -94,38 +78,17 @@ if generate_btn:
                 response = client.chat.completions.create(
                     model="llama-3.1-8b-instant",
                     messages=[
-                        {"role": "system", "content": "You are a precise computer program that outputs raw JSON matching structural formatting rules perfectly."},
+                        {"role": "system", "content": "You are a data parser outputting raw JSON objects without code blocks or filler text."},
                         {"role": "user", "content": prompt}
                     ],
                     response_format={"type": "json_object"},
-                    temperature=0.15,
-                    max_tokens=2000
+                    temperature=0.2,
+                    max_tokens=2000 
                 )
                 
                 raw_json = json.loads(response.choices[0].message.content)
                 st.session_state.deadlines_data = raw_json.get("deadlines", [])
-                
-                # --- DEFENSIVE DATA REPAIR PATTERN ---
-                roadmap_list = raw_json.get("roadmap", [])
-                for item in roadmap_list:
-                    # Explicit Boolean cleanup ensures structural parsing variables are clean
-                    if "Status" not in item: 
-                        item["Status"] = False
-                    else:
-                        item["Status"] = True if str(item["Status"]).lower() in ['true', '1', 'yes'] else False
-                        
-                    if "Scheduled Date" not in item: item["Scheduled Date"] = "2026-07-01"
-                    if "Time Slot" not in item: item["Time Slot"] = f"{start_str}-{end_str}"
-                    if "Focus Topic" not in item: item["Focus Topic"] = "Syllabus Topic"
-                    if "Suggested Activity" not in item: item["Suggested Activity"] = "Review unit concepts."
-                
-                df_temp = pd.DataFrame(roadmap_list)
-                
-                # Rigid mechanical type safety enforcement
-                if not df_temp.empty:
-                    df_temp["Status"] = df_temp["Status"].astype(bool)
-                
-                st.session_state.roadmap_df = df_temp
+                st.session_state.roadmap_list = raw_json.get("roadmap", [])
                 st.session_state.generated = True
                 
             except Exception as e:
@@ -133,55 +96,56 @@ if generate_btn:
 
 # Render UI Dashboards Safely
 if st.session_state.generated:
-    try:
-        left_col, right_col = st.columns([1, 2], gap="large")
-        
-        with left_col:
-            st.markdown("### 📅 Extracted Deadlines")
-            st.dataframe(st.session_state.deadlines_data, use_container_width=True, hide_index=True)
-            
-        with right_col:
-            st.markdown("### 🔄 Interactive Study Roadmap")
-            df = st.session_state.roadmap_df
-            
-            if not df.empty and "Status" in df.columns:
-                edited_df = st.data_editor(
-                    df,
-                    column_config={
-                        "Status": st.column_config.CheckboxColumn("Status", default=False),
-                        "Scheduled Date": st.column_config.TextColumn("Date", disabled=True),
-                        "Time Slot": st.column_config.TextColumn("Time Slot", disabled=True),
-                        "Focus Topic": st.column_config.TextColumn("Subject & Unit", disabled=True),
-                        "Suggested Activity": st.column_config.TextColumn("Study Description & Topic Focus", disabled=True),
-                    },
-                    hide_index=True,
-                    use_container_width=True,
-                    key="roadmap_editor"
-                )
-                
-                completed_tasks = int(edited_df["Status"].sum())
-                total_tasks = len(edited_df)
-                progress_percent = int((completed_tasks / total_tasks) * 100) if total_tasks > 0 else 0
-                
-                st.markdown(f"**Progress:** {completed_tasks}/{total_tasks} Milestones Completed ({progress_percent}%)")
-                st.progress(progress_percent / 100.0)
-                st.session_state.roadmap_df = edited_df
-            else:
-                st.warning("Roadmap structural fields are empty or formatted incorrectly.")
-
-        st.markdown("---")
-        btn_col1, btn_col2 = st.columns(2)
-        
-        if not st.session_state.roadmap_df.empty:
-            csv_bytes = convert_df_to_csv(st.session_state.roadmap_df)
-            ics_bytes = convert_to_ics(st.session_state.roadmap_df)
-            
-            with btn_col1:
-                st.download_button("🗓️ Export to Calendar (.ics)", data=ics_bytes, file_name="study_schedule.ics", mime="text/calendar", use_container_width=True)
-            with btn_col2:
-                st.download_button("📊 Download Spreadsheet (.csv)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
+    left_col, right_col = st.columns([1, 2], gap="large")
     
-    except Exception as e:
-        st.error(f"Fatal UI rendering layout conflict caught: {e}")
+    with left_col:
+        st.markdown("### 📅 Extracted Deadlines")
+        st.dataframe(st.session_state.deadlines_data, use_container_width=True, hide_index=True)
+        
+    with right_col:
+        st.markdown("### 🔄 Interactive Study Roadmap")
+        
+        roadmap = st.session_state.roadmap_list
+        
+        if roadmap:
+            # Table Header Layout
+            h_col1, h_col2, h_col3, h_col4 = st.columns([0.5, 1.2, 2.3, 4.0])
+            h_col1.markdown("**Status**")
+            h_col2.markdown("**Date & Time**")
+            h_col3.markdown("**Subject & Unit**")
+            h_col4.markdown("**Study Description & Topic Focus**")
+            st.markdown("---")
+            
+            completed_count = 0
+            
+            # Loop through rows to generate native checkboxes instead of using the complex data_editor
+            for i, item in enumerate(roadmap):
+                r_col1, r_col2, r_col3, r_col4 = st.columns([0.5, 1.2, 2.3, 4.0])
+                
+                with r_col1:
+                    # Maintain individual checked states persistently in session memory
+                    is_checked = st.checkbox("", key=f"task_{i}")
+                    if is_checked:
+                        completed_count += 1
+                        
+                with r_col2:
+                    st.caption(f"📅 {item.get('Scheduled Date', '')}\n⏰ {item.get('Time Slot', '')}")
+                with r_col3:
+                    st.markdown(f"**{item.get('Focus Topic', '')}**")
+                with r_col4:
+                    st.write(item.get('Suggested Activity', ''))
+            
+            # Progress Tracking Header Metrics
+            total_tasks = len(roadmap)
+            progress_percent = int((completed_count / total_tasks) * 100) if total_tasks > 0 else 0
+            
+            st.markdown("---")
+            st.markdown(f"**Progress:** {completed_count}/{total_tasks} Milestones Completed ({progress_percent}%)")
+            st.progress(progress_percent / 100.0)
+
+    # Export Action Row
+    if st.session_state.roadmap_list:
+        csv_bytes = convert_to_csv(st.session_state.roadmap_list)
+        st.download_button("📊 Download Roadmap Spreadsheet (.csv)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
 else:
     st.info("Configuration parameters pending: Feed a course document file into the sidebar parameters to populate the interactive dashboard.")
