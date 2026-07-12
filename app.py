@@ -44,61 +44,56 @@ if generate_btn:
     if not uploaded_file:
         st.sidebar.error("Please upload a course document first!")
     else:
-        with st.spinner("Analyzing syllabus and building your comprehensive 45-50 day timeline..."):
+        with st.spinner("Crafting your safe 45-50 day timeline..."):
             try:
                 # Read text from the target document
                 reader = pypdf.PdfReader(uploaded_file)
                 pdf_text = ""
-                for page in reader.pages[:15]: 
+                for page in reader.pages[:10]: 
                     pdf_text += page.extract_text() or ""
                 
                 start_str = start_time.strftime("%I:%M %p")
                 end_str = end_time.strftime("%I:%M %p")
                 
-                # Optimized text capacity to fit safely right under Groq's 6,000 TPM limit
+                # Highly condensed prompt to minimize token usage
                 prompt = f"""
-                You are a helpful personal academic tutor. Analyze this syllabus content:
-                ---
-                {pdf_text[:14000]}
-                ---
+                Analyze this syllabus:
+                {pdf_text[:9000]}
                 
-                Create an extensive day-by-day sequential study roadmap. 
-                Daily study session windows: {start_str} to {end_str}.
+                Create a daily study roadmap from {start_str} to {end_str}.
                 
-                STRICT COMPLIANCE DIRECTIVES:
-                1. You MUST generate an exhaustive roadmap array containing a minimum of 45 to 50 distinct daily row entries.
-                2. For the 'Focus Topic' field, write ONLY the Subject Name and Unit Number (e.g., "Fundamentals of Computers - Unit I"). Do not append structural suffixes like "(Part-1)" or "(Part 2)".
-                3. For the 'Suggested Activity' field, isolate exactly ONE core topic, theorem, keyword, or concept from that unit for that specific day. Write a clear, student-friendly description explaining what they need to study or define.
-                4. Stretch your breakdown out across all available subjects in the text. Break down individual concepts into micro-steps across consecutive days to ensure you hit the 45-50 item requirement easily.
-                5. Increment the 'Scheduled Date' string field by exactly 1 calendar day for each progressive milestone entry row starting from 2026-07-01.
+                RULES:
+                1. You MUST generate between 45 to 50 entries in the roadmap array.
+                2. 'Focus Topic' must ONLY be Subject Name and Unit (e.g., "Fundamentals of Computers - Unit I"). No structural suffixes like "(Part-1)".
+                3. 'Suggested Activity' must be ONE specific topic with a short, helpful 1-sentence explanation of what to learn. No comma lists.
+                4. Split units sequentially over multiple days to easily hit the 45-50 row requirement.
+                5. Increment 'Scheduled Date' by 1 day per row starting 2026-07-01.
                 
-                Respond ONLY with a valid JSON object matching this structural layout blueprint without markdown wrapper code blocks:
+                Return raw JSON matching this format:
                 {{
-                  "deadlines": [
-                    {{"Subject": "Name of Subject", "due_date": "2027-01-20"}}
-                  ],
+                  "deadlines": [{{"Subject": "Name", "due_date": "2027-01-20"}}],
                   "roadmap": [
                     {{
                       "Status": false,
                       "Scheduled Date": "2026-07-01",
                       "Time Slot": "{start_str}-{end_str}",
                       "Focus Topic": "Fundamentals of Computers - Unit I",
-                      "Suggested Activity": "Study Computer System Characteristics: Learn the essential capabilities, speed metrics, and core operational limitations of processing hardware."
+                      "Suggested Activity": "Study Computer System Characteristics: Learn core hardware processing capabilities and operational limitations."
                     }}
                   ]
                 }}
                 """
                 
-                # Groq API call with explicit output token bandwidth unlocked
+                # Strict parameter configuration to stay safely under 6000 TPM
                 response = client.chat.completions.create(
                     model="llama-3.1-8b-instant",
                     messages=[
-                        {"role": "system", "content": "You are a precise data parser who outputs raw, strict JSON without commentary. You generate long arrays exactly matching requested item counts."},
+                        {"role": "system", "content": "You are a data parser outputting raw JSON objects without code blocks or filler text."},
                         {"role": "user", "content": prompt}
                     ],
                     response_format={"type": "json_object"},
                     temperature=0.2,
-                    max_tokens=2500 # Unlocks the maximum output length constraint
+                    max_tokens=1600 # Carefully tuned limit to balance depth and safety ceilings
                 )
                 
                 raw_json = json.loads(response.choices[0].message.content)
