@@ -2,6 +2,7 @@ import streamlit as st
 import pypdf
 import json
 import pandas as pd
+import requests
 from groq import Groq
 
 # Initialize Groq Client
@@ -10,15 +11,85 @@ client = Groq()
 # Configure page settings
 st.set_page_config(page_title="Study-Sync | Dashboard", page_icon="🔄", layout="wide")
 
-st.title("🔄 Study-Sync Dashboard")
-st.markdown("#### *Granular Day-by-Day Syllabus Roadmap (Powered by Groq)*")
-st.markdown("---")
+# Fetch Firebase API Key from Secrets
+FIREBASE_API_KEY = st.secrets.get("FIREBASE_API_KEY")
 
-# Initialize persistent session states
+# Initialize persistent session states for Auth and Planner data
+if "auth_state" not in st.session_state:
+    st.session_state.auth_state = False
+if "user_email" not in st.session_state:
+    st.session_state.user_email = ""
 if "generated" not in st.session_state:
     st.session_state.generated = False
 if "roadmap_list" not in st.session_state:
     st.session_state.roadmap_list = []
+
+# --- FIREBASE AUTHENTICATION FUNCTIONS ---
+def firebase_auth(email, password, mode="signInWithPassword"):
+    """Handles both Sign In and Sign Up requests via Firebase Rest API."""
+    url = f"https://identitytoolkit.googleapis.com/v1/accounts:{mode}?key={FIREBASE_API_KEY}"
+    payload = {"email": email, "password": password, "returnSecureToken": True}
+    
+    try:
+        response = requests.post(url, json=payload)
+        res_data = response.json()
+        
+        if response.status_code == 200:
+            return {"success": True, "email": res_data["email"]}
+        else:
+            error_msg = res_data.get("error", {}).get("message", "Authentication Failed")
+            return {"success": False, "message": error_msg}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+
+# --- LOGOUT UTILITY ---
+def logout():
+    st.session_state.auth_state = False
+    st.session_state.user_email = ""
+    st.session_state.generated = False
+    st.session_state.roadmap_list = []
+    st.rerun()
+
+# ==========================================
+#  INTERFACE ROUTING: AUTHENTICATION PORTAL
+# ==========================================
+if not st.session_state.auth_state:
+    st.title("🔒 Welcome to Study-Sync")
+    st.markdown("#### *Please sign in or create an account to access your daily study plans.*")
+    st.markdown("---")
+    
+    auth_mode = st.radio("Choose an option:", ["Login", "Sign Up"], horizontal=True)
+    
+    with st.form("auth_form"):
+        email = st.text_input("Email Address")
+        password = st.text_input("Password", type="password")
+        submit_btn = st.form_submit_button("Submit")
+        
+        if submit_btn:
+            if not email or not password:
+                st.error("Please fill out all fields.")
+            elif len(password) < 6:
+                st.error("Password must be at least 6 characters long.")
+            else:
+                mode_action = "signInWithPassword" if auth_mode == "Login" else "signUp"
+                with st.spinner("Verifying credentials with Firebase..."):
+                    result = firebase_auth(email, password, mode=mode_action)
+                
+                if result["success"]:
+                    st.session_state.auth_state = True
+                    st.session_state.user_email = result["email"]
+                    st.success(f"Welcome back, {result['email']}!")
+                    st.rerun()
+                else:
+                    st.error(f"Error: {result['message']}")
+    st.stop() # Halts app execution here until user passes authorization checks
+
+# ==========================================
+#  INTERFACE ROUTING: CORE APPLICATION
+# ==========================================
+st.title("🔄 Study-Sync Dashboard")
+st.markdown(f"#### *Active Session: User Identity logged in as **{st.session_state.user_email}***")
+st.markdown("---")
 
 # Sidebar Controls
 st.sidebar.header("⚡ Configuration Panel")
@@ -26,6 +97,10 @@ uploaded_file = st.sidebar.file_uploader("Upload Course Syllabus/PDF", type=["pd
 start_time = st.sidebar.time_input("Preferred Daily Start Time")
 end_time = st.sidebar.time_input("Preferred Daily End Time")
 generate_btn = st.sidebar.button("Generate Complete Roadmap", type="primary", use_container_width=True)
+
+st.sidebar.markdown("---")
+if st.sidebar.button("🚪 Log Out Session", use_container_width=True):
+    logout()
 
 def convert_to_csv(data_list):
     df = pd.DataFrame(data_list)
@@ -37,7 +112,6 @@ if generate_btn:
     else:
         with st.spinner("Analyzing syllabus and crafting an extended 45-50 day roadmap..."):
             try:
-                # Read text from the target document
                 reader = pypdf.PdfReader(uploaded_file)
                 pdf_text = ""
                 for page in reader.pages[:10]: 
@@ -46,7 +120,6 @@ if generate_btn:
                 start_str = start_time.strftime("%I:%M %p")
                 end_str = end_time.strftime("%I:%M %p")
                 
-                # Capped text capacity to optimize Groq context token limits
                 prompt = f"""
                 Analyze this syllabus text:
                 {pdf_text[:7000]}
@@ -110,7 +183,7 @@ if generate_btn:
             except Exception as e:
                 st.error(f"App compilation process encountered an evaluation exception: {e}")
 
-# Render UI Dashboard Safely
+# Render UI Dashboard Safely (Flat Layout protects against memory crash conditions)
 if st.session_state.generated:
     st.markdown("### 🔄 Interactive Study Roadmap")
     
@@ -119,14 +192,12 @@ if st.session_state.generated:
     if roadmap:
         completed_count = 0
         
-        # Safe full-width flat layout container blocks
         for i, item in enumerate(roadmap):
             date_str = item.get('Scheduled Date', '')
             time_str = item.get('Time Slot', '')
             topic_str = item.get('Focus Topic', '')
             activity_str = item.get('Suggested Activity', '')
             
-            # Using rich markdown syntax inside a single checkbox label block
             label_markdown = f"🗓️ **{date_str}** | ⏰ {time_str} | 📘 **{topic_str}**\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📝 *{activity_str}*"
             
             is_checked = st.checkbox(label_markdown, key=f"task_{i}")
@@ -135,14 +206,12 @@ if st.session_state.generated:
                 
             st.markdown("---")
         
-        # Progress Calculation Metrics Tracker
         total_tasks = len(roadmap)
         progress_percent = int((completed_count / total_tasks) * 100) if total_tasks > 0 else 0
         
         st.markdown(f"**Progress:** {completed_count}/{total_tasks} Milestones Completed ({progress_percent}%)")
         st.progress(progress_percent / 100.0)
 
-    # Export Action Buttons Block
     if st.session_state.roadmap_list:
         csv_bytes = convert_to_csv(st.session_state.roadmap_list)
         st.download_button("📊 Download Roadmap Spreadsheet (.csv)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
