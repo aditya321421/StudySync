@@ -11,7 +11,7 @@ client = Groq()
 st.set_page_config(page_title="Study-Sync | Dashboard", page_icon="🔄", layout="wide")
 
 st.title("🔄 Study-Sync Dashboard")
-st.markdown("#### *Granular Day-by-Day Study Planner (Powered by Groq)*")
+st.markdown("#### *Granular Day-by-Day Syllabus Roadmap (Powered by Groq)*")
 st.markdown("---")
 
 # Initialize persistent session states
@@ -44,33 +44,33 @@ if generate_btn:
     if not uploaded_file:
         st.sidebar.error("Please upload a course document first!")
     else:
-        with st.spinner("Analyzing syllabus and crafting an extended 45-50 day roadmap..."):
+        with st.spinner("Analyzing syllabus and building your comprehensive 45-50 day timeline..."):
             try:
                 # Read text from the target document
                 reader = pypdf.PdfReader(uploaded_file)
                 pdf_text = ""
-                for page in reader.pages[:10]: 
+                for page in reader.pages[:15]: 
                     pdf_text += page.extract_text() or ""
                 
                 start_str = start_time.strftime("%I:%M %p")
                 end_str = end_time.strftime("%I:%M %p")
                 
-                # ENFORCED COUNT PROMPT: Mandates a minimum of 45-50 items in the roadmap array
+                # Optimized text capacity to fit safely right under Groq's 6,000 TPM limit
                 prompt = f"""
-                You are a helpful personal academic tutor. Analyze this syllabus snippet:
+                You are a helpful personal academic tutor. Analyze this syllabus content:
                 ---
-                {pdf_text[:5000]}
+                {pdf_text[:14000]}
                 ---
                 
                 Create an extensive day-by-day sequential study roadmap. 
                 Daily study session windows: {start_str} to {end_str}.
                 
                 STRICT COMPLIANCE DIRECTIVES:
-                1. You MUST generate a comprehensive roadmap containing between 45 to 50 distinct daily entries. Do not stop at 20 entries.
+                1. You MUST generate an exhaustive roadmap array containing a minimum of 45 to 50 distinct daily row entries.
                 2. For the 'Focus Topic' field, write ONLY the Subject Name and Unit Number (e.g., "Fundamentals of Computers - Unit I"). Do not append structural suffixes like "(Part-1)" or "(Part 2)".
-                3. For the 'Suggested Activity' field, isolate exactly ONE core topic or concept from that unit for that day. Write a clear, student-friendly explanation describing exactly what specific concept they need to study, define, or learn.
-                4. Break down each Unit micro-step by micro-step over multiple consecutive days so you can easily satisfy the 45-50 day requirements. Step through the units sequentially in the exact logical order they appear in the text.
-                5. Increment the 'Scheduled Date' string field by exactly 1 calendar day for each progressive milestone entry row starting from 2026-07-01 (e.g., 2026-07-01, 2026-07-02 ... up to at least 2026-08-15).
+                3. For the 'Suggested Activity' field, isolate exactly ONE core topic, theorem, keyword, or concept from that unit for that specific day. Write a clear, student-friendly description explaining what they need to study or define.
+                4. Stretch your breakdown out across all available subjects in the text. Break down individual concepts into micro-steps across consecutive days to ensure you hit the 45-50 item requirement easily.
+                5. Increment the 'Scheduled Date' string field by exactly 1 calendar day for each progressive milestone entry row starting from 2026-07-01.
                 
                 Respond ONLY with a valid JSON object matching this structural layout blueprint without markdown wrapper code blocks:
                 {{
@@ -89,14 +89,16 @@ if generate_btn:
                 }}
                 """
                 
+                # Groq API call with explicit output token bandwidth unlocked
                 response = client.chat.completions.create(
                     model="llama-3.1-8b-instant",
                     messages=[
-                        {"role": "system", "content": "You are a precise data parser who outputs raw, strict JSON without commentary. You follow item count parameters exactly."},
+                        {"role": "system", "content": "You are a precise data parser who outputs raw, strict JSON without commentary. You generate long arrays exactly matching requested item counts."},
                         {"role": "user", "content": prompt}
                     ],
                     response_format={"type": "json_object"},
-                    temperature=0.2
+                    temperature=0.2,
+                    max_tokens=2500 # Unlocks the maximum output length constraint
                 )
                 
                 raw_json = json.loads(response.choices[0].message.content)
