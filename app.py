@@ -11,7 +11,7 @@ client = Groq()
 st.set_page_config(page_title="Study-Sync | Dashboard", page_icon="🔄", layout="wide")
 
 st.title("🔄 Study-Sync Dashboard")
-st.markdown("#### *Granular Unit-by-Unit Syllabus Roadmap*")
+st.markdown("#### *Granular Day-by-Day Syllabus Roadmap*")
 st.markdown("---")
 
 # Initialize persistent session states
@@ -44,43 +44,45 @@ if generate_btn:
     if not uploaded_file:
         st.sidebar.error("Please upload a course document first!")
     else:
-        with st.spinner("Analyzing syllabus structure and mapping technical subtopics..."):
+        with st.spinner("Parsing full syllabus text and expanding granular study blocks..."):
             try:
-                # Read text layout layers out of the target document
+                # Read text layout layers out of the target document (Increased page read boundaries)
                 reader = pypdf.PdfReader(uploaded_file)
                 pdf_text = ""
-                for page in reader.pages[:15]: 
+                for page in reader.pages[:30]: 
                     pdf_text += page.extract_text() or ""
                 
                 start_str = start_time.strftime("%I:%M %p")
                 end_str = end_time.strftime("%I:%M %p")
                 
-                # REVISED PROMPT: Forces absolute granularity based on actual text units
+                # STRICTOR PROMPT: Demands high granularity and sequential execution across all units
                 prompt = f"""
-                You are a meticulous curriculum parsing assistant. Analyze this syllabus document context completely:
+                You are a meticulous curriculum breakdown expert. Analyze the entire text of this syllabus:
                 ---
-                {pdf_text[:12000]}
+                {pdf_text[:30000]}
                 ---
                 
-                Generate a daily chronological roadmap breaking the syllabus topics down sequentially day-by-day.
-                Daily session time constraints: {start_str} to {end_str}.
+                Create an exhaustive, highly granular day-by-day study roadmap that covers ALL subjects and ALL units sequentially from beginning to end.
+                 Daily study session windows: {start_str} to {end_str}.
                 
-                CRITICAL DIRECTIVE FOR THE "Suggested Activity" FIELD:
-                Do NOT use generic placeholder text or filler instructions like "Read text layout docs", "Watch videos", "Practice quizzes", or "Solve problems". 
-                Instead, look at the units inside the syllabus text and pull the exact technical subtopics, definitions, algorithms, keywords, and theorems listed under that unit section.
+                STRICT COMPLIANCE DIRECTIVES:
+                1. DO NOT map an entire unit to a single day or milestone row. (e.g., Do not put all of 'Unit I' on a single day).
+                2. Instead, pick topics SEQUENTIALLY from each subject and unit in exact order. Split every single Unit into 3 to 5 separate consecutive days, parsing out specific subset concepts, keywords, and definitions for each individual day.
+                3. The roadmap must advance naturally through every single subject found in the text without shortening or truncating early. Ensure you generate a comprehensive timeline array (aim for 40+ detailed daily rows to fully exhaust the syllabus details).
+                4. Increment the 'Scheduled Date' string field by exactly 1 calendar day for each progressive milestone entry row starting from 2026-07-01.
                 
-                Respond ONLY with a valid JSON object matching this structural blueprint without markdown wrapper code blocks:
+                Respond ONLY with a valid JSON object matching this structural layout blueprint without markdown wrapper code blocks:
                 {{
                   "deadlines": [
-                    {{"Subject": "Name of Subject (e.g., Fundamentals of Computers)", "due_date": "2027-01-20"}}
+                    {{"Subject": "Name of Subject", "due_date": "2027-01-20"}}
                   ],
                   "roadmap": [
                     {{
                       "Status": false,
                       "Scheduled Date": "2026-07-01",
                       "Time Slot": "{start_str}-{end_str}",
-                      "Focus Topic": "Subject Name - Unit X (e.g., Programming with C - Unit 2)",
-                      "Suggested Activity": "Exact core topics from text (e.g., Pointers, Memory Allocation, Arrays, structure definitions)"
+                      "Focus Topic": "Subject Name - Unit X (Part Y)",
+                      "Suggested Activity": "Specific subtopics (e.g., Computer System Characteristics, capabilities, and operational limitations)"
                     }}
                   ]
                 }}
@@ -118,7 +120,6 @@ if st.session_state.generated:
         df = st.session_state.roadmap_df
         
         if not df.empty:
-            # Overriding visual column display headers for a cleaner look
             edited_df = st.data_editor(
                 df,
                 column_config={
