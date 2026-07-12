@@ -44,7 +44,7 @@ if generate_btn:
     if not uploaded_file:
         st.sidebar.error("Please upload a course document first!")
     else:
-        with st.spinner("Crafting your safe 45-50 day timeline..."):
+        with st.spinner("Executing strict multi-day unit split roadmap generation..."):
             try:
                 # Read text from the target document
                 reader = pypdf.PdfReader(uploaded_file)
@@ -55,19 +55,25 @@ if generate_btn:
                 start_str = start_time.strftime("%I:%M %p")
                 end_str = end_time.strftime("%I:%M %p")
                 
-                # Highly condensed prompt to minimize token usage
+                # Rigid template prompt that dictates a mandatory 3-day split per unit
                 prompt = f"""
                 Analyze this syllabus:
-                {pdf_text[:9000]}
+                {pdf_text[:8000]}
                 
-                Create a daily study roadmap from {start_str} to {end_str}.
+                Create a sequential study roadmap from {start_str} to {end_str}.
                 
-                RULES:
-                1. You MUST generate between 45 to 50 entries in the roadmap array.
-                2. 'Focus Topic' must ONLY be Subject Name and Unit (e.g., "Fundamentals of Computers - Unit I"). No structural suffixes like "(Part-1)".
-                3. 'Suggested Activity' must be ONE specific topic with a short, helpful 1-sentence explanation of what to learn. No comma lists.
-                4. Split units sequentially over multiple days to easily hit the 45-50 row requirement.
-                5. Increment 'Scheduled Date' by 1 day per row starting 2026-07-01.
+                STRICT GENERATION FORMULA:
+                For EVERY single Unit identified in the text, you MUST generate EXACTLY 3 separate, consecutive daily rows. Do not lump a unit into 1 day.
+                
+                Follow this exact 3-day split pattern for every unit:
+                - Day 1 of the Unit: Focus Topic = "Subject - Unit X". Suggested Activity = Describe and explain the core foundational concepts and introductory definitions found in the first part of this unit.
+                - Day 2 of the Unit: Focus Topic = "Subject - Unit X". Suggested Activity = Describe and explain the advanced theories, specific subtopics, or key mechanisms found in the middle part of this unit.
+                - Day 3 of the Unit: Focus Topic = "Subject - Unit X". Suggested Activity = Describe the practical applications, formula derivations, numerical problems, or coding practice related to this unit.
+                
+                CRITICAL RULES:
+                1. Keep generating this 3-day loop for Unit I, Unit II, Unit III, etc., moving sequentially through all subjects. This must yield a large roadmap array of 45+ rows.
+                2. Do NOT append structural suffixes like "(Part-1)" or "Day 1" to the Focus Topic column string. Keep it clean: "Subject Name - Unit X".
+                3. Increment 'Scheduled Date' by exactly 1 day per row starting 2026-07-01.
                 
                 Return raw JSON matching this format:
                 {{
@@ -78,22 +84,22 @@ if generate_btn:
                       "Scheduled Date": "2026-07-01",
                       "Time Slot": "{start_str}-{end_str}",
                       "Focus Topic": "Fundamentals of Computers - Unit I",
-                      "Suggested Activity": "Study Computer System Characteristics: Learn core hardware processing capabilities and operational limitations."
+                      "Suggested Activity": "Study Core Hardware Frameworks: Learn the foundational processing characteristics, input-output flow baselines, and execution limitations of central computing systems."
                     }}
                   ]
                 }}
                 """
                 
-                # Strict parameter configuration to stay safely under 6000 TPM
+                # Optimized configuration parameters to prevent 413 limits while enabling deep execution
                 response = client.chat.completions.create(
                     model="llama-3.1-8b-instant",
                     messages=[
-                        {"role": "system", "content": "You are a data parser outputting raw JSON objects without code blocks or filler text."},
+                        {"role": "system", "content": "You are a precise computer program that outputs raw JSON matching structural formatting rules and row generation counts perfectly."},
                         {"role": "user", "content": prompt}
                     ],
                     response_format={"type": "json_object"},
-                    temperature=0.2,
-                    max_tokens=1600 # Carefully tuned limit to balance depth and safety ceilings
+                    temperature=0.15,
+                    max_tokens=2000
                 )
                 
                 raw_json = json.loads(response.choices[0].message.content)
