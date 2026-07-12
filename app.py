@@ -11,14 +11,19 @@ client = Groq()
 # Configure page settings
 st.set_page_config(page_title="Study-Sync | Dashboard", page_icon="🔄", layout="wide")
 
-# Fetch Firebase API Key from Secrets
+# Fetch Firebase Configurations from Secrets
 FIREBASE_API_KEY = st.secrets.get("FIREBASE_API_KEY")
+FIREBASE_PROJECT_ID = st.secrets.get("FIREBASE_PROJECT_ID")
 
-# Initialize persistent session states for Auth and Planner data
+# Initialize persistent session states
 if "auth_state" not in st.session_state:
     st.session_state.auth_state = False
 if "user_email" not in st.session_state:
     st.session_state.user_email = ""
+if "user_uid" not in st.session_state:
+    st.session_state.user_uid = ""
+if "id_token" not in st.session_state:
+    st.session_state.id_token = ""
 if "generated" not in st.session_state:
     st.session_state.generated = False
 if "roadmap_list" not in st.session_state:
@@ -26,7 +31,7 @@ if "roadmap_list" not in st.session_state:
 
 # --- FIREBASE AUTHENTICATION FUNCTIONS ---
 def firebase_auth(email, password, mode="signInWithPassword"):
-    """Handles both Sign In and Sign Up requests via Firebase Rest API."""
+    """Handles Sign In/Sign Up and returns email, UID, and authorization idToken."""
     url = f"https://identitytoolkit.googleapis.com/v1/accounts:{mode}?key={FIREBASE_API_KEY}"
     payload = {"email": email, "password": password, "returnSecureToken": True}
     
@@ -35,17 +40,68 @@ def firebase_auth(email, password, mode="signInWithPassword"):
         res_data = response.json()
         
         if response.status_code == 200:
-            return {"success": True, "email": res_data["email"]}
+            return {
+                "success": True, 
+                "email": res_data["email"], 
+                "uid": res_data["localId"],
+                "idToken": res_data["idToken"]
+            }
         else:
             error_msg = res_data.get("error", {}).get("message", "Authentication Failed")
             return {"success": False, "message": error_msg}
     except Exception as e:
         return {"success": False, "message": str(e)}
 
+# --- GOOGLE CLOUD FIRESTORE REST API INTERACTIONS ---
+def save_roadmap_to_firestore(uid, id_token, roadmap_list):
+    """Saves the roadmap list as a serialized JSON string in a Firestore document."""
+    if not FIREBASE_PROJECT_ID:
+        st.error("Firebase Project ID is missing from Secrets.")
+        return False
+        
+    url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{uid}"
+    
+    # Firestore REST requires a specific typed field mapping structure
+    payload = {
+        "fields": {
+            "roadmap_json": {
+                "stringValue": json.dumps(roadmap_list)
+            }
+        }
+    }
+    headers = {"Authorization": f"Bearer {id_token}"}
+    
+    try:
+        # PATCH creates the document if missing or updates it cleanly if it exists
+        res = requests.patch(url, json=payload, headers=headers)
+        return res.status_code == 200
+    except Exception:
+        return False
+
+def load_roadmap_from_firestore(uid, id_token):
+    """Fetches and decodes the user's saved roadmap string from Cloud Firestore."""
+    if not FIREBASE_PROJECT_ID:
+        return []
+        
+    url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{uid}"
+    headers = {"Authorization": f"Bearer {id_token}"}
+    
+    try:
+        res = requests.get(url, headers=headers)
+        if res.status_code == 200 and res.json():
+            doc_data = res.json()
+            roadmap_str = doc_data.get("fields", {}).get("roadmap_json", {}).get("stringValue", "[]")
+            return json.loads(roadmap_str)
+    except Exception:
+        return []
+    return []
+
 # --- LOGOUT UTILITY ---
 def logout():
     st.session_state.auth_state = False
     st.session_state.user_email = ""
+    st.session_state.user_uid = ""
+    st.session_state.id_token = ""
     st.session_state.generated = False
     st.session_state.roadmap_list = []
     st.rerun()
@@ -72,17 +128,26 @@ if not st.session_state.auth_state:
                 st.error("Password must be at least 6 characters long.")
             else:
                 mode_action = "signInWithPassword" if auth_mode == "Login" else "signUp"
-                with st.spinner("Verifying credentials with Firebase..."):
+                with st.spinner("Verifying credentials with Firebase Auth..."):
                     result = firebase_auth(email, password, mode=mode_action)
                 
                 if result["success"]:
                     st.session_state.auth_state = True
                     st.session_state.user_email = result["email"]
+                    st.session_state.user_uid = result["uid"]
+                    st.session_state.id_token = result["idToken"]
+                    
+                    # Auto-check and pull data down from Cloud Firestore collection records
+                    cloud_data = load_roadmap_from_firestore(result["uid"], result["idToken"])
+                    if cloud_data:
+                        st.session_state.roadmap_list = cloud_data
+                        st.session_state.generated = True
+                        
                     st.success(f"Welcome back, {result['email']}!")
                     st.rerun()
                 else:
                     st.error(f"Error: {result['message']}")
-    st.stop() # Halts app execution here until user passes authorization checks
+    st.stop()
 
 # ==========================================
 #  INTERFACE ROUTING: CORE APPLICATION
@@ -144,18 +209,21 @@ if generate_btn:
                 {{
                   "roadmap": [
                     {{
+                      "Status": false,
                       "Scheduled Date": "2026-07-01",
                       "Time Slot": "{start_str}-{end_str}",
                       "Focus Topic": "Fundamentals of Computers - Unit I",
                       "Suggested Activity": "Study Core Hardware Frameworks: Learn the processing speeds, data capacities, and fundamental design limitations of computer hardware."
                     }},
                     {{
+                      "Status": false,
                       "Scheduled Date": "2026-07-02",
                       "Time Slot": "{start_str}-{end_str}",
                       "Focus Topic": "Fundamentals of Computers - Unit I",
                       "Suggested Activity": "Examine Machine Classifications: Understand architectural and processing performance variations between micro, mini, and mainframe systems."
                     }},
                     {{
+                      "Status": false,
                       "Scheduled Date": "2026-07-03",
                       "Time Slot": "{start_str}-{end_str}",
                       "Focus Topic": "Fundamentals of Computers - Unit I",
@@ -177,13 +245,22 @@ if generate_btn:
                 )
                 
                 raw_json = json.loads(response.choices[0].message.content)
-                st.session_state.roadmap_list = raw_json.get("roadmap", [])
+                roadmap_data = raw_json.get("roadmap", [])
+                
+                for item in roadmap_data:
+                    if "Status" not in item:
+                        item["Status"] = False
+                
+                st.session_state.roadmap_list = roadmap_data
                 st.session_state.generated = True
+                
+                # Auto-save freshly created schedules straight to the cloud database collection
+                save_roadmap_to_firestore(st.session_state.user_uid, st.session_state.id_token, roadmap_data)
                 
             except Exception as e:
                 st.error(f"App compilation process encountered an evaluation exception: {e}")
 
-# Render UI Dashboard Safely (Flat Layout protects against memory crash conditions)
+# Render UI Dashboard Safely
 if st.session_state.generated:
     st.markdown("### 🔄 Interactive Study Roadmap")
     
@@ -192,28 +269,41 @@ if st.session_state.generated:
     if roadmap:
         completed_count = 0
         
+        save_col, csv_col = st.columns(2)
+        with save_col:
+            if st.button("💾 Save Progress to Cloud Firestore", type="primary", use_container_width=True):
+                if save_roadmap_to_firestore(st.session_state.user_uid, st.session_state.id_token, st.session_state.roadmap_list):
+                    st.toast("Progress saved successfully to Cloud Firestore!", icon="🔥")
+                else:
+                    st.error("Failed to sync progress changes to Firestore collection.")
+        with csv_col:
+            csv_bytes = convert_to_csv(st.session_state.roadmap_list)
+            st.download_button("📊 Download Roadmap Spreadsheet (.csv)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
+            
+        st.markdown("---")
+        
+        # Safe layout flat loop prevents multi-column segmentation faults
         for i, item in enumerate(roadmap):
             date_str = item.get('Scheduled Date', '')
             time_str = item.get('Time Slot', '')
             topic_str = item.get('Focus Topic', '')
             activity_str = item.get('Suggested Activity', '')
+            current_status = item.get('Status', False)
             
             label_markdown = f"🗓️ **{date_str}** | ⏰ {time_str} | 📘 **{topic_str}**\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📝 *{activity_str}*"
             
-            is_checked = st.checkbox(label_markdown, key=f"task_{i}")
+            is_checked = st.checkbox(label_markdown, value=current_status, key=f"task_{i}")
             if is_checked:
                 completed_count += 1
+            
+            st.session_state.roadmap_list[i]["Status"] = is_checked
                 
             st.markdown("---")
         
         total_tasks = len(roadmap)
         progress_percent = int((completed_count / total_tasks) * 100) if total_tasks > 0 else 0
         
-        st.markdown(f"**Progress:** {completed_count}/{total_tasks} Milestones Completed ({progress_percent}%)")
+        st.markdown(f"**Progress Check:** {completed_count}/{total_tasks} Milestones Completed ({progress_percent}%)")
         st.progress(progress_percent / 100.0)
-
-    if st.session_state.roadmap_list:
-        csv_bytes = convert_to_csv(st.session_state.roadmap_list)
-        st.download_button("📊 Download Roadmap Spreadsheet (.csv)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
 else:
     st.info("Configuration parameters pending: Feed a course document file into the sidebar parameters to populate the interactive dashboard.")
