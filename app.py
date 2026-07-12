@@ -46,7 +46,6 @@ if generate_btn:
                 start_str = start_time.strftime("%I:%M %p")
                 end_str = end_time.strftime("%I:%M %p")
                 
-                # Capped text size to 7000 to keep the input + long output safely under Groq's 6,000 token ceiling
                 prompt = f"""
                 Analyze this syllabus text:
                 {pdf_text[:7000]}
@@ -118,7 +117,6 @@ if st.session_state.generated:
     roadmap = st.session_state.roadmap_list
     
     if roadmap:
-        # Optimized full-width table headers 
         h_col1, h_col2, h_col3, h_col4 = st.columns([0.6, 1.4, 2.5, 5.5])
         h_col1.markdown("**Status**")
         h_col2.markdown("**Date & Time**")
@@ -133,7 +131,8 @@ if st.session_state.generated:
             r_col1, r_col2, r_col3, r_col4 = st.columns([0.6, 1.4, 2.5, 5.5])
             
             with r_col1:
-                is_checked = st.checkbox("", key=f"task_{i}")
+                # Fixed: Added an internal fallback label string and set visibility to collapsed to satisfy the accessibility engine
+                is_checked = st.checkbox("Mark task status completed", key=f"task_{i}", label_visibility="collapsed")
                 if is_checked:
                     completed_count += 1
                     
@@ -144,7 +143,7 @@ if st.session_state.generated:
             with r_col4:
                 st.write(item.get('Suggested Activity', ''))
         
-        # Bottom Progress Tracking Calculations
+        # Progress Tracking Calculations
         total_tasks = len(roadmap)
         progress_percent = int((completed_count / total_tasks) * 100) if total_tasks > 0 else 0
         
