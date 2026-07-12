@@ -17,8 +17,6 @@ st.markdown("---")
 # Initialize persistent session states
 if "generated" not in st.session_state:
     st.session_state.generated = False
-if "deadlines_data" not in st.session_state:
-    st.session_state.deadlines_data = []
 if "roadmap_list" not in st.session_state:
     st.session_state.roadmap_list = []
 
@@ -77,7 +75,7 @@ if generate_btn:
                       "Scheduled Date": "2026-07-01",
                       "Time Slot": "{start_str}-{end_str}",
                       "Focus Topic": "Fundamentals of Computers - Unit I",
-                      "Suggested Activity": "Study Core System Characteristics: Learn the processing speeds, data capacities, and fundamental design limitations of computer hardware."
+                      "Suggested Activity": "Study Core Hardware Frameworks: Learn the processing speeds, data capacities, and fundamental design limitations of computer hardware."
                     }},
                     {{
                       "Scheduled Date": "2026-07-02",
@@ -103,66 +101,58 @@ if generate_btn:
                     ],
                     response_format={"type": "json_object"},
                     temperature=0.2,
-                    max_tokens=2500  # Gives the model maximum space to write out 50 complete entries
+                    max_tokens=2500  
                 )
                 
                 raw_json = json.loads(response.choices[0].message.content)
-                st.session_state.deadlines_data = raw_json.get("deadlines", [])
                 st.session_state.roadmap_list = raw_json.get("roadmap", [])
                 st.session_state.generated = True
                 
             except Exception as e:
                 st.error(f"App compilation process encountered an evaluation exception: {e}")
 
-# Render UI Dashboards Safely
+# Render UI Dashboard Safely (Now occupying full screen width)
 if st.session_state.generated:
-    left_col, right_col = st.columns([1, 2], gap="large")
+    st.markdown("### 🔄 Interactive Study Roadmap")
     
-    with left_col:
-        st.markdown("### 📅 Extracted Deadlines")
-        st.dataframe(st.session_state.deadlines_data, use_container_width=True, hide_index=True)
+    roadmap = st.session_state.roadmap_list
+    
+    if roadmap:
+        # Optimized full-width table headers 
+        h_col1, h_col2, h_col3, h_col4 = st.columns([0.6, 1.4, 2.5, 5.5])
+        h_col1.markdown("**Status**")
+        h_col2.markdown("**Date & Time**")
+        h_col3.markdown("**Subject & Unit**")
+        h_col4.markdown("**Study Description & Topic Focus**")
+        st.markdown("---")
         
-    with right_col:
-        st.markdown("### 🔄 Interactive Study Roadmap")
+        completed_count = 0
         
-        roadmap = st.session_state.roadmap_list
+        # Loop through rows to generate checklist UI elements
+        for i, item in enumerate(roadmap):
+            r_col1, r_col2, r_col3, r_col4 = st.columns([0.6, 1.4, 2.5, 5.5])
+            
+            with r_col1:
+                is_checked = st.checkbox("", key=f"task_{i}")
+                if is_checked:
+                    completed_count += 1
+                    
+            with r_col2:
+                st.caption(f"📅 {item.get('Scheduled Date', '')}\n⏰ {item.get('Time Slot', '')}")
+            with r_col3:
+                st.markdown(f"**{item.get('Focus Topic', '')}**")
+            with r_col4:
+                st.write(item.get('Suggested Activity', ''))
         
-        if roadmap:
-            # Table Header Layout
-            h_col1, h_col2, h_col3, h_col4 = st.columns([0.5, 1.2, 2.3, 4.0])
-            h_col1.markdown("**Status**")
-            h_col2.markdown("**Date & Time**")
-            h_col3.markdown("**Subject & Unit**")
-            h_col4.markdown("**Study Description & Topic Focus**")
-            st.markdown("---")
-            
-            completed_count = 0
-            
-            # Loop through rows to generate native checklists
-            for i, item in enumerate(roadmap):
-                r_col1, r_col2, r_col3, r_col4 = st.columns([0.5, 1.2, 2.3, 4.0])
-                
-                with r_col1:
-                    is_checked = st.checkbox("", key=f"task_{i}")
-                    if is_checked:
-                        completed_count += 1
-                        
-                with r_col2:
-                    st.caption(f"📅 {item.get('Scheduled Date', '')}\n⏰ {item.get('Time Slot', '')}")
-                with r_col3:
-                    st.markdown(f"**{item.get('Focus Topic', '')}**")
-                with r_col4:
-                    st.write(item.get('Suggested Activity', ''))
-            
-            # Progress Tracking Metrics
-            total_tasks = len(roadmap)
-            progress_percent = int((completed_count / total_tasks) * 100) if total_tasks > 0 else 0
-            
-            st.markdown("---")
-            st.markdown(f"**Progress:** {completed_count}/{total_tasks} Milestones Completed ({progress_percent}%)")
-            st.progress(progress_percent / 100.0)
+        # Bottom Progress Tracking Calculations
+        total_tasks = len(roadmap)
+        progress_percent = int((completed_count / total_tasks) * 100) if total_tasks > 0 else 0
+        
+        st.markdown("---")
+        st.markdown(f"**Progress:** {completed_count}/{total_tasks} Milestones Completed ({progress_percent}%)")
+        st.progress(progress_percent / 100.0)
 
-    # Export Action Row
+    # Export Action Buttons Block
     if st.session_state.roadmap_list:
         csv_bytes = convert_to_csv(st.session_state.roadmap_list)
         st.download_button("📊 Download Roadmap Spreadsheet (.csv)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
