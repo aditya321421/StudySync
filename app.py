@@ -35,7 +35,6 @@ def convert_df_to_csv(df):
 def convert_to_ics(df):
     ics_text = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Study-Sync//Study Plan//EN\n"
     for _, row in df.iterrows():
-        # Fallback to prevent crashes if columns are missing in the export string
         focus = row.get('Focus Topic', 'Study Session')
         activity = row.get('Suggested Activity', 'Review Material')
         clean_date = str(row.get('Scheduled Date', '20260701')).replace("-", "")
@@ -109,13 +108,24 @@ if generate_btn:
                 # --- DEFENSIVE DATA REPAIR PATTERN ---
                 roadmap_list = raw_json.get("roadmap", [])
                 for item in roadmap_list:
-                    if "Status" not in item: item["Status"] = False
+                    # Explicit Boolean cleanup ensures structural parsing variables are clean
+                    if "Status" not in item: 
+                        item["Status"] = False
+                    else:
+                        item["Status"] = True if str(item["Status"]).lower() in ['true', '1', 'yes'] else False
+                        
                     if "Scheduled Date" not in item: item["Scheduled Date"] = "2026-07-01"
                     if "Time Slot" not in item: item["Time Slot"] = f"{start_str}-{end_str}"
                     if "Focus Topic" not in item: item["Focus Topic"] = "Syllabus Topic"
                     if "Suggested Activity" not in item: item["Suggested Activity"] = "Review unit concepts."
                 
-                st.session_state.roadmap_df = pd.DataFrame(roadmap_list)
+                df_temp = pd.DataFrame(roadmap_list)
+                
+                # Rigid mechanical type safety enforcement
+                if not df_temp.empty:
+                    df_temp["Status"] = df_temp["Status"].astype(bool)
+                
+                st.session_state.roadmap_df = df_temp
                 st.session_state.generated = True
                 
             except Exception as e:
@@ -123,19 +133,18 @@ if generate_btn:
 
 # Render UI Dashboards Safely
 if st.session_state.generated:
-    left_col, right_col = st.columns([1, 2], gap="large")
-    
-    with left_col:
-        st.markdown("### 📅 Extracted Deadlines")
-        st.dataframe(st.session_state.deadlines_data, use_container_width=True, hide_index=True)
+    try:
+        left_col, right_col = st.columns([1, 2], gap="large")
         
-    with right_col:
-        st.markdown("### 🔄 Interactive Study Roadmap")
-        df = st.session_state.roadmap_df
-        
-        # Verify the dataframe structure is populated and has columns before processing
-        if not df.empty and "Status" in df.columns:
-            try:
+        with left_col:
+            st.markdown("### 📅 Extracted Deadlines")
+            st.dataframe(st.session_state.deadlines_data, use_container_width=True, hide_index=True)
+            
+        with right_col:
+            st.markdown("### 🔄 Interactive Study Roadmap")
+            df = st.session_state.roadmap_df
+            
+            if not df.empty and "Status" in df.columns:
                 edited_df = st.data_editor(
                     df,
                     column_config={
@@ -157,21 +166,22 @@ if st.session_state.generated:
                 st.markdown(f"**Progress:** {completed_tasks}/{total_tasks} Milestones Completed ({progress_percent}%)")
                 st.progress(progress_percent / 100.0)
                 st.session_state.roadmap_df = edited_df
-            except Exception as e:
-                st.error(f"UI Grid Error: {e}")
-        else:
-            st.warning("Roadmap structural fields are empty or formatted incorrectly.")
+            else:
+                st.warning("Roadmap structural fields are empty or formatted incorrectly.")
 
-    st.markdown("---")
-    btn_col1, btn_col2 = st.columns(2)
-    
-    if not st.session_state.roadmap_df.empty:
-        csv_bytes = convert_df_to_csv(st.session_state.roadmap_df)
-        ics_bytes = convert_to_ics(st.session_state.roadmap_df)
+        st.markdown("---")
+        btn_col1, btn_col2 = st.columns(2)
         
-        with btn_col1:
-            st.download_button("🗓️ Export to Calendar (.ics)", data=ics_bytes, file_name="study_schedule.ics", mime="text/calendar", use_container_width=True)
-        with btn_col2:
-            st.download_button("📊 Download Spreadsheet (.csv)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
+        if not st.session_state.roadmap_df.empty:
+            csv_bytes = convert_df_to_csv(st.session_state.roadmap_df)
+            ics_bytes = convert_to_ics(st.session_state.roadmap_df)
+            
+            with btn_col1:
+                st.download_button("🗓️ Export to Calendar (.ics)", data=ics_bytes, file_name="study_schedule.ics", mime="text/calendar", use_container_width=True)
+            with btn_col2:
+                st.download_button("📊 Download Spreadsheet (.csv)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
+    
+    except Exception as e:
+        st.error(f"Fatal UI rendering layout conflict caught: {e}")
 else:
     st.info("Configuration parameters pending: Feed a course document file into the sidebar parameters to populate the interactive dashboard.")
