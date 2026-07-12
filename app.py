@@ -3,7 +3,7 @@ import pypdf
 import json
 from groq import Groq
 
-# Initialize Groq Client (automatically reads the GROQ_API_KEY environment variable)
+# Initialize Groq Client
 client = Groq()
 
 # Configure page settings
@@ -62,9 +62,9 @@ with col2:
                     }}
                     """
                     
-                    # Groq API call using llama3-8b-8192
+                    # Groq API call using the updated active model
                     response = client.chat.completions.create(
-                        model="llama3-8b-8192",
+                        model="llama-3.1-8b-instant",
                         messages=[
                             {"role": "system", "content": "You are a helpful assistant designed to output strict JSON."},
                             {"role": "user", "content": prompt}
