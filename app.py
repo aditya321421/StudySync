@@ -46,6 +46,7 @@ if generate_btn:
                 start_str = start_time.strftime("%I:%M %p")
                 end_str = end_time.strftime("%I:%M %p")
                 
+                # Capped text capacity to optimize Groq context token limits
                 prompt = f"""
                 Analyze this syllabus text:
                 {pdf_text[:7000]}
@@ -68,7 +69,6 @@ if generate_btn:
                 
                 Follow this exact multi-day structural example format when building the array:
                 {{
-                  "deadlines": [{{"Subject": "Fundamentals of Computers", "due_date": "2027-01-20"}}],
                   "roadmap": [
                     {{
                       "Scheduled Date": "2026-07-01",
@@ -110,44 +110,35 @@ if generate_btn:
             except Exception as e:
                 st.error(f"App compilation process encountered an evaluation exception: {e}")
 
-# Render UI Dashboard Safely (Now occupying full screen width)
+# Render UI Dashboard Safely
 if st.session_state.generated:
     st.markdown("### 🔄 Interactive Study Roadmap")
     
     roadmap = st.session_state.roadmap_list
     
     if roadmap:
-        h_col1, h_col2, h_col3, h_col4 = st.columns([0.6, 1.4, 2.5, 5.5])
-        h_col1.markdown("**Status**")
-        h_col2.markdown("**Date & Time**")
-        h_col3.markdown("**Subject & Unit**")
-        h_col4.markdown("**Study Description & Topic Focus**")
-        st.markdown("---")
-        
         completed_count = 0
         
-        # Loop through rows to generate checklist UI elements
+        # Safe full-width flat layout container blocks
         for i, item in enumerate(roadmap):
-            r_col1, r_col2, r_col3, r_col4 = st.columns([0.6, 1.4, 2.5, 5.5])
+            date_str = item.get('Scheduled Date', '')
+            time_str = item.get('Time Slot', '')
+            topic_str = item.get('Focus Topic', '')
+            activity_str = item.get('Suggested Activity', '')
             
-            with r_col1:
-                # Fixed: Added an internal fallback label string and set visibility to collapsed to satisfy the accessibility engine
-                is_checked = st.checkbox("Mark task status completed", key=f"task_{i}", label_visibility="collapsed")
-                if is_checked:
-                    completed_count += 1
-                    
-            with r_col2:
-                st.caption(f"📅 {item.get('Scheduled Date', '')}\n⏰ {item.get('Time Slot', '')}")
-            with r_col3:
-                st.markdown(f"**{item.get('Focus Topic', '')}**")
-            with r_col4:
-                st.write(item.get('Suggested Activity', ''))
+            # Using rich markdown syntax inside a single checkbox label block
+            label_markdown = f"🗓️ **{date_str}** | ⏰ {time_str} | 📘 **{topic_str}**\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📝 *{activity_str}*"
+            
+            is_checked = st.checkbox(label_markdown, key=f"task_{i}")
+            if is_checked:
+                completed_count += 1
+                
+            st.markdown("---")
         
-        # Progress Tracking Calculations
+        # Progress Calculation Metrics Tracker
         total_tasks = len(roadmap)
         progress_percent = int((completed_count / total_tasks) * 100) if total_tasks > 0 else 0
         
-        st.markdown("---")
         st.markdown(f"**Progress:** {completed_count}/{total_tasks} Milestones Completed ({progress_percent}%)")
         st.progress(progress_percent / 100.0)
 
