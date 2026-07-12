@@ -11,7 +11,7 @@ client = Groq()
 st.set_page_config(page_title="Study-Sync | Dashboard", page_icon="🔄", layout="wide")
 
 st.title("🔄 Study-Sync Dashboard")
-st.markdown("#### *Granular Day-by-Day Syllabus Roadmap*")
+st.markdown("#### *Granular Day-by-Day Syllabus Roadmap (Powered by Groq)*")
 st.markdown("---")
 
 # Initialize persistent session states
@@ -44,31 +44,31 @@ if generate_btn:
     if not uploaded_file:
         st.sidebar.error("Please upload a course document first!")
     else:
-        with st.spinner("Parsing full syllabus text and expanding granular study blocks..."):
+        with st.spinner("Analyzing syllabus structure with Groq..."):
             try:
-                # Read text layout layers out of the target document (Increased page read boundaries)
+                # Read text from the target document
                 reader = pypdf.PdfReader(uploaded_file)
                 pdf_text = ""
-                for page in reader.pages[:30]: 
+                for page in reader.pages[:10]: 
                     pdf_text += page.extract_text() or ""
                 
                 start_str = start_time.strftime("%I:%M %p")
                 end_str = end_time.strftime("%I:%M %p")
                 
-                # STRICTOR PROMPT: Demands high granularity and sequential execution across all units
+                # Capped context length to 5000 to strictly respect Groq's TPM ceiling
                 prompt = f"""
-                You are a meticulous curriculum breakdown expert. Analyze the entire text of this syllabus:
+                You are a meticulous curriculum breakdown expert. Analyze this syllabus text snippet:
                 ---
-                {pdf_text[:30000]}
+                {pdf_text[:5000]}
                 ---
                 
-                Create an exhaustive, highly granular day-by-day study roadmap that covers ALL subjects and ALL units sequentially from beginning to end.
-                 Daily study session windows: {start_str} to {end_str}.
+                Create an exhaustive, highly granular day-by-day study roadmap that covers the subjects and units sequentially from beginning to end.
+                Daily study session windows: {start_str} to {end_str}.
                 
                 STRICT COMPLIANCE DIRECTIVES:
-                1. DO NOT map an entire unit to a single day or milestone row. (e.g., Do not put all of 'Unit I' on a single day).
-                2. Instead, pick topics SEQUENTIALLY from each subject and unit in exact order. Split every single Unit into 3 to 5 separate consecutive days, parsing out specific subset concepts, keywords, and definitions for each individual day.
-                3. The roadmap must advance naturally through every single subject found in the text without shortening or truncating early. Ensure you generate a comprehensive timeline array (aim for 40+ detailed daily rows to fully exhaust the syllabus details).
+                1. DO NOT map an entire unit to a single day or milestone row.
+                2. Pick topics SEQUENTIALLY from each subject and unit in exact order. Split every single Unit into 3 to 5 separate consecutive days, parsing out specific subset concepts, keywords, and definitions for each individual day.
+                3. Truncate filler text but preserve all core technical terms.
                 4. Increment the 'Scheduled Date' string field by exactly 1 calendar day for each progressive milestone entry row starting from 2026-07-01.
                 
                 Respond ONLY with a valid JSON object matching this structural layout blueprint without markdown wrapper code blocks:
@@ -88,6 +88,7 @@ if generate_btn:
                 }}
                 """
                 
+                # Groq API call using the active Llama 3.1 model
                 response = client.chat.completions.create(
                     model="llama-3.1-8b-instant",
                     messages=[
