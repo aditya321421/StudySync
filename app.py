@@ -11,7 +11,7 @@ client = Groq()
 st.set_page_config(page_title="Study-Sync | Dashboard", page_icon="🔄", layout="wide")
 
 st.title("🔄 Study-Sync Dashboard")
-st.markdown("#### *Granular Day-by-Day Syllabus Roadmap (Powered by Groq)*")
+st.markdown("#### *Granular Day-by-Day Study Planner (Powered by Groq)*")
 st.markdown("---")
 
 # Initialize persistent session states
@@ -44,7 +44,7 @@ if generate_btn:
     if not uploaded_file:
         st.sidebar.error("Please upload a course document first!")
     else:
-        with st.spinner("Analyzing syllabus structure with Groq..."):
+        with st.spinner("Analyzing syllabus and crafting descriptive study targets..."):
             try:
                 # Read text from the target document
                 reader = pypdf.PdfReader(uploaded_file)
@@ -55,20 +55,20 @@ if generate_btn:
                 start_str = start_time.strftime("%I:%M %p")
                 end_str = end_time.strftime("%I:%M %p")
                 
-                # Capped context length to 5000 to strictly respect Groq's TPM ceiling
+                # STRICTOR TUTOR PROMPT: Focuses on single-topic descriptions and drops "Part-X"
                 prompt = f"""
-                You are a meticulous curriculum breakdown expert. Analyze this syllabus text snippet:
+                You are a helpful personal academic tutor. Analyze this syllabus snippet:
                 ---
                 {pdf_text[:5000]}
                 ---
                 
-                Create an exhaustive, highly granular day-by-day study roadmap that covers the subjects and units sequentially from beginning to end.
+                Create a day-by-day sequential study roadmap. 
                 Daily study session windows: {start_str} to {end_str}.
                 
                 STRICT COMPLIANCE DIRECTIVES:
-                1. DO NOT map an entire unit to a single day or milestone row.
-                2. Pick topics SEQUENTIALLY from each subject and unit in exact order. Split every single Unit into 3 to 5 separate consecutive days, parsing out specific subset concepts, keywords, and definitions for each individual day.
-                3. Truncate filler text but preserve all core technical terms.
+                1. For the 'Focus Topic' field, write ONLY the Subject Name and Unit Number (e.g., "Fundamentals of Computers - Unit I"). NEVER append structural suffixes like "(Part-1)", "(Part 2)", or "(Part-A)". If a single unit spans multiple days, keep the text string completely identical across those days.
+                2. For the 'Suggested Activity' field, isolate exactly ONE core topic or concept from that unit for the day. Write a clear, student-friendly explanation describing exactly what specific concept they need to study, define, or learn. Avoid a long comma-separated list of random keywords.
+                3. Step through the units and topics sequentially in the exact logical order they appear in the text.
                 4. Increment the 'Scheduled Date' string field by exactly 1 calendar day for each progressive milestone entry row starting from 2026-07-01.
                 
                 Respond ONLY with a valid JSON object matching this structural layout blueprint without markdown wrapper code blocks:
@@ -81,14 +81,13 @@ if generate_btn:
                       "Status": false,
                       "Scheduled Date": "2026-07-01",
                       "Time Slot": "{start_str}-{end_str}",
-                      "Focus Topic": "Subject Name - Unit X (Part Y)",
-                      "Suggested Activity": "Specific subtopics (e.g., Computer System Characteristics, capabilities, and operational limitations)"
+                      "Focus Topic": "Fundamentals of Computers - Unit I",
+                      "Suggested Activity": "Study Computer System Characteristics: Learn the essential capabilities, speed metrics, and core operational limitations of processing hardware."
                     }}
                   ]
                 }}
                 """
                 
-                # Groq API call using the active Llama 3.1 model
                 response = client.chat.completions.create(
                     model="llama-3.1-8b-instant",
                     messages=[
@@ -96,7 +95,7 @@ if generate_btn:
                         {"role": "user", "content": prompt}
                     ],
                     response_format={"type": "json_object"},
-                    temperature=0.15
+                    temperature=0.2
                 )
                 
                 raw_json = json.loads(response.choices[0].message.content)
@@ -128,7 +127,7 @@ if st.session_state.generated:
                     "Scheduled Date": st.column_config.TextColumn("Date", disabled=True),
                     "Time Slot": st.column_config.TextColumn("Time Slot", disabled=True),
                     "Focus Topic": st.column_config.TextColumn("Subject & Unit", disabled=True),
-                    "Suggested Activity": st.column_config.TextColumn("Granular Syllabus Topics", disabled=True),
+                    "Suggested Activity": st.column_config.TextColumn("Study Description & Topic Focus", disabled=True),
                 },
                 hide_index=True,
                 use_container_width=True,
