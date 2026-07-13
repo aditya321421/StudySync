@@ -39,8 +39,8 @@ st.markdown(
     /* Hardware-Accelerated Smooth Moving Cyber Grid Backdrop */
     .stApp {
         background-image: 
-            linear-gradient(rgba(0, 114, 255, 0.012) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 114, 255, 0.012) 1px, transparent 1px) !important;
+            linear-gradient(rgba(82, 39, 255, 0.012) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(82, 39, 255, 0.012) 1px, transparent 1px) !important;
         background-size: 60px 60px !important;
         animation: cyberGridShift 30s linear infinite !important;
         background-attachment: fixed !important;
@@ -62,17 +62,17 @@ st.markdown(
         z-index: 0 !important;
     }
 
-    /* Blue Nebula Shift */
+    /* Blue/Indigo Accent Nebula Shift */
     .stApp::before {
-        background: radial-gradient(circle, rgba(0, 114, 255, 0.06) 0%, rgba(0, 114, 255, 0.01) 50%, transparent 70%) !important;
+        background: radial-gradient(circle, rgba(82, 39, 255, 0.05) 0%, rgba(82, 39, 255, 0.01) 50%, transparent 70%) !important;
         top: -15% !important;
         left: -10% !important;
         animation: orbitPulseCyan 25s infinite alternate ease-in-out !important;
     }
 
-    /* Light Blue/White Flare Nebula Shift */
+    /* Pink Accent Nebula Shift */
     .stApp::after {
-        background: radial-gradient(circle, rgba(0, 198, 255, 0.04) 0%, rgba(255, 255, 255, 0.005) 50%, transparent 70%) !important;
+        background: radial-gradient(circle, rgba(255, 159, 252, 0.03) 0%, rgba(255, 255, 255, 0.002) 50%, transparent 70%) !important;
         bottom: -15% !important;
         right: -10% !important;
         animation: orbitPulsePurple 32s infinite alternate ease-in-out !important;
@@ -90,15 +90,16 @@ st.markdown(
         100% { transform: translate(-35vw, -5vh) scale(1.1); }
     }
     
-    /* Continuous looping gradient text effect without text-shadow mask distortion */
+    /* EXACT CONFIGURATION MATCH: Continuous React Bits Infinite Text Loop Gradient (#5227ff -> #ff9ffc -> #b497cf) */
     .laser-title {
-        background: linear-gradient(90deg, #00c6ff 0%, #0033cc 33%, #ffffff 66%, #00c6ff 100%) !important;
+        background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 33%, #b497cf 66%, #5227ff 100%) !important;
         background-size: 300% 100% !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
         background-clip: text !important;
         display: inline-block !important;
-        animation: continuousShine 6s linear infinite !important;
+        animation: continuousShine 5s linear infinite !important;
+        text-shadow: 0 0 45px rgba(255, 159, 252, 0.1) !important;
     }
 
     @keyframes continuousShine {
@@ -111,7 +112,7 @@ st.markdown(
         background: rgba(9, 12, 26, 0.6) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
-        border: 1px solid rgba(0, 114, 255, 0.15) !important;
+        border: 1px solid rgba(82, 39, 255, 0.15) !important;
         border-radius: 12px !important;
         padding: 2.5rem !important;
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
@@ -120,33 +121,33 @@ st.markdown(
         transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
     div[data-testid="stForm"]:hover {
-        border-color: rgba(0, 198, 255, 0.4) !important;
-        box-shadow: 0 0 40px rgba(0, 114, 255, 0.18), 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+        border-color: rgba(255, 159, 252, 0.3) !important;
+        box-shadow: 0 0 40px rgba(82, 39, 255, 0.15), 0 20px 50px rgba(0, 0, 0, 0.6) !important;
         transform: translateY(-2px);
     }
 
     /* Reactive Glow States on Input Focus Fields */
     div[data-testid="stTextInput"] input {
         background: rgba(16, 22, 42, 0.45) !important;
-        border: 1px solid rgba(0, 114, 255, 0.15) !important;
+        border: 1px solid rgba(82, 39, 255, 0.15) !important;
         color: #ffffff !important;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
     div[data-testid="stTextInput"] input:hover {
-        border-color: rgba(0, 198, 255, 0.35) !important;
+        border-color: rgba(255, 159, 252, 0.25) !important;
         background: rgba(16, 22, 42, 0.55) !important;
     }
     div[data-testid="stTextInput"] input:focus {
-        border-color: #00c6ff !important;
-        box-shadow: 0 0 20px rgba(0, 198, 255, 0.3) !important;
+        border-color: #ff9ffc !important;
+        box-shadow: 0 0 20px rgba(255, 159, 252, 0.2) !important;
         background: rgba(16, 22, 42, 0.65) !important;
     }
     
     /* Interactive Dashboard Telemetry Rows */
     div[data-testid="stCheckbox"] {
         background: rgba(16, 22, 42, 0.4) !important;
-        border: 1px solid rgba(0, 114, 255, 0.15) !important;
-        border-left: 4px solid #0072ff !important;
+        border: 1px solid rgba(82, 39, 255, 0.15) !important;
+        border-left: 4px solid #5227ff !important;
         padding: 1.2rem 1.5rem !important;
         border-radius: 6px !important;
         margin-bottom: 12px !important;
@@ -155,36 +156,36 @@ st.markdown(
     }
     div[data-testid="stCheckbox"]:hover {
         background: rgba(16, 22, 42, 0.7) !important;
-        border-color: rgba(0, 198, 255, 0.35) !important;
+        border-color: rgba(255, 159, 252, 0.25) !important;
         border-left-color: #ffffff !important;
-        box-shadow: 0 0 20px rgba(0, 114, 255, 0.2) !important;
+        box-shadow: 0 0 20px rgba(82, 39, 255, 0.15) !important;
         transform: translateX(3px);
     }
     
     /* Primary Trigger Buttons */
     button[data-testid="stBaseButton-primary"] {
-        background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%) !important;
+        background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 100%) !important;
         color: #ffffff !important;
         font-family: 'Plus Jakarta Sans', sans-serif !important;
         font-weight: 700 !important;
         border: none !important;
         border-radius: 5px !important;
-        box-shadow: 0 0 15px rgba(0, 198, 255, 0.4) !important;
+        box-shadow: 0 0 15px rgba(82, 39, 255, 0.3) !important;
         text-transform: uppercase;
         letter-spacing: 1px;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
     button[data-testid="stBaseButton-primary"]:hover {
-        box-shadow: 0 0 30px rgba(0, 198, 255, 0.7) !important;
-        background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%) !important;
+        box-shadow: 0 0 30px rgba(255, 159, 252, 0.5) !important;
+        background: linear-gradient(90deg, #ff9ffc 0%, #b497cf 100%) !important;
         transform: translateY(-1px);
     }
     
     /* Secondary Action Buttons */
     button[data-testid="stBaseButton-secondary"] {
         background: rgba(16, 22, 42, 0.6) !important;
-        color: #00c6ff !important;
-        border: 1px solid rgba(0, 114, 255, 0.35) !important;
+        color: #ff9ffc !important;
+        border: 1px solid rgba(82, 39, 255, 0.35) !important;
         border-radius: 5px !important;
         font-family: 'Plus Jakarta Sans', sans-serif !important;
         font-size: 0.85rem !important;
@@ -193,15 +194,15 @@ st.markdown(
         transition: all 0.3s ease !important;
     }
     button[data-testid="stBaseButton-secondary"]:hover {
-        background: rgba(0, 114, 255, 0.12) !important;
-        border-color: #00c6ff !important;
+        background: rgba(82, 39, 255, 0.12) !important;
+        border-color: #ff9ffc !important;
         color: #ffffff !important;
-        box-shadow: 0 0 15px rgba(0, 114, 255, 0.25) !important;
+        box-shadow: 0 0 15px rgba(255, 159, 252, 0.2) !important;
     }
     
     /* File Upload Area */
     div[data-testid="stFileUploader"] {
-        border: 1px dashed rgba(0, 114, 255, 0.35) !important;
+        border: 1px dashed rgba(82, 39, 255, 0.35) !important;
         background: rgba(16, 22, 42, 0.3) !important;
         border-radius: 6px;
         padding: 6px;
@@ -209,8 +210,8 @@ st.markdown(
     
     /* Progress Bars */
     div[data-testid="stProgress"] > div > div > div {
-        background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%) !important;
-        box-shadow: 0 0 12px rgba(0, 198, 255, 0.6);
+        background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 100%) !important;
+        box-shadow: 0 0 12px rgba(82, 39, 255, 0.4);
     }
     </style>
     """,
