@@ -169,7 +169,6 @@ if not st.session_state.auth_state:
     auth_mode = st.radio("Choose an option:", ["Login", "Sign Up"], horizontal=True)
     
     with st.form("auth_form"):
-        # Fields are now arranged completely vertically without column partitioning
         if auth_mode == "Login":
             username_input = st.text_input("Username", placeholder="Enter your username")
             email_input = st.text_input("Email Address", placeholder="Enter your email address")
@@ -242,20 +241,31 @@ if not st.session_state.auth_state:
 # ==========================================
 #  INTERFACE ROUTING: CORE APPLICATION
 # ==========================================
-st.title("🔄 Study-Sync Dashboard")
-st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
+# Upper Header Row with aligned Log Out action
+header_col1, header_col2 = st.columns([5, 1], gap="small")
+with header_col1:
+    st.title("🔄 Study-Sync Dashboard")
+    st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
+with header_col2:
+    st.write("<br>", unsafe_allow_html=True) # Structural visual adjustment spacing
+    if st.button("🚪 Log Out", use_container_width=True):
+        logout()
+
 st.markdown("---")
 
-# Sidebar Controls
-st.sidebar.header("⚡ Configuration Panel")
-uploaded_file = st.sidebar.file_uploader("Upload Course Syllabus/PDF", type=["pdf"])
-start_time = st.sidebar.time_input("Preferred Daily Start Time")
-end_time = st.sidebar.time_input("Preferred Daily End Time")
-generate_btn = st.sidebar.button("Generate Complete Roadmap", type="primary", use_container_width=True)
+# --- CENTRALIZED CONFIGURATION PANEL ON MAIN SCREEN ---
+st.markdown("### ⚡ Configuration Panel")
+config_col1, config_col2, config_col3 = st.columns([2, 1, 1], gap="medium")
 
-st.sidebar.markdown("---")
-if st.sidebar.button("🚪 Log Out Session", use_container_width=True):
-    logout()
+with config_col1:
+    uploaded_file = st.file_uploader("Upload Course Syllabus/PDF", type=["pdf"])
+with config_col2:
+    start_time = st.time_input("Preferred Daily Start Time")
+with config_col3:
+    end_time = st.time_input("Preferred Daily End Time")
+
+generate_btn = st.button("Generate Complete Roadmap", type="primary", use_container_width=True)
+st.markdown("---")
 
 def convert_to_csv(data_list):
     df = pd.DataFrame(data_list)
@@ -263,7 +273,7 @@ def convert_to_csv(data_list):
 
 if generate_btn:
     if not uploaded_file:
-        st.sidebar.error("Please upload a course document first!")
+        st.error("Please upload a course document first!")
     else:
         with st.spinner("Analyzing syllabus and crafting an extended 45-50 day roadmap..."):
             try:
@@ -394,4 +404,4 @@ if st.session_state.generated:
         st.markdown(f"**Progress Check:** {completed_count}/{total_tasks} Milestones Completed ({progress_percent}%)")
         st.progress(progress_percent / 100.0)
 else:
-    st.info("Configuration parameters pending: Feed a course document file into the sidebar parameters to populate the interactive dashboard.")
+    st.info("Configuration parameters pending: Feed a course document file into the parameters block above to populate your interactive dashboard.")
