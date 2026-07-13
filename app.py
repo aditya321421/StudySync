@@ -17,17 +17,15 @@ st.set_page_config(page_title="Study-Sync | Core Terminal", page_icon="🔄", la
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@500;800&family=Rajdhani:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
     
-    /* Base Typography Assignments */
-    h1, h2, h3, .hud-header {
-        font-family: 'Orbitron', sans-serif !important;
-        letter-spacing: 1px;
+    /* Global Universal Font Unification */
+    *, html, body, p, label, input, button, h1, h2, h3, h4, h5, h6, [data-testid="stMarkdownContainer"] {
+        font-family: 'Audiowide', sans-serif !important;
     }
     
-    /* CRITICAL FIX: Removed 'span' from the global catch-all to eliminate the 'uploadpload' layout bug */
+    /* Baseline Text Size Rules (Preserving exact dimensions) */
     body, p, label, input, .hud-body {
-        font-family: 'Rajdhani', sans-serif !important;
         font-size: 1.2rem !important;
     }
     
@@ -63,7 +61,6 @@ st.markdown(
     button[data-testid="stBaseButton-primary"] {
         background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%) !important;
         color: #ffffff !important;
-        font-family: 'Orbitron', sans-serif !important;
         font-weight: 700 !important;
         border: none !important;
         border-radius: 5px !important;
@@ -84,7 +81,6 @@ st.markdown(
         color: #00f2fe !important;
         border: 1px solid rgba(0, 242, 254, 0.35) !important;
         border-radius: 5px !important;
-        font-family: 'Orbitron', sans-serif !important;
         font-size: 0.85rem !important;
         font-weight: 600 !important;
         letter-spacing: 1px;
@@ -269,7 +265,6 @@ if not st.session_state.auth_state:
             background: linear-gradient(45deg, #00c6ff, #0072ff, #7f00ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-family: "Audiowide", sans-serif;
             font-size: 5rem;
             font-weight: 800;
             margin-bottom: 0px;
@@ -365,7 +360,7 @@ if not st.session_state.auth_state:
 # ==========================================
 #  INTERFACE ROUTING: CORE APPLICATION
 # ==========================================
-st.markdown("<h1 class='laser-title' style='font-family: \"Audiowide\", sans-serif; font-size: 5rem; margin-bottom: 0px; padding-bottom: 10px; line-height: 1.2;'>Study Sync</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='laser-title' style='font-size: 5rem; margin-bottom: 0px; padding-bottom: 10px; line-height: 1.2;'>Study Sync</h1>", unsafe_allow_html=True)
 
 header_col1, header_col2 = st.columns([5, 1], gap="small")
 with header_col1:
@@ -493,7 +488,6 @@ if st.session_state.generated:
         
         save_col, csv_col = st.columns(2)
         with save_col:
-            # Fixed: Removed memory card icon cleanly from the string parameter
             if st.button("Save It", type="primary", use_container_width=True):
                 if save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email):
                     st.toast("Progress saved successfully to Cloud Firestore!", icon="🔥")
