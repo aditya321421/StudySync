@@ -365,13 +365,13 @@ if not st.session_state.auth_state:
 # ==========================================
 #  INTERFACE ROUTING: CORE APPLICATION
 # ==========================================
-# Unshackled from structural columns to allow the Audiowide header text to fully breathe at 5rem scale
 st.markdown("<h1 class='laser-title' style='font-family: \"Audiowide\", sans-serif; font-size: 5rem; margin-bottom: 0px; padding-bottom: 10px; line-height: 1.2;'>Study Sync</h1>", unsafe_allow_html=True)
 
 header_col1, header_col2 = st.columns([5, 1], gap="small")
 with header_col1:
     st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
 with header_col2:
+    st.write("<br><br>", unsafe_allow_html=True)
     if st.button("🚪 Log Out", use_container_width=True):
         logout()
 
@@ -493,7 +493,8 @@ if st.session_state.generated:
         
         save_col, csv_col = st.columns(2)
         with save_col:
-            if st.button("💾 Save It", type="primary", use_container_width=True):
+            # Fixed: Removed memory card icon cleanly from the string parameter
+            if st.button("Save It", type="primary", use_container_width=True):
                 if save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email):
                     st.toast("Progress saved successfully to Cloud Firestore!", icon="🔥")
                 else:
