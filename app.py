@@ -19,8 +19,8 @@ st.markdown(
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
     
-    /* Global Universal Font Unification */
-    *, html, body, p, label, input, button, h1, h2, h3, h4, h5, h6, [data-testid="stMarkdownContainer"] {
+    /* Global Universal Font Unification - Excluded '*' to protect internal icon ligatures */
+    html, body, p, label, input, button, h1, h2, h3, h4, h5, h6, [data-testid="stMarkdownContainer"] {
         font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
     
@@ -96,44 +96,22 @@ st.markdown(
         padding-right: 3rem !important;
     }
     
-    /* Container positioning block alignment */
-    div[data-testid="stTextInput"] > div {
-        position: relative !important;
-    }
-    
-    /* Eye icon alignment and styling integration */
+    /* ==========================================
+       THE EYE ICON RESKINDED CYBER BLUE STYLE
+       ========================================== */
     div[data-testid="stTextInput"] button {
-        font-size: 0px !important;
-        color: transparent !important;
+        color: #0091ff !important;
         background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        outline: none !important;
-        width: 40px !important;
-        height: 40px !important;
-        position: absolute !important;
-        right: 5px !important;
-        top: 2px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        z-index: 10 !important;
-        padding: 0 !important;
     }
-    
     div[data-testid="stTextInput"] button svg {
         fill: #0091ff !important;
-        stroke: #0091ff !important;
-        color: #0091ff !important;
-        width: 20px !important;
-        height: 20px !important;
-        display: inline-block !important;
     }
-
+    div[data-testid="stTextInput"] button:hover {
+        color: #00a2ff !important;
+        background: transparent !important;
+    }
     div[data-testid="stTextInput"] button:hover svg {
         fill: #00a2ff !important;
-        stroke: #00a2ff !important;
-        color: #00a2ff !important;
     }
     
     /* Target the invisible outer wrapper block to force absolute centering */
