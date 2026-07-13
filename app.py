@@ -39,8 +39,8 @@ st.markdown(
     /* Hardware-Accelerated Smooth Moving Cyber Grid Backdrop */
     .stApp {
         background-image: 
-            linear-gradient(rgba(0, 242, 254, 0.015) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 242, 254, 0.015) 1px, transparent 1px) !important;
+            linear-gradient(rgba(0, 114, 255, 0.012) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 114, 255, 0.012) 1px, transparent 1px) !important;
         background-size: 60px 60px !important;
         animation: cyberGridShift 30s linear infinite !important;
         background-attachment: fixed !important;
@@ -62,17 +62,17 @@ st.markdown(
         z-index: 0 !important;
     }
 
-    /* Cyan Nebula Shift */
+    /* Blue Nebula Shift */
     .stApp::before {
-        background: radial-gradient(circle, rgba(0, 242, 254, 0.07) 0%, rgba(0, 242, 254, 0.01) 50%, transparent 70%) !important;
+        background: radial-gradient(circle, rgba(0, 114, 255, 0.06) 0%, rgba(0, 114, 255, 0.01) 50%, transparent 70%) !important;
         top: -15% !important;
         left: -10% !important;
         animation: orbitPulseCyan 25s infinite alternate ease-in-out !important;
     }
 
-    /* Purple Nebula Shift */
+    /* Light Blue/White Flare Nebula Shift */
     .stApp::after {
-        background: radial-gradient(circle, rgba(127, 0, 255, 0.06) 0%, rgba(127, 0, 255, 0.01) 50%, transparent 70%) !important;
+        background: radial-gradient(circle, rgba(0, 198, 255, 0.04) 0%, rgba(255, 255, 255, 0.005) 50%, transparent 70%) !important;
         bottom: -15% !important;
         right: -10% !important;
         animation: orbitPulsePurple 32s infinite alternate ease-in-out !important;
@@ -90,13 +90,13 @@ st.markdown(
         100% { transform: translate(-35vw, -5vh) scale(1.1); }
     }
     
-    /* Central Radiant Laser Title Gradient */
+    /* Central Blue-White Gradient Text Effect */
     .laser-title {
-        background: linear-gradient(90deg, #00f2fe 0%, #4facfe 50%, #7f00ff 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        background: linear-gradient(90deg, #0052d4 0%, #00c6ff 50%, #ffffff 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
         font-weight: 800 !important;
-        text-shadow: 0 0 35px rgba(0, 242, 254, 0.15);
+        text-shadow: 0 0 35px rgba(0, 114, 255, 0.25) !important;
     }
     
     /* Glassmorphic Card Wrapper with Dynamic Proximity Glow Flare */
@@ -104,7 +104,7 @@ st.markdown(
         background: rgba(9, 12, 26, 0.6) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
-        border: 1px solid rgba(0, 242, 254, 0.15) !important;
+        border: 1px solid rgba(0, 114, 255, 0.15) !important;
         border-radius: 12px !important;
         padding: 2.5rem !important;
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
@@ -113,33 +113,33 @@ st.markdown(
         transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
     div[data-testid="stForm"]:hover {
-        border-color: rgba(0, 242, 254, 0.45) !important;
-        box-shadow: 0 0 40px rgba(0, 242, 254, 0.18), 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+        border-color: rgba(0, 198, 255, 0.4) !important;
+        box-shadow: 0 0 40px rgba(0, 114, 255, 0.18), 0 20px 50px rgba(0, 0, 0, 0.6) !important;
         transform: translateY(-2px);
     }
 
-    /* INTERACTIVE COGNITIVE FX: Reactive Glow States on Input Focus Fields */
+    /* Reactive Glow States on Input Focus Fields */
     div[data-testid="stTextInput"] input {
         background: rgba(16, 22, 42, 0.45) !important;
-        border: 1px solid rgba(0, 242, 254, 0.15) !important;
+        border: 1px solid rgba(0, 114, 255, 0.15) !important;
         color: #ffffff !important;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
     div[data-testid="stTextInput"] input:hover {
-        border-color: rgba(0, 242, 254, 0.4) !important;
-        background: rgba(16, 22, 42, 0.6) !important;
+        border-color: rgba(0, 198, 255, 0.35) !important;
+        background: rgba(16, 22, 42, 0.55) !important;
     }
     div[data-testid="stTextInput"] input:focus {
-        border-color: #00f2fe !important;
-        box-shadow: 0 0 20px rgba(0, 242, 254, 0.35) !important;
-        background: rgba(16, 22, 42, 0.7) !important;
+        border-color: #00c6ff !important;
+        box-shadow: 0 0 20px rgba(0, 198, 255, 0.3) !important;
+        background: rgba(16, 22, 42, 0.65) !important;
     }
     
     /* Interactive Dashboard Telemetry Rows */
     div[data-testid="stCheckbox"] {
         background: rgba(16, 22, 42, 0.4) !important;
-        border: 1px solid rgba(0, 242, 254, 0.15) !important;
-        border-left: 4px solid #00f2fe !important;
+        border: 1px solid rgba(0, 114, 255, 0.15) !important;
+        border-left: 4px solid #0072ff !important;
         padding: 1.2rem 1.5rem !important;
         border-radius: 6px !important;
         margin-bottom: 12px !important;
@@ -148,9 +148,9 @@ st.markdown(
     }
     div[data-testid="stCheckbox"]:hover {
         background: rgba(16, 22, 42, 0.7) !important;
-        border-color: rgba(0, 242, 254, 0.4) !important;
-        border-left-color: #7f00ff !important;
-        box-shadow: 0 0 20px rgba(0, 242, 254, 0.2) !important;
+        border-color: rgba(0, 198, 255, 0.35) !important;
+        border-left-color: #ffffff !important;
+        box-shadow: 0 0 20px rgba(0, 114, 255, 0.2) !important;
         transform: translateX(3px);
     }
     
@@ -176,8 +176,8 @@ st.markdown(
     /* Secondary Action Buttons */
     button[data-testid="stBaseButton-secondary"] {
         background: rgba(16, 22, 42, 0.6) !important;
-        color: #00f2fe !important;
-        border: 1px solid rgba(0, 242, 254, 0.35) !important;
+        color: #00c6ff !important;
+        border: 1px solid rgba(0, 114, 255, 0.35) !important;
         border-radius: 5px !important;
         font-family: 'Plus Jakarta Sans', sans-serif !important;
         font-size: 0.85rem !important;
@@ -186,15 +186,15 @@ st.markdown(
         transition: all 0.3s ease !important;
     }
     button[data-testid="stBaseButton-secondary"]:hover {
-        background: rgba(0, 242, 254, 0.12) !important;
-        border-color: #00f2fe !important;
+        background: rgba(0, 114, 255, 0.12) !important;
+        border-color: #00c6ff !important;
         color: #ffffff !important;
-        box-shadow: 0 0 15px rgba(0, 242, 254, 0.25) !important;
+        box-shadow: 0 0 15px rgba(0, 114, 255, 0.25) !important;
     }
     
     /* File Upload Area */
     div[data-testid="stFileUploader"] {
-        border: 1px dashed rgba(0, 242, 254, 0.35) !important;
+        border: 1px dashed rgba(0, 114, 255, 0.35) !important;
         background: rgba(16, 22, 42, 0.3) !important;
         border-radius: 6px;
         padding: 6px;
@@ -361,7 +361,7 @@ if not st.session_state.auth_state:
     st.markdown(
         """
         <h1 style='
-            background: linear-gradient(45deg, #00c6ff, #0072ff, #7f00ff);
+            background: linear-gradient(90deg, #0052d4 0%, #00c6ff 55%, #ffffff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-family: "Plus Jakarta Sans", sans-serif;
@@ -369,7 +369,7 @@ if not st.session_state.auth_state:
             font-weight: 800;
             margin-bottom: 0px;
             padding-bottom: 5px;
-            text-shadow: 0 0 25px rgba(0, 198, 255, 0.1);
+            text-shadow: 0 0 25px rgba(0, 114, 255, 0.2);
             line-height: 1.2;
             letter-spacing: -2px;
         '>
