@@ -169,29 +169,38 @@ if not st.session_state.auth_state:
     auth_mode = st.radio("Choose an option:", ["Login", "Sign Up"], horizontal=True)
     
     with st.form("auth_form"):
+        # Create separate side-by-side columns for inputs
+        input_col1, input_col2 = st.columns(2)
+        
         if auth_mode == "Login":
-            login_input = st.text_input("Username or Email Address", placeholder="Enter your username or email")
+            with input_col1:
+                username_input = st.text_input("Username", placeholder="Enter username (if leaving email blank)")
+            with input_col2:
+                email_input = st.text_input("Email Address", placeholder="Enter email address")
             password = st.text_input("Password", type="password")
         else:
-            username_input = st.text_input("Username", placeholder="e.g., alex_codes")
-            email_input = st.text_input("Email Address", placeholder="name@example.com")
+            with input_col1:
+                username_input = st.text_input("Username", placeholder="e.g., alex_codes")
+            with input_col2:
+                email_input = st.text_input("Email Address", placeholder="name@example.com")
             password = st.text_input("Password", type="password")
             
         submit_btn = st.form_submit_button("Submit")
         
         if submit_btn:
-            # Process Form Logic
             if auth_mode == "Login":
-                if not login_input or not password:
-                    st.error("Please fill out all required fields.")
+                if not username_input.strip() and not email_input.strip():
+                    st.error("Please provide either your Username or Email Address to log in.")
+                elif not password:
+                    st.error("Please enter your password.")
                 else:
-                    resolved_email = login_input.strip()
-                    # Resolve username to email address if no '@' symbol is present
-                    if "@" not in resolved_email:
+                    resolved_email = email_input.strip()
+                    # If email field is left blank, resolve the username column field instead
+                    if not resolved_email and username_input.strip():
                         with st.spinner("Resolving username matching profile..."):
-                            resolved_email = get_email_from_username(resolved_email)
+                            resolved_email = get_email_from_username(username_input.strip())
                         if not resolved_email:
-                            st.error("Username profile record not found. Use your raw Email Address instead.")
+                            st.error("Username profile record not found. Please double check or use your Email Address.")
                             st.stop()
                     
                     with st.spinner("Verifying credentials with Firebase Auth..."):
@@ -204,7 +213,7 @@ if not st.session_state.auth_state:
                         st.session_state.id_token = result["idToken"]
                         
                         cloud_data, cloud_username = load_user_data_from_firestore(result["uid"], result["idToken"])
-                        st.session_state.username = cloud_username if cloud_username else login_input.strip()
+                        st.session_state.username = cloud_username if cloud_username else username_input.strip()
                         if cloud_data:
                             st.session_state.roadmap_list = cloud_data
                             st.session_state.generated = True
@@ -216,7 +225,7 @@ if not st.session_state.auth_state:
             else:
                 # Sign Up Flow Processing Engine
                 if not username_input.strip() or not email_input.strip() or not password:
-                    st.error("Please provide all registration fields.")
+                    st.error("Please fill out all registration fields.")
                 elif len(password) < 6:
                     st.error("Password must be at least 6 characters long.")
                 else:
@@ -230,7 +239,7 @@ if not st.session_state.auth_state:
                         st.session_state.id_token = result["idToken"]
                         st.session_state.username = username_input.strip()
                         
-                        # Register initial blank map document alongside user metadata vectors
+                        # Register initial blank documents fields
                         save_user_data_to_firestore(result["uid"], result["idToken"], [], username_input.strip(), result["email"])
                         
                         st.success("Account created successfully!")
@@ -243,8 +252,8 @@ if not st.session_state.auth_state:
 #  INTERFACE ROUTING: CORE APPLICATION
 # ==========================================
 st.title("🔄 Study-Sync Dashboard")
-# Updated custom profile display template layout view metric matching user configuration criteria
-st.markdown(f"#### *Profile Name - (**{st.session_state.username}**)*")
+# Updated exact structural header constraint format matching requirements
+st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
 st.markdown("---")
 
 # Sidebar Controls
