@@ -112,13 +112,19 @@ st.markdown(
         background: rgba(16, 22, 42, 0.65) !important;
     }
     
-    /* FIX: Complete Centering Stack Target on Form Submit Parent and Inner Elements */
+    /* BULLTPROOF FIX: Target the invisible top-level wrapper block to force absolute centering */
+    div[data-testid="element-container"]:has(div[data-testid="stFormSubmitButton"]) {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+        text-align: center !important;
+    }
+    
+    /* Layout styling mapping alignment directly on form element button classes */
     div[data-testid="stFormSubmitButton"] {
         display: flex !important;
         justify-content: center !important;
-        align-items: center !important;
         width: 100% !important;
-        text-align: center !important;
         margin-top: 1.5rem !important;
     }
     div[data-testid="stFormSubmitButton"] > div {
@@ -138,7 +144,6 @@ st.markdown(
         box-shadow: 0 0 15px rgba(82, 39, 255, 0.35) !important;
         text-transform: uppercase;
         letter-spacing: 1px;
-        margin: 0 auto !important;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
     div[data-testid="stFormSubmitButton"] button:hover {
