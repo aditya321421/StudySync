@@ -32,15 +32,15 @@ st.markdown(
 
     /* Core Canvas Deep Background Base */
     html, body, .stApp {
-        background-color: #040612 !important;
+        background-color: #0c1017 !important;
         overflow-x: hidden;
     }
 
     /* Hardware-Accelerated Smooth Moving Cyber Grid Backdrop */
     .stApp {
         background-image: 
-            linear-gradient(rgba(82, 39, 255, 0.012) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(82, 39, 255, 0.012) 1px, transparent 1px) !important;
+            linear-gradient(rgba(0, 145, 255, 0.01) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 145, 255, 0.01) 1px, transparent 1px) !important;
         background-size: 60px 60px !important;
         background-attachment: fixed !important;
     }
@@ -68,7 +68,7 @@ st.markdown(
     div[data-testid="stRadio"] > label {
         text-align: center !important;
         display: block !important;
-        color: #b497cf !important;
+        color: #0091ff !important;
         font-weight: 600 !important;
     }
     div[data-testid="stRadio"] > div {
@@ -80,7 +80,7 @@ st.markdown(
         background: rgba(9, 12, 26, 0.6) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
-        border: 1px solid rgba(82, 39, 255, 0.15) !important;
+        border: 1px solid rgba(0, 145, 255, 0.15) !important;
         border-radius: 12px !important;
         padding: 2.5rem !important;
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
@@ -91,7 +91,7 @@ st.markdown(
     /* Reactive Glow States on Input Focus Fields */
     div[data-testid="stTextInput"] input {
         background: rgba(16, 22, 42, 0.45) !important;
-        border: 1px solid rgba(82, 39, 255, 0.15) !important;
+        border: 1px solid rgba(0, 145, 255, 0.15) !important;
         color: #ffffff !important;
     }
     
@@ -116,64 +116,63 @@ st.markdown(
         width: 100% !important;
     }
     
-    /* Custom Cosmic Submit Button Base Stylesheet */
+    /* ==========================================
+       EXACT COLOR EXTRACTIONS & HOVER EFFECTS
+       ========================================== */
+       
+    /* 1. SOLID PRIMARY BUTTONS (Submit, Generate Complete Roadmap, Save It) */
+    div.stButton > button[kind="primary"], 
     div[data-testid="stFormSubmitButton"] button {
         display: block !important;
         margin: 1.5rem auto 0 auto !important;
-        background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 100%) !important;
+        background: #0091ff !important;
         color: #ffffff !important;
         font-weight: 700 !important;
         border: none !important;
         border-radius: 6px !important;
         padding: 0.6rem 3.5rem !important;
-        box-shadow: 0 0 15px rgba(82, 39, 255, 0.45) !important;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    
-    /* Hover overrides resetting animations */
-    div[data-testid="stFormSubmitButton"] button:hover {
-        background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 100%) !important;
-        box-shadow: 0 0 15px rgba(82, 39, 255, 0.45) !important;
-        color: #ffffff !important;
-        transform: none !important;
-    }
-
-    /* ==========================================
-       VIBRANT BLUE GLOW & INTERACTIVE HOVER EFFECTS
-       ========================================== */
-    div.stButton > button, 
-    div.stDownloadButton > button,
-    button[data-testid="baseButton-primary"],
-    button[data-testid="baseButton-secondary"] {
-        background: linear-gradient(90deg, #0052ff 0%, #00a2ff 100%) !important;
-        color: #ffffff !important;
-        font-weight: 700 !important;
-        border: none !important;
-        border-radius: 6px !important;
-        padding: 0.6rem 2.5rem !important;
-        box-shadow: 0 0 14px rgba(0, 162, 255, 0.4) !important;
+        box-shadow: 0 5px 20px rgba(0, 145, 255, 0.55) !important;
         text-transform: uppercase !important;
         letter-spacing: 1px !important;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
-
-    /* Smooth Lift & Intensified Cyber Glow Transition on Hover */
-    div.stButton > button:hover, 
-    div.stDownloadButton > button:hover,
-    button[data-testid="baseButton-primary"]:hover,
-    button[data-testid="baseButton-secondary"]:hover {
-        background: linear-gradient(90deg, #0052ff 0%, #00a2ff 100%) !important;
-        box-shadow: 0 0 28px rgba(0, 162, 255, 0.8) !important;
-        color: #ffffff !important;
+    
+    div.stButton > button[kind="primary"]:hover, 
+    div[data-testid="stFormSubmitButton"] button:hover {
+        background: #00a2ff !important;
+        box-shadow: 0 6px 30px rgba(0, 162, 255, 0.85) !important;
         transform: translateY(-2px) !important;
+        color: #ffffff !important;
+    }
+    
+    /* 2. OUTLINE GHOST BUTTONS (Log Out, Download Roadmap Spreadsheet) */
+    div.stButton > button[kind="secondary"], 
+    div.stDownloadButton > button {
+        background: transparent !important;
+        color: #0091ff !important;
+        border: 1px solid rgba(0, 145, 255, 0.35) !important;
+        border-radius: 6px !important;
+        font-weight: 600 !important;
+        padding: 0.6rem 2.5rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    
+    div.stButton > button[kind="secondary"]:hover, 
+    div.stDownloadButton > button:hover {
+        background: rgba(0, 145, 255, 0.06) !important;
+        border-color: #00a2ff !important;
+        box-shadow: 0 0 18px rgba(0, 162, 255, 0.35) !important;
+        color: #ffffff !important;
+        transform: translateY(-1px) !important;
     }
     
     /* Interactive Dashboard Telemetry Rows */
     div[data-testid="stCheckbox"] {
         background: rgba(16, 22, 42, 0.4) !important;
-        border: 1px solid rgba(82, 39, 255, 0.15) !important;
-        border-left: 4px solid #3b82f6 !important;
+        border: 1px solid rgba(0, 145, 255, 0.15) !important;
+        border-left: 4px solid #0091ff !important;
         padding: 1.2rem 1.5rem !important;
         border-radius: 6px !important;
         margin-bottom: 12px !important;
@@ -181,8 +180,14 @@ st.markdown(
     
     /* Progress Bars custom color mapping */
     div[data-testid="stProgress"] > div > div > div {
-        background: linear-gradient(90deg, #3b82f6 0%, #ec4899 100%) !important;
-        box-shadow: 0 0 12px rgba(82, 39, 255, 0.4);
+        background: linear-gradient(90deg, #0091ff 0%, #00a2ff 100%) !important;
+        box-shadow: 0 0 12px rgba(0, 145, 255, 0.4);
+    }
+    
+    /* File Uploader styling optimization */
+    div[data-testid="stFileUploader"] {
+        border: 1px dashed rgba(0, 145, 255, 0.3) !important;
+        background: rgba(11, 16, 28, 0.6) !important;
     }
     </style>
     """,
@@ -285,7 +290,6 @@ def convert_to_csv(data_list):
 if not st.session_state.auth_state:
     st.write("<br>", unsafe_allow_html=True)
     
-    # Text updated to "Study Sync" with the active 6-color gradient stream configuration
     st.markdown(
         """
         <div style="text-align: center; width: 100%; margin-bottom: 25px;">
@@ -297,7 +301,6 @@ if not st.session_state.auth_state:
         unsafe_allow_html=True
     )
     
-    # Balanced 3-column grid positioning layout cards dead center
     left_space, center_auth_col, right_space = st.columns([1, 1.6, 1], gap="medium")
     
     with center_auth_col:
@@ -386,7 +389,7 @@ with header_col1:
     st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
 with header_col2:
     st.write("<br>", unsafe_allow_html=True)
-    if st.button("🚪 Log Out", use_container_width=True):
+    if st.button("🚪 Log Out", use_container_width=True, type="secondary"):
         logout()
 
 st.markdown("---")
@@ -401,7 +404,7 @@ with config_col2:
 with config_col3:
     end_time = st.time_input("Preferred Daily End Time")
 
-generate_btn = st.button("Generate Complete Roadmap", use_container_width=True)
+generate_btn = st.button("Generate Complete Roadmap", type="primary", use_container_width=True)
 st.markdown("---")
 
 if generate_btn:
@@ -452,7 +455,7 @@ if st.session_state.generated:
         completed_count = 0
         save_col, csv_col = st.columns(2)
         with save_col:
-            if st.button("💾 Save It", use_container_width=True):
+            if st.button("💾 Save It", type="primary", use_container_width=True):
                 save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email)
                 st.toast("Progress saved successfully!", icon="🔥")
         with csv_col:
