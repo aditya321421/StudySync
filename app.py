@@ -1,4 +1,4 @@
-import streamlit st
+import streamlit as st
 import pypdf
 import json
 import pandas as pd
@@ -90,7 +90,7 @@ st.markdown(
         100% { transform: translate(-35vw, -5vh) scale(1.1); }
     }
     
-    /* FIX: Continuous looping gradient text effect without text-shadow mask distortion */
+    /* Continuous looping gradient text effect without text-shadow mask distortion */
     .laser-title {
         background: linear-gradient(90deg, #00c6ff 0%, #0033cc 33%, #ffffff 66%, #00c6ff 100%) !important;
         background-size: 300% 100% !important;
