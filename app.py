@@ -169,20 +169,14 @@ if not st.session_state.auth_state:
     auth_mode = st.radio("Choose an option:", ["Login", "Sign Up"], horizontal=True)
     
     with st.form("auth_form"):
-        # Create separate side-by-side columns for inputs
-        input_col1, input_col2 = st.columns(2)
-        
+        # Fields are now arranged completely vertically without column partitioning
         if auth_mode == "Login":
-            with input_col1:
-                username_input = st.text_input("Username", placeholder="Enter username (if leaving email blank)")
-            with input_col2:
-                email_input = st.text_input("Email Address", placeholder="Enter email address")
+            username_input = st.text_input("Username", placeholder="Enter your username")
+            email_input = st.text_input("Email Address", placeholder="Enter your email address")
             password = st.text_input("Password", type="password")
         else:
-            with input_col1:
-                username_input = st.text_input("Username", placeholder="e.g., alex_codes")
-            with input_col2:
-                email_input = st.text_input("Email Address", placeholder="name@example.com")
+            username_input = st.text_input("Username", placeholder="e.g., alex_codes")
+            email_input = st.text_input("Email Address", placeholder="name@example.com")
             password = st.text_input("Password", type="password")
             
         submit_btn = st.form_submit_button("Submit")
@@ -195,7 +189,6 @@ if not st.session_state.auth_state:
                     st.error("Please enter your password.")
                 else:
                     resolved_email = email_input.strip()
-                    # If email field is left blank, resolve the username column field instead
                     if not resolved_email and username_input.strip():
                         with st.spinner("Resolving username matching profile..."):
                             resolved_email = get_email_from_username(username_input.strip())
@@ -223,7 +216,6 @@ if not st.session_state.auth_state:
                     else:
                         st.error(f"Error: {result['message']}")
             else:
-                # Sign Up Flow Processing Engine
                 if not username_input.strip() or not email_input.strip() or not password:
                     st.error("Please fill out all registration fields.")
                 elif len(password) < 6:
@@ -239,7 +231,6 @@ if not st.session_state.auth_state:
                         st.session_state.id_token = result["idToken"]
                         st.session_state.username = username_input.strip()
                         
-                        # Register initial blank documents fields
                         save_user_data_to_firestore(result["uid"], result["idToken"], [], username_input.strip(), result["email"])
                         
                         st.success("Account created successfully!")
@@ -252,7 +243,6 @@ if not st.session_state.auth_state:
 #  INTERFACE ROUTING: CORE APPLICATION
 # ==========================================
 st.title("🔄 Study-Sync Dashboard")
-# Updated exact structural header constraint format matching requirements
 st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
 st.markdown("---")
 
