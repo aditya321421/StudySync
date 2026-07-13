@@ -112,7 +112,7 @@ st.markdown(
         background: rgba(16, 22, 42, 0.65) !important;
     }
     
-    /* BULLTPROOF FIX: Target the invisible top-level wrapper block to force absolute centering */
+    /* Target the invisible outer wrapper block to force absolute centering */
     div[data-testid="element-container"]:has(div[data-testid="stFormSubmitButton"]) {
         display: flex !important;
         justify-content: center !important;
@@ -120,7 +120,7 @@ st.markdown(
         text-align: center !important;
     }
     
-    /* Layout styling mapping alignment directly on form element button classes */
+    /* Center alignment stack layouts */
     div[data-testid="stFormSubmitButton"] {
         display: flex !important;
         justify-content: center !important;
@@ -133,7 +133,7 @@ st.markdown(
         width: 100% !important;
     }
     
-    /* Custom Cosmic Submit Button Design and Hover Flare Effects */
+    /* Custom Cosmic Submit Button Base Stylesheet */
     div[data-testid="stFormSubmitButton"] button {
         background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 100%) !important;
         color: #ffffff !important;
@@ -144,12 +144,14 @@ st.markdown(
         box-shadow: 0 0 15px rgba(82, 39, 255, 0.35) !important;
         text-transform: uppercase;
         letter-spacing: 1px;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
+    
+    /* FIXED: Statically freeze the hover state to eliminate scaling and switching animations */
     div[data-testid="stFormSubmitButton"] button:hover {
-        box-shadow: 0 0 30px rgba(255, 159, 252, 0.6) !important;
-        background: linear-gradient(90deg, #ff9ffc 0%, #b497cf 100%) !important;
-        transform: translateY(-2px) scale(1.02) !important;
+        background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 100%) !important;
+        box-shadow: 0 0 15px rgba(82, 39, 255, 0.35) !important;
+        color: #ffffff !important;
+        transform: none !important;
     }
     
     /* Interactive Dashboard Telemetry Rows */
