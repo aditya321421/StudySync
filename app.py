@@ -24,9 +24,11 @@ st.markdown(
         font-family: 'Orbitron', sans-serif !important;
         letter-spacing: 1px;
     }
-    body, p, span, label, input, .hud-body {
+    
+    /* CRITICAL FIX: Removed 'span' from the global catch-all to eliminate the 'uploadpload' layout bug */
+    body, p, label, input, .hud-body {
         font-family: 'Rajdhani', sans-serif !important;
-        font-size: 1.15rem !important;
+        font-size: 1.2rem !important;
     }
     
     /* Central Radiant Laser Gradient Text Effect */
@@ -35,7 +37,7 @@ st.markdown(
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         font-weight: 800 !important;
-        text-shadow: 0 0 25px rgba(0, 242, 254, 0.25);
+        text-shadow: 0 0 35px rgba(0, 242, 254, 0.35);
     }
     
     /* Sleek Telemetry Checkbox Data Cards */
@@ -268,11 +270,12 @@ if not st.session_state.auth_state:
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-family: "Audiowide", sans-serif;
-            font-size: 4.5rem;
+            font-size: 5rem;
             font-weight: 800;
             margin-bottom: 0px;
             padding-bottom: 5px;
             text-shadow: 0 0 25px rgba(0, 198, 255, 0.2);
+            line-height: 1.2;
         '>
             Study Sync
         </h1>
@@ -362,13 +365,13 @@ if not st.session_state.auth_state:
 # ==========================================
 #  INTERFACE ROUTING: CORE APPLICATION
 # ==========================================
+# Unshackled from structural columns to allow the Audiowide header text to fully breathe at 5rem scale
+st.markdown("<h1 class='laser-title' style='font-family: \"Audiowide\", sans-serif; font-size: 5rem; margin-bottom: 0px; padding-bottom: 10px; line-height: 1.2;'>Study Sync</h1>", unsafe_allow_html=True)
+
 header_col1, header_col2 = st.columns([5, 1], gap="small")
 with header_col1:
-    # Changed font to 'Audiowide' and bumped layout engine text scale parameters to 4.5rem
-    st.markdown("<h1 class='laser-title' style='font-family: \"Audiowide\", sans-serif; font-size: 4.5rem; margin-bottom: 0px;'>Study Sync</h1>", unsafe_allow_html=True)
     st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
 with header_col2:
-    st.write("<br><br>", unsafe_allow_html=True)
     if st.button("🚪 Log Out", use_container_width=True):
         logout()
 
