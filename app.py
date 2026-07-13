@@ -17,7 +17,7 @@ st.set_page_config(page_title="Study-Sync | Core Terminal", page_icon="🔄", la
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&family=Rajdhani:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@500;800&family=Rajdhani:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap');
     
     /* Base Typography Assignments */
     h1, h2, h3, .hud-header {
@@ -267,8 +267,8 @@ if not st.session_state.auth_state:
             background: linear-gradient(45deg, #00c6ff, #0072ff, #7f00ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-family: "Orbitron", sans-serif;
-            font-size: 3.5rem;
+            font-family: "Audiowide", sans-serif;
+            font-size: 4.5rem;
             font-weight: 800;
             margin-bottom: 0px;
             padding-bottom: 5px;
@@ -364,10 +364,11 @@ if not st.session_state.auth_state:
 # ==========================================
 header_col1, header_col2 = st.columns([5, 1], gap="small")
 with header_col1:
-    st.markdown("<h1 class='laser-title' style='font-size: 3.2rem; margin-bottom: 0px;'>🔄 Study-Sync Dashboard</h1>", unsafe_allow_html=True)
+    # Changed font to 'Audiowide' and bumped layout engine text scale parameters to 4.5rem
+    st.markdown("<h1 class='laser-title' style='font-family: \"Audiowide\", sans-serif; font-size: 4.5rem; margin-bottom: 0px;'>Study Sync</h1>", unsafe_allow_html=True)
     st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
 with header_col2:
-    st.write("<br>", unsafe_allow_html=True)
+    st.write("<br><br>", unsafe_allow_html=True)
     if st.button("🚪 Log Out", use_container_width=True):
         logout()
 
@@ -500,7 +501,6 @@ if st.session_state.generated:
             
         st.markdown("---")
         
-        # Futuristic data-stream label layout
         for i, item in enumerate(roadmap):
             date_str = item.get('Scheduled Date', '')
             time_str = item.get('Time Slot', '')
@@ -508,7 +508,6 @@ if st.session_state.generated:
             activity_str = item.get('Suggested Activity', '')
             current_status = item.get('Status', False)
             
-            # Formatted with high-tech separation dividers and monospaced code blocks for study times
             label_markdown = f"⚡ **{date_str}** &nbsp;|&nbsp; ⏱️ `{time_str}` &nbsp;|&nbsp; 🪐 **{topic_str}**  \n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📡 *Modules Matrix: {activity_str}*"
             
             is_checked = st.checkbox(label_markdown, value=current_status, key=f"task_{i}")
