@@ -20,6 +20,8 @@ if "auth_state" not in st.session_state:
     st.session_state.auth_state = False
 if "user_email" not in st.session_state:
     st.session_state.user_email = ""
+if "username" not in st.session_state:
+    st.session_state.username = ""
 if "user_uid" not in st.session_state:
     st.session_state.user_uid = ""
 if "id_token" not in st.session_state:
@@ -53,8 +55,8 @@ def firebase_auth(email, password, mode="signInWithPassword"):
         return {"success": False, "message": str(e)}
 
 # --- GOOGLE CLOUD FIRESTORE REST API INTERACTIONS ---
-def save_roadmap_to_firestore(uid, id_token, roadmap_list):
-    """Saves the roadmap list as a serialized JSON string in a Firestore document."""
+def save_user_data_to_firestore(uid, id_token, roadmap_list, username):
+    """Saves both the roadmap list and the custom username inside the Firestore document."""
     if not FIREBASE_PROJECT_ID:
         st.error("Firebase Project ID is missing from Secrets.")
         return False
@@ -65,6 +67,9 @@ def save_roadmap_to_firestore(uid, id_token, roadmap_list):
         "fields": {
             "roadmap_json": {
                 "stringValue": json.dumps(roadmap_list)
+            },
+            "username": {
+                "stringValue": username
             }
         }
     }
@@ -76,10 +81,10 @@ def save_roadmap_to_firestore(uid, id_token, roadmap_list):
     except Exception:
         return False
 
-def load_roadmap_from_firestore(uid, id_token):
-    """Fetches and decodes the user's saved roadmap string from Cloud Firestore."""
+def load_user_data_from_firestore(uid, id_token):
+    """Fetches and decodes both the roadmap array and the custom username field from Firestore."""
     if not FIREBASE_PROJECT_ID:
-        return []
+        return [], ""
         
     url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{uid}"
     headers = {"Authorization": f"Bearer {id_token}"}
@@ -89,15 +94,17 @@ def load_roadmap_from_firestore(uid, id_token):
         if res.status_code == 200 and res.json():
             doc_data = res.json()
             roadmap_str = doc_data.get("fields", {}).get("roadmap_json", {}).get("stringValue", "[]")
-            return json.loads(roadmap_str)
+            username = doc_data.get("fields", {}).get("username", {}).get("stringValue", "")
+            return json.loads(roadmap_str), username
     except Exception:
-        return []
-    return []
+        return [], ""
+    return [], ""
 
 # --- LOGOUT UTILITY ---
 def logout():
     st.session_state.auth_state = False
     st.session_state.user_email = ""
+    st.session_state.username = ""
     st.session_state.user_uid = ""
     st.session_state.id_token = ""
     st.session_state.generated = False
@@ -108,7 +115,6 @@ def logout():
 #  INTERFACE ROUTING: AUTHENTICATION PORTAL
 # ==========================================
 if not st.session_state.auth_state:
-    # Custom CSS Gradient Text Injection
     st.markdown(
         """
         <h1 style='
@@ -131,13 +137,20 @@ if not st.session_state.auth_state:
     auth_mode = st.radio("Choose an option:", ["Login", "Sign Up"], horizontal=True)
     
     with st.form("auth_form"):
+        # Conditionally render the Username field only during Sign Up
+        username_input = ""
+        if auth_mode == "Sign Up":
+            username_input = st.text_input("Username", placeholder="e.g., alex_codes")
+            
         email = st.text_input("Email Address")
         password = st.text_input("Password", type="password")
         submit_btn = st.form_submit_button("Submit")
         
         if submit_btn:
             if not email or not password:
-                st.error("Please fill out all fields.")
+                st.error("Please fill out all required credentials fields.")
+            elif auth_mode == "Sign Up" and not username_input.strip():
+                st.error("Please provide a custom username profile tag.")
             elif len(password) < 6:
                 st.error("Password must be at least 6 characters long.")
             else:
@@ -151,12 +164,19 @@ if not st.session_state.auth_state:
                     st.session_state.user_uid = result["uid"]
                     st.session_state.id_token = result["idToken"]
                     
-                    cloud_data = load_roadmap_from_firestore(result["uid"], result["idToken"])
-                    if cloud_data:
-                        st.session_state.roadmap_list = cloud_data
-                        st.session_state.generated = True
+                    if auth_mode == "Sign Up":
+                        # For new sign ups, save their chosen username immediately
+                        st.session_state.username = username_input.strip()
+                        save_user_data_to_firestore(result["uid"], result["idToken"], [], username_input.strip())
+                    else:
+                        # For existing users logging in, load their profile and roadmap from Firestore
+                        cloud_data, cloud_username = load_user_data_from_firestore(result["uid"], result["idToken"])
+                        st.session_state.username = cloud_username if cloud_username else result["email"]
+                        if cloud_data:
+                            st.session_state.roadmap_list = cloud_data
+                            st.session_state.generated = True
                         
-                    st.success(f"Welcome back, {result['email']}!")
+                    st.success(f"Welcome back!")
                     st.rerun()
                 else:
                     st.error(f"Error: {result['message']}")
@@ -166,7 +186,8 @@ if not st.session_state.auth_state:
 #  INTERFACE ROUTING: CORE APPLICATION
 # ==========================================
 st.title("🔄 Study-Sync Dashboard")
-st.markdown(f"#### *Active Session: User Identity logged in as **{st.session_state.user_email}***")
+# Personalized greeting using the student's unique username
+st.markdown(f"#### *Welcome back, **{st.session_state.username if st.session_state.username else st.session_state.user_email}**!*")
 st.markdown("---")
 
 # Sidebar Controls
@@ -267,7 +288,8 @@ if generate_btn:
                 st.session_state.roadmap_list = roadmap_data
                 st.session_state.generated = True
                 
-                save_roadmap_to_firestore(st.session_state.user_uid, st.session_state.id_token, roadmap_data)
+                # Auto-save layout data configuration along with the active profile username
+                save_user_data_to_firestore(st.session_state.user_uid, st.session_state.id_token, roadmap_data, st.session_state.username)
                 
             except Exception as e:
                 st.error(f"App compilation process encountered an evaluation exception: {e}")
@@ -284,7 +306,7 @@ if st.session_state.generated:
         save_col, csv_col = st.columns(2)
         with save_col:
             if st.button("💾 Save Progress to Cloud Firestore", type="primary", use_container_width=True):
-                if save_roadmap_to_firestore(st.session_state.user_uid, st.session_state.id_token, st.session_state.roadmap_list):
+                if save_user_data_to_firestore(st.session_state.user_uid, st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username):
                     st.toast("Progress saved successfully to Cloud Firestore!", icon="🔥")
                 else:
                     st.error("Failed to sync progress changes to Firestore collection.")
