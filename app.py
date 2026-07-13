@@ -11,125 +11,14 @@ client = Groq()
 # Configure page settings
 st.set_page_config(page_title="Study-Sync | Core Terminal", page_icon="🔄", layout="wide")
 
-# ========================================================
-#  ENTERPRISE TECH INTERFACE STYLING + GLOW MOUSE TRAILER
-# ========================================================
+# ==========================================
+#  ENTERPRISE TECH PURE CSS GLOWING SYSTEM
+# ==========================================
 st.markdown(
     """
-    <!-- Global Interactive Canvas Layer Layer -->
-    <canvas id="cyber-mouse-glow"></canvas>
-    
-    <script>
-    const canvas = document.getElementById('cyber-mouse-glow');
-    const ctx = canvas.getContext('2d');
-
-    function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    // Mouse Tracking Vectors
-    let mouse = { x: null, y: null, targetX: null, targetY: null };
-    
-    // Tracks coordinates globally across the entire viewport window interface
-    window.addEventListener('mousemove', (e) => {
-        mouse.targetX = e.clientX;
-        mouse.targetY = e.clientY;
-        if (mouse.x === null) {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-        }
-    });
-
-    window.addEventListener('mouseout', () => {
-        mouse.targetX = null;
-        mouse.targetY = null;
-    });
-
-    // Digital Ambient Matrix Particles
-    const particles = [];
-    const particleCount = 60;
-
-    for (let i = 0; i < particleCount; i++) {
-        particles.push({
-            x: Math.random() * window.innerWidth,
-            y: Math.random() * window.innerHeight,
-            radius: Math.random() * 1.5 + 0.5,
-            vx: (Math.random() - 0.5) * 0.5,
-            vy: (Math.random() - 0.5) * 0.5
-        });
-    }
-
-    function drawSystem() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Render digital matrix backdrop particles
-        ctx.fillStyle = 'rgba(0, 242, 254, 0.15)';
-        particles.forEach(p => {
-            p.x += p.vx;
-            p.y += p.vy;
-            if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-            if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            ctx.fill();
-        });
-
-        // Calculate smooth cursor interpolation delay (lerping)
-        if (mouse.targetX !== null) {
-            mouse.x += (mouse.targetX - mouse.x) * 0.12;
-            mouse.y += (mouse.targetY - mouse.y) * 0.12;
-
-            // Render a futuristic neon magnetic fluid aura trail tracking the cursor
-            let gradient = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 160);
-            gradient.addColorStop(0, 'rgba(0, 242, 254, 0.08)');
-            gradient.addColorStop(0.5, 'rgba(127, 0, 255, 0.03)');
-            gradient.addColorStop(1, 'rgba(0,0,0,0)');
-            
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(mouse.x, mouse.y, 160, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Core holographic laser focal crosshair dot
-            ctx.fillStyle = 'rgba(0, 242, 254, 0.6)';
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = '#00f2fe';
-            ctx.beginPath();
-            ctx.arc(mouse.x, mouse.y, 2.5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.shadowBlur = 0; // Reset canvas glow states
-        }
-
-        requestAnimationFrame(drawSystem);
-    }
-    drawSystem();
-    </script>
-
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
     
-    /* Position the interactive background canvas correctly below inputs */
-    #cyber-mouse-glow {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: 0;
-        pointer-events: none;
-    }
-
-    /* CRITICAL FIX: Make Streamlit backgrounds transparent so canvas is visible */
-    html, body {
-        background-color: #050814 !important;
-    }
-    .stApp {
-        background: transparent !important;
-    }
-
     /* Global Universal Font Unification */
     *, html, body, p, label, input, button, h1, h2, h3, h4, h5, h6, [data-testid="stMarkdownContainer"] {
         font-family: 'Plus Jakarta Sans', sans-serif !important;
@@ -139,6 +28,65 @@ st.markdown(
         font-family: 'Inter', sans-serif !important;
         font-size: 1.2rem !important;
         font-weight: 400;
+    }
+
+    /* Core Application Canvas Layer Setup */
+    html, body, .stApp {
+        background-color: #040712 !important;
+        overflow-x: hidden;
+    }
+
+    /* Moving Cyber Matrix Grid Layer */
+    .stApp {
+        background-image: 
+            linear-gradient(rgba(0, 242, 254, 0.015) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 242, 254, 0.015) 1px, transparent 1px) !important;
+        background-size: 50px 50px !important;
+        animation: gridMove 25s linear infinite !important;
+    }
+
+    @keyframes gridMove {
+        0% { background-position: 0px 0px; }
+        100% { background-position: 50px 100px; }
+    }
+
+    /* Ambient Floating Fluid Plasma Orbs */
+    .stApp::before, .stApp::after {
+        content: "";
+        position: fixed;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* Cyan Plasma Orb */
+    .stApp::before {
+        background: radial-gradient(circle, rgba(0, 242, 254, 0.1) 0%, rgba(0, 242, 254, 0.02) 40%, transparent 70%);
+        top: -10%;
+        left: -10%;
+        animation: plasmaDriftCyan 22s infinite alternate ease-in-out;
+    }
+
+    /* Purple Plasma Orb */
+    .stApp::after {
+        background: radial-gradient(circle, rgba(127, 0, 255, 0.08) 0%, rgba(127, 0, 255, 0.02) 40%, transparent 70%);
+        bottom: -10%;
+        right: -10%;
+        animation: plasmaDriftPurple 28s infinite alternate ease-in-out;
+    }
+
+    @keyframes plasmaDriftCyan {
+        0% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(30vw, 20vh) scale(1.2); }
+        100% { transform: translate(15vw, 40vh) scale(0.9); }
+    }
+
+    @keyframes plasmaDriftPurple {
+        0% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(-25vw, -30vh) scale(0.85); }
+        100% { transform: translate(-40vw, -10vh) scale(1.15); }
     }
     
     /* Central Radiant Laser Gradient Text Effect */
@@ -150,9 +98,9 @@ st.markdown(
         text-shadow: 0 0 35px rgba(0, 242, 254, 0.15);
     }
     
-    /* Premium Glassmorphic Form Wrapper for Auth Gate */
+    /* Premium Interactive Form Wrapper with Hover Glow Flare */
     div[data-testid="stForm"] {
-        background: rgba(11, 15, 30, 0.55) !important;
+        background: rgba(10, 14, 28, 0.6) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
         border: 1px solid rgba(0, 242, 254, 0.15) !important;
@@ -161,6 +109,13 @@ st.markdown(
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
         position: relative;
         z-index: 10;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    /* Dynamic tracking glow triggers instantly when mouse crosses into the card perimeter */
+    div[data-testid="stForm"]:hover {
+        border-color: rgba(0, 242, 254, 0.4) !important;
+        box-shadow: 0 0 35px rgba(0, 242, 254, 0.2), 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+        transform: translateY(-2px);
     }
     
     /* Sleek Telemetry Checkbox Data Cards */
