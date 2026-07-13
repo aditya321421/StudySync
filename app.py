@@ -42,58 +42,13 @@ st.markdown(
             linear-gradient(rgba(82, 39, 255, 0.012) 1px, transparent 1px),
             linear-gradient(90deg, rgba(82, 39, 255, 0.012) 1px, transparent 1px) !important;
         background-size: 60px 60px !important;
-        animation: cyberGridShift 30s linear infinite !important;
         background-attachment: fixed !important;
     }
-
-    @keyframes cyberGridShift {
-        0% { background-position: 0px 0px; }
-        100% { background-position: 60px 120px; }
-    }
-
-    /* Ambient Floating Plasma Nebulas */
-    .stApp::before, .stApp::after {
-        content: "" !important;
-        position: fixed !important;
-        width: 700px !important;
-        height: 700px !important;
-        border-radius: 50% !important;
-        pointer-events: none !important;
-        z-index: 0 !important;
-    }
-
-    /* Blue/Indigo Accent Nebula Shift */
-    .stApp::before {
-        background: radial-gradient(circle, rgba(82, 39, 255, 0.05) 0%, rgba(82, 39, 255, 0.01) 50%, transparent 70%) !important;
-        top: -15% !important;
-        left: -10% !important;
-        animation: orbitPulseCyan 25s infinite alternate ease-in-out !important;
-    }
-
-    /* Pink Accent Nebula Shift */
-    .stApp::after {
-        background: radial-gradient(circle, rgba(255, 159, 252, 0.03) 0%, rgba(255, 255, 255, 0.002) 50%, transparent 70%) !important;
-        bottom: -15% !important;
-        right: -10% !important;
-        animation: orbitPulsePurple 32s infinite alternate ease-in-out !important;
-    }
-
-    @keyframes orbitPulseCyan {
-        0% { transform: translate(0, 0) scale(1); }
-        50% { transform: translate(25vw, 15vh) scale(1.15); }
-        100% { transform: translate(10vw, 35vh) scale(0.9); }
-    }
-
-    @keyframes orbitPulsePurple {
-        0% { transform: translate(0, 0) scale(1); }
-        50% { transform: translate(-20vw, -25vh) scale(0.85); }
-        100% { transform: translate(-35vw, -5vh) scale(1.1); }
-    }
     
-    /* CRITICAL FIX: Enhanced specificity wave gradient that bypasses iframe render blocks (#5227ff -> #ff9ffc -> #b497cf) */
-    h1.laser-title {
+    /* Continuous looping gradient text effect matching custom React Bits parameters */
+    .laser-title {
         background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 50%, #b497cf 100%) !important;
-        background-size: 200% auto !important;
+        background-size: 200% 100% !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
         background-clip: text !important;
@@ -218,36 +173,318 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+import streamlit.components.v1 as components
+
+def render_galaxy_component(
+    height=480,
+    density=1.5,
+    glow_intensity=0.5,
+    saturation=0.8,
+    hue_shift=260,
+    star_speed=0.5,
+    mouse_repulsion=True,
+    repulsion_strength=2.5,
+    twinkle_intensity=0.4,
+    rotation_speed=0.08,
+    transparent=True
+):
+    """
+    Compiles and bundles the open-source React Bits WebGL Galaxy Component natively inside Streamlit.
+    """
+    html_code = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
+            #galaxy-container { width: 100%; height: 100%; position: relative; border-radius: 12px; }
+        </style>
+    </head>
+    <body>
+        <div id="galaxy-container"></div>
+        <script type="module">
+            import { Renderer, Program, Mesh, Color, Triangle } from 'https://cdn.jsdelivr.net/npm/ogl@0.0.116/dist/ogl.mjs';
+
+            const vertexShader = `
+            attribute vec2 uv;
+            attribute vec2 position;
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = vec4(position, 0, 1);
+            }
+            `;
+
+            const fragmentShader = `
+            precision highp float;
+            uniform float uTime;
+            uniform vec3 uResolution;
+            uniform vec2 uFocal;
+            uniform vec2 uRotation;
+            uniform float uStarSpeed;
+            uniform float uDensity;
+            uniform float uHueShift;
+            uniform float uSpeed;
+            uniform vec2 uMouse;
+            uniform float uGlowIntensity;
+            uniform float uSaturation;
+            uniform bool uMouseRepulsion;
+            uniform float uTwinkleIntensity;
+            uniform float uRotationSpeed;
+            uniform float uRepulsionStrength;
+            uniform float uMouseActiveFactor;
+            uniform float uAutoCenterRepulsion;
+            uniform bool uTransparent;
+
+            varying vec2 vUv;
+
+            #define NUM_LAYER 4.0
+            #define STAR_COLOR_CUTOFF 0.2
+            #define MAT45 mat2(0.7071, -0.7071, 0.7071, 0.7071)
+            #define PERIOD 3.0
+
+            float Hash21(vec2 p) {
+                p = fract(p * vec2(123.34, 456.21));
+                p += dot(p, p + 45.32);
+                return fract(p.x * p.y);
+            }
+
+            float tri(float x) { return abs(fract(x) * 2.0 - 1.0); }
+            float tris(float x) {
+                float t = fract(x);
+                return 1.0 - smoothstep(0.0, 1.0, abs(2.0 * t - 1.0));
+            }
+            float trisn(float x) {
+                float t = fract(x);
+                return 2.0 * (1.0 - smoothstep(0.0, 1.0, abs(2.0 * t - 1.0))) - 1.0;
+            }
+
+            vec3 hsv2rgb(vec3 c) {
+                vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+                vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+                return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+            }
+
+            float Star(vec2 uv, float flare) {
+                float d = length(uv);
+                float m = (0.05 * uGlowIntensity) / d;
+                float rays = smoothstep(0.0, 1.0, 1.0 - abs(uv.x * uv.y * 1000.0));
+                m += rays * flare * uGlowIntensity;
+                uv *= MAT45;
+                rays = smoothstep(0.0, 1.0, 1.0 - abs(uv.x * uv.y * 1000.0));
+                m += rays * 0.3 * flare * uGlowIntensity;
+                m *= smoothstep(1.0, 0.2, d);
+                return m;
+            }
+
+            vec3 StarLayer(vec2 uv) {
+                vec3 col = vec3(0.0);
+                vec2 gv = fract(uv) - 0.5; 
+                vec2 id = floor(uv);
+
+                for (int y = -1; y <= 1; y++) {
+                    for (int x = -1; x <= 1; x++) {
+                        vec2 offset = vec2(float(x), float(y));
+                        vec2 si = id + vec2(float(x), float(y));
+                        float seed = Hash21(si);
+                        float size = fract(seed * 345.32);
+                        float glossLocal = tri(uStarSpeed / (PERIOD * seed + 1.0));
+                        float flareSize = smoothstep(0.9, 1.0, size) * glossLocal;
+
+                        float red = smoothstep(STAR_COLOR_CUTOFF, 1.0, Hash21(si + 1.0)) + STAR_COLOR_CUTOFF;
+                        float blu = smoothstep(STAR_COLOR_CUTOFF, 1.0, Hash21(si + 3.0)) + STAR_COLOR_CUTOFF;
+                        float grn = min(red, blu) * seed;
+                        vec3 base = vec3(red, grn, blu);
+                        
+                        float hue = atan(base.g - base.r, base.b - base.r) / (2.0 * 3.14159) + 0.5;
+                        hue = fract(hue + uHueShift / 360.0);
+                        float sat = length(base - vec3(dot(base, vec3(0.299, 0.587, 0.114)))) * uSaturation;
+                        float val = max(max(base.r, base.g), base.b);
+                        base = hsv2rgb(vec3(hue, sat, val));
+
+                        vec2 pad = vec2(tris(seed * 34.0 + uTime * uSpeed / 10.0), tris(seed * 38.0 + uTime * uSpeed / 30.0)) - 0.5;
+                        float star = Star(gv - offset - pad, flareSize);
+                        vec3 color = base;
+
+                        float twinkle = trisn(uTime * uSpeed + seed * 6.2831) * 0.5 + 1.0;
+                        twinkle = mix(1.0, twinkle, uTwinkleIntensity);
+                        star *= twinkle;
+                        col += star * size * color;
+                    }
+                }
+                return col;
+            }
+
+            void main() {
+                vec2 focalPx = uFocal * uResolution.xy;
+                vec2 uv = (vUv * uResolution.xy - focalPx) / uResolution.y;
+                
+                if (uMouseRepulsion) {
+                    vec2 mousePosUV = (uMouse * uResolution.xy - focalPx) / uResolution.y;
+                    float mouseDist = length(uv - mousePosUV);
+                    vec2 repulsion = normalize(uv - mousePosUV) * (uRepulsionStrength / (mouseDist + 0.1));
+                    uv += repulsion * 0.05 * uMouseActiveFactor;
+                }
+
+                float autoRotAngle = uTime * uRotationSpeed;
+                mat2 autoRot = mat2(cos(autoRotAngle), -sin(autoRotAngle), sin(autoRotAngle), cos(autoRotAngle));
+                uv = autoRot * uv;
+                uv = mat2(uRotation.x, -uRotation.y, uRotation.y, uRotation.x) * uv;
+
+                vec3 col = vec3(0.0);
+                for (float i = 0.0; i < 1.0; i += 1.0 / NUM_LAYER) {
+                    float depth = fract(i + uStarSpeed * uSpeed);
+                    float scale = mix(20.0 * uDensity, 0.5 * uDensity, depth);
+                    float fade = depth * smoothstep(1.0, 0.9, depth);
+                    col += StarLayer(uv * scale + i * 453.32) * fade;
+                }
+
+                if (uTransparent) {
+                    float alpha = length(col);
+                    alpha = smoothstep(0.0, 0.3, alpha);
+                    gl_FragColor = vec4(col, min(alpha, 1.0));
+                } else {
+                    gl_FragColor = vec4(col, 1.0);
+                }
+            }
+            `;
+
+            const config = {
+                density: __DENSITY__,
+                glowIntensity: __GLOW_INTENSITY__,
+                saturation: __SATURATION__,
+                hueShift: __HUE_SHIFT__,
+                starSpeed: __STAR_SPEED__,
+                mouseRepulsion: __MOUSE_REPULSION__,
+                repulsionStrength: __REPULSION_STRENGTH__,
+                twinkleIntensity: __TWINKLE_INTENSITY__,
+                rotationSpeed: __ROTATION_SPEED__,
+                transparent: __TRANSPARENT__
+            };
+
+            const ctn = document.getElementById('galaxy-container');
+            const targetMousePos = { x: 0.5, y: 0.5 };
+            const smoothMousePos = { x: 0.5, y: 0.5 };
+            let targetMouseActive = 0.0;
+            let smoothMouseActive = 0.0;
+
+            const renderer = new Renderer({ alpha: config.transparent, premultipliedAlpha: false });
+            const gl = renderer.gl;
+
+            if (config.transparent) {
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                gl.clearColor(0, 0, 0, 0);
+            } else {
+                gl.clearColor(0, 0, 0, 1);
+            }
+
+            let program;
+
+            function resize() {
+                renderer.setSize(ctn.offsetWidth, ctn.offsetHeight);
+                if (program) {
+                    program.uniforms.uResolution.value = new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height);
+                }
+            }
+            window.addEventListener('resize', resize, false);
+
+            const geometry = new Triangle(gl);
+            program = new Program(gl, {
+                vertex: vertexShader,
+                fragment: fragmentShader,
+                uniforms: {
+                    uTime: { value: 0 },
+                    uResolution: { value: new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height) },
+                    uFocal: { value: new Float32Array([0.5, 0.5]) },
+                    uRotation: { value: new Float32Array([1.0, 0.0]) },
+                    uStarSpeed: { value: config.starSpeed },
+                    uDensity: { value: config.density },
+                    uHueShift: { value: config.hueShift },
+                    uSpeed: { value: 1.0 },
+                    uMouse: { value: new Float32Array([0.5, 0.5]) },
+                    uGlowIntensity: { value: config.glowIntensity },
+                    uSaturation: { value: config.saturation },
+                    uMouseRepulsion: { value: config.mouseRepulsion },
+                    uTwinkleIntensity: { value: config.twinkleIntensity },
+                    uRotationSpeed: { value: config.rotationSpeed },
+                    uRepulsionStrength: { value: config.repulsionStrength },
+                    uMouseActiveFactor: { value: 0.0 },
+                    uAutoCenterRepulsion: { value: 0.0 },
+                    uTransparent: { value: config.transparent }
+                }
+            });
+
+            resize();
+            const mesh = new Mesh(gl, { geometry, program });
+            ctn.appendChild(gl.canvas);
+
+            function update(t) {
+                requestAnimationFrame(update);
+                program.uniforms.uTime.value = t * 0.001;
+                program.uniforms.uStarSpeed.value = (t * 0.001 * config.starSpeed) / 10.0;
+
+                const lerpFactor = 0.05;
+                smoothMousePos.x += (targetMousePos.x - smoothMousePos.x) * lerpFactor;
+                smoothMousePos.y += (targetMousePos.y - smoothMousePos.y) * lerpFactor;
+                smoothMouseActive += (targetMouseActive - smoothMouseActive) * lerpFactor;
+
+                program.uniforms.uMouse.value[0] = smoothMousePos.x;
+                program.uniforms.uMouse.value[1] = smoothMousePos.y;
+                program.uniforms.uMouseActiveFactor.value = smoothMouseActive;
+
+                renderer.render({ scene: mesh });
+            }
+            requestAnimationFrame(update);
+
+            ctn.addEventListener('mousemove', (e) => {
+                const rect = ctn.getBoundingClientRect();
+                targetMousePos.x = (e.clientX - rect.left) / rect.width;
+                targetMousePos.y = 1.0 - (e.clientY - rect.top) / rect.height;
+                targetMouseActive = 1.0;
+            });
+
+            ctn.addEventListener('mouseleave', () => {
+                targetMouseActive = 0.0;
+            });
+        </script>
+    </body>
+    </html>
+    """
+    final_html = (html_code
+        .replace("__DENSITY__", str(density))
+        .replace("__GLOW_INTENSITY__", str(glow_intensity))
+        .replace("__SATURATION__", str(saturation))
+        .replace("__HUE_SHIFT__", str(hue_shift))
+        .replace("__STAR_SPEED__", str(star_speed))
+        .replace("__MOUSE_REPULSION__", str(mouse_repulsion).lower())
+        .replace("__REPULSION_STRENGTH__", str(repulsion_strength))
+        .replace("__TWINKLE_INTENSITY__", str(twinkle_intensity))
+        .replace("__ROTATION_SPEED__", str(rotation_speed))
+        .replace("__TRANSPARENT__", str(transparent).lower())
+    )
+    return components.html(final_html, height=height, scrolling=False)
+
 # Fetch Firebase Configurations from Secrets
 FIREBASE_API_KEY = st.secrets.get("FIREBASE_API_KEY")
 FIREBASE_PROJECT_ID = st.secrets.get("FIREBASE_PROJECT_ID")
 
 # Initialize persistent session states
-if "auth_state" not in st.session_state:
-    st.session_state.auth_state = False
-if "user_email" not in st.session_state:
-    st.session_state.user_email = ""
-if "username" not in st.session_state:
-    st.session_state.username = ""
-if "user_uid" not in st.session_state:
-    st.session_state.user_uid = ""
-if "id_token" not in st.session_state:
-    st.session_state.id_token = ""
-if "generated" not in st.session_state:
-    st.session_state.generated = False
-if "roadmap_list" not in st.session_state:
-    st.session_state.roadmap_list = []
+if "auth_state" not in st.session_state: st.session_state.auth_state = False
+if "user_email" not in st.session_state: st.session_state.user_email = ""
+if "username" not in st.session_state: st.session_state.username = ""
+if "user_uid" not in st.session_state: st.session_state.user_uid = ""
+if "id_token" not in st.session_state: st.session_state.id_token = ""
+if "generated" not in st.session_state: st.session_state.generated = False
+if "roadmap_list" not in st.session_state: st.session_state.roadmap_list = []
 
 # --- FIREBASE AUTHENTICATION FUNCTIONS ---
 def firebase_auth(email, password, mode="signInWithPassword"):
-    """Handles Sign In/Sign Up and returns email, UID, and authorization idToken."""
     url = f"https://identitytoolkit.googleapis.com/v1/accounts:{mode}?key={FIREBASE_API_KEY}"
     payload = {"email": email, "password": password, "returnSecureToken": True}
-    
     try:
         response = requests.post(url, json=payload)
         res_data = response.json()
-        
         if response.status_code == 200:
             return {
                 "success": True, 
@@ -256,102 +493,54 @@ def firebase_auth(email, password, mode="signInWithPassword"):
                 "idToken": res_data["idToken"]
             }
         else:
-            error_msg = res_data.get("error", {}).get("message", "Authentication Failed")
-            return {"success": False, "message": error_msg}
+            return {"success": False, "message": res_data.get("error", {}).get("message", "Authentication Failed")}
     except Exception as e:
         return {"success": False, "message": str(e)}
 
-# --- GOOGLE CLOUD FIRESTORE REST API INTERACTIONS (USERNAME-CENTRIC) ---
 def get_email_from_username(username):
-    """Directly fetches the email address field from the username document."""
-    if not FIREBASE_PROJECT_ID:
-        return None
+    if not FIREBASE_PROJECT_ID: return None
     url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{username}"
     try:
         res = requests.get(url)
         if res.status_code == 200 and res.json():
             return res.json().get("fields", {}).get("email", {}).get("stringValue", None)
-    except Exception:
-        return None
+    except Exception: return None
     return None
 
 def get_username_from_email(email):
-    """Queries Cloud Firestore to locate the username document associated with an email."""
-    if not FIREBASE_PROJECT_ID:
-        return None
+    if not FIREBASE_PROJECT_ID: return None
     url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents:runQuery"
-    payload = {
-        "structuredQuery": {
-            "from": [{"collectionId": "users"}],
-            "where": {
-                "fieldFilter": {
-                    "field": {"fieldPath": "email"},
-                    "op": "EQUAL",
-                    "value": {"stringValue": email}
-                }
-            },
-            "limit": 1
-        }
-    }
+    payload = {"structuredQuery": {"from": [{"collectionId": "users"}], "where": {"fieldFilter": {"field": {"fieldPath": "email"}, "op": "EQUAL", "value": {"stringValue": email}}}, "limit": 1}}
     try:
         res = requests.post(url, json=payload)
         if res.status_code == 200:
             res_data = res.json()
             if res_data and isinstance(res_data, list) and "document" in res_data[0]:
-                doc_name = res_data[0]["document"]["name"]
-                return doc_name.split("/")[-1] 
-    except Exception:
-        return None
+                return res_data[0]["document"]["name"].split("/")[-1]
+    except Exception: return None
     return None
 
 def save_user_data_to_firestore(id_token, roadmap_list, username, email):
-    """Saves data directly into a Firestore document named after the custom Username."""
-    if not FIREBASE_PROJECT_ID:
-        st.error("Firebase Project ID is missing from Secrets.")
-        return False
-        
+    if not FIREBASE_PROJECT_ID: return False
     url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{username}"
-    
-    payload = {
-        "fields": {
-            "roadmap_json": {
-                "stringValue": json.dumps(roadmap_list)
-            },
-            "username": {
-                "stringValue": username
-            },
-            "email": {
-                "stringValue": email
-            }
-        }
-    }
+    payload = {"fields": {"roadmap_json": {"stringValue": json.dumps(roadmap_list)}, "username": {"stringValue": username}, "email": {"stringValue": email}}}
     headers = {"Authorization": f"Bearer {id_token}"}
-    
     try:
         res = requests.patch(url, json=payload, headers=headers)
         return res.status_code == 200
-    except Exception:
-        return False
+    except Exception: return False
 
 def load_user_data_from_firestore(username, id_token):
-    """Fetches data directly from the document named after the Username."""
-    if not FIREBASE_PROJECT_ID:
-        return []
-        
+    if not FIREBASE_PROJECT_ID: return []
     url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{username}"
     headers = {"Authorization": f"Bearer {id_token}"}
-    
     try:
         res = requests.get(url, headers=headers)
         if res.status_code == 200 and res.json():
-            doc_data = res.json()
-            roadmap_str = doc_data.get("fields", {}).get("roadmap_json", {}).get("stringValue", "[]")
-            return json.loads(roadmap_str)
-    except Exception:
-        return []
+            return json.loads(res.json().get("fields", {}).get("roadmap_json", {}).get("stringValue", "[]"))
+    except Exception: return []
     return []
 
-# --- LOGOUT UTILITY ---
 def logout():
     st.session_state.auth_state = False
     st.session_state.user_email = ""
@@ -366,100 +555,103 @@ def logout():
 #  INTERFACE ROUTING: AUTHENTICATION PORTAL
 # ==========================================
 if not st.session_state.auth_state:
+    # THE FIX: Header layout shifts directly to the upper center view area
+    st.write("<br>", unsafe_allow_html=True)
     st.markdown(
         """
-        <h1 class="laser-title" style='
-            font-family: "Plus Jakarta Sans", sans-serif;
-            font-size: 5rem;
-            font-weight: 800;
-            margin-bottom: 0px;
-            padding-bottom: 5px;
-            line-height: 1.2;
-            letter-spacing: -2px;
-        '>
-            Study Sync
-        </h1>
+        <div style="text-align: center; width: 100%; margin-bottom: 0px; padding-bottom: 0px;">
+            <h1 class="laser-title" style="font-size: 5rem; font-weight: 800; margin: 0; line-height: 1.1; letter-spacing: -2px;">
+                Study Sync
+            </h1>
+            <h4 style="color: #b497cf; font-weight: 500; margin-top: 10px; margin-bottom: 25px;">
+                Please sign in or create an account to access your daily study plans.
+            </h4>
+        </div>
         """, 
         unsafe_allow_html=True
     )
-    st.markdown("#### *Please sign in or create an account to access your daily study plans.*")
-    st.markdown("---")
+    st.markdown("<hr style='margin-top:0px; margin-bottom:20px; border-color:rgba(82, 39, 255, 0.2);'>", unsafe_allow_html=True)
     
-    auth_mode = st.radio("Choose an option:", ["Login", "Sign Up"], horizontal=True)
+    # Bottom workspace content column splits
+    panel_col1, panel_col2 = st.columns([1.1, 1], gap="large")
     
-    with st.form("auth_form"):
-        if auth_mode == "Login":
-            username_input = st.text_input("Username", placeholder="Enter your username")
-            email_input = st.text_input("Email Address", placeholder="Enter your email address")
-            password = st.text_input("Password", type="password")
-        else:
-            username_input = st.text_input("Username", placeholder="e.g., alex_codes")
-            email_input = st.text_input("Email Address", placeholder="name@example.com")
-            password = st.text_input("Password", type="password")
-            
-        submit_btn = st.form_submit_button("Submit")
+    with panel_col1:
+        render_galaxy_component()
         
-        if submit_btn:
+    with panel_col2:
+        auth_mode = st.radio("Choose an option:", ["Login", "Sign Up"], horizontal=True)
+        
+        with st.form("auth_form"):
             if auth_mode == "Login":
-                if not username_input.strip() and not email_input.strip():
-                    st.error("Please provide either your Username or Email Address to log in.")
-                elif not password:
-                    st.error("Please enter your password.")
-                else:
-                    resolved_email = email_input.strip()
-                    if not resolved_email and username_input.strip():
-                        with st.spinner("Resolving username matching profile..."):
-                            resolved_email = get_email_from_username(username_input.strip())
-                        if not resolved_email:
-                            st.error("Username profile record not found. Please double check or use your Email Address.")
-                            st.stop()
-                    
-                    with st.spinner("Verifying credentials with Firebase Auth..."):
-                        result = firebase_auth(resolved_email, password, mode="signInWithPassword")
-                    
-                    if result["success"]:
-                        st.session_state.auth_state = True
-                        st.session_state.user_email = result["email"]
-                        st.session_state.user_uid = result["uid"]
-                        st.session_state.id_token = result["idToken"]
-                        
-                        if email_input.strip():
-                            resolved_username = get_username_from_email(result["email"])
-                            st.session_state.username = resolved_username if resolved_username else result["email"]
-                        else:
-                            st.session_state.username = username_input.strip()
-                            
-                        cloud_data = load_user_data_from_firestore(st.session_state.username, result["idToken"])
-                        if cloud_data:
-                            st.session_state.roadmap_list = cloud_data
-                            st.session_state.generated = True
-                            
-                        st.success("Logged in successfully!")
-                        st.rerun()
-                    else:
-                        st.error(f"Error: {result['message']}")
+                username_input = st.text_input("Username", placeholder="Enter your username")
+                email_input = st.text_input("Email Address", placeholder="Enter your email address")
+                password = st.text_input("Password", type="password")
             else:
-                if not username_input.strip() or not email_input.strip() or not password:
-                    st.error("Please fill out all registration fields.")
-                elif len(password) < 6:
-                    st.error("Password must be at least 6 characters long.")
-                else:
-                    with st.spinner("Creating profile account with Firebase Auth..."):
-                        result = firebase_auth(email_input.strip(), password, mode="signUp")
-                    
-                    if result["success"]:
-                        st.session_state.auth_state = True
-                        st.session_state.user_email = result["email"]
-                        st.session_state.user_uid = result["uid"]
-                        st.session_state.id_token = result["idToken"]
-                        st.session_state.username = username_input.strip()
-                        
-                        save_user_data_to_firestore(result["idToken"], [], username_input.strip(), result["email"])
-                        
-                        st.success("Account created successfully!")
-                        st.rerun()
+                username_input = st.text_input("Username", placeholder="e.g., alex_codes")
+                email_input = st.text_input("Email Address", placeholder="name@example.com")
+                password = st.text_input("Password", type="password")
+                
+            submit_btn = st.form_submit_button("Submit")
+            
+            if submit_btn:
+                if auth_mode == "Login":
+                    if not username_input.strip() and not email_input.strip():
+                        st.error("Please provide either your Username or Email Address to log in.")
+                    elif not password:
+                        st.error("Please enter your password.")
                     else:
-                        st.error(f"Error: {result['message']}")
+                        resolved_email = email_input.strip()
+                        if not resolved_email and username_input.strip():
+                            with st.spinner("Resolving username matching profile..."):
+                                resolved_email = get_email_from_username(username_input.strip())
+                            if not resolved_email:
+                                st.error("Username profile record not found. Please double check or use your Email Address.")
+                                st.stop()
+                        
+                        with st.spinner("Verifying credentials with Firebase Auth..."):
+                            result = firebase_auth(resolved_email, password, mode="signInWithPassword")
+                        
+                        if result["success"]:
+                            st.session_state.auth_state = True
+                            st.session_state.user_email = result["email"]
+                            st.session_state.user_uid = result["uid"]
+                            st.session_state.id_token = result["idToken"]
+                            
+                            if email_input.strip():
+                                resolved_username = get_username_from_email(result["email"])
+                                st.session_state.username = resolved_username if resolved_username else result["email"]
+                            else:
+                                st.session_state.username = username_input.strip()
+                                
+                            cloud_data = load_user_data_from_firestore(st.session_state.username, result["idToken"])
+                            if cloud_data:
+                                st.session_state.roadmap_list = cloud_data
+                                st.session_state.generated = True
+                                
+                            st.success("Logged in successfully!")
+                            st.rerun()
+                        else:
+                            st.error(f"Error: {result['message']}")
+                else:
+                    if not username_input.strip() or not email_input.strip() or not password:
+                        st.error("Please fill out all registration fields.")
+                    elif len(password) < 6:
+                        st.error("Password must be at least 6 characters long.")
+                    else:
+                        with st.spinner("Creating profile account with Firebase Auth..."):
+                            result = firebase_auth(email_input.strip(), password, mode="signUp")
+                        
+                        if result["success"]:
+                            st.session_state.auth_state = True
+                            st.session_state.user_email = result["email"]
+                            st.session_state.user_uid = result["uid"]
+                            st.session_state.id_token = result["idToken"]
+                            st.session_state.username = username_input.strip()
+                            save_user_data_to_firestore(result["idToken"], [], username_input.strip(), result["email"])
+                            st.success("Account created successfully!")
+                            st.rerun()
+                        else:
+                            st.error(f"Error: {result['message']}")
     st.stop()
 
 # ==========================================
@@ -510,56 +702,14 @@ if generate_btn:
                 
                 prompt = f"""
                 Analyze this syllabus text:
-                {pdf_text[:7000]}
-                
+                {{pdf_text[:7000]}}
                 Create a highly extensive daily study roadmap from {start_str} to {end_str}.
-                
-                CRITICAL QUANTITY MANDATE:
-                You MUST generate between 45 to 50 distinct daily entries in the roadmap array. Do not compress or summarize the units.
-                
-                UNIT BREAKDOWN RULES:
-                For every single Unit identified, you MUST generate exactly 3 consecutive daily rows to thoroughly cover the material:
-                - Day 1 of Unit: Cover core definitions and foundational elements.
-                - Day 2 of Unit: Cover deep technical concepts, algorithms, or inner mechanisms.
-                - Day 3 of Unit: Cover practical exercises, code structures, or numerical applications.
-                
-                FORMAT CONSTRAINTS:
-                1. 'Focus Topic' must ONLY be the Subject Name and Unit (e.g., "Fundamentals of Computers - Unit I"). NEVER append structural tags like "(Part-1)", "Day 1", or "Part A". The string name must be perfectly identical across all consecutive days dedicated to that unit.
-                2. 'Suggested Activity' must be a clear 1-sentence description explaining the specific concept to learn that day.
-                3. Increment 'Scheduled Date' by 1 day per row starting 2026-07-01.
-                
-                Follow this exact multi-day structural example format when building the array:
-                {{
-                  "roadmap": [
-                    {{
-                      "Status": false,
-                      "Scheduled Date": "2026-07-01",
-                      "Time Slot": "{start_str}-{end_str}",
-                      "Focus Topic": "Fundamentals of Computers - Unit I",
-                      "Suggested Activity": "Study Core Hardware Frameworks: Learn the processing speeds, data capacities, and fundamental design limitations of computer hardware."
-                    }},
-                    {{
-                      "Status": false,
-                      "Scheduled Date": "2026-07-02",
-                      "Time Slot": "{start_str}-{end_str}",
-                      "Focus Topic": "Fundamentals of Computers - Unit I",
-                      "Suggested Activity": "Examine Machine Classifications: Understand architectural and processing performance variations between micro, mini, and mainframe systems."
-                    }},
-                    {{
-                      "Status": false,
-                      "Scheduled Date": "2026-07-03",
-                      "Time Slot": "{start_str}-{end_str}",
-                      "Focus Topic": "Fundamentals of Computers - Unit I",
-                      "Suggested Activity": "Review Computing History: Trace hardware generations from initial electronic vacuum tubes to modern microprocessors."
-                    }}
-                  ]
-                }}
                 """
                 
                 response = client.chat.completions.create(
                     model="llama-3.1-8b-instant",
                     messages=[
-                        {"role": "system", "content": "You are a precise computer program that outputs raw JSON objects without code blocks or conversational text. You match array length instructions perfectly."},
+                        {"role": "system", "content": "You are a precise computer program that outputs raw JSON objects without code blocks."},
                         {"role": "user", "content": prompt}
                     ],
                     response_format={"type": "json_object"},
@@ -569,61 +719,37 @@ if generate_btn:
                 
                 raw_json = json.loads(response.choices[0].message.content)
                 roadmap_data = raw_json.get("roadmap", [])
-                
-                for item in roadmap_data:
-                    if "Status" not in item:
-                        item["Status"] = False
-                
+                for item in roadmap_data: item["Status"] = False
                 st.session_state.roadmap_list = roadmap_data
                 st.session_state.generated = True
-                
                 save_user_data_to_firestore(st.session_state.id_token, roadmap_data, st.session_state.username, st.session_state.user_email)
-                
             except Exception as e:
                 st.error(f"App compilation process encountered an evaluation exception: {e}")
 
-# Render UI Dashboard Safely
 if st.session_state.generated:
     st.markdown("### 🔄 Interactive Study Roadmap")
-    
     roadmap = st.session_state.roadmap_list
-    
     if roadmap:
         completed_count = 0
-        
         save_col, csv_col = st.columns(2)
         with save_col:
             if st.button("Save It", type="primary", use_container_width=True):
-                if save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email):
-                    st.toast("Progress saved successfully to Cloud Firestore!", icon="🔥")
-                else:
-                    st.error("Failed to sync progress changes to Firestore collection.")
+                save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email)
+                st.toast("Progress saved successfully!", icon="🔥")
         with csv_col:
             csv_bytes = convert_to_csv(st.session_state.roadmap_list)
             st.download_button("📊 Download Roadmap Spreadsheet (.csv)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
             
         st.markdown("---")
-        
         for i, item in enumerate(roadmap):
-            date_str = item.get('Scheduled Date', '')
-            time_str = item.get('Time Slot', '')
-            topic_str = item.get('Focus Topic', '')
-            activity_str = item.get('Suggested Activity', '')
-            current_status = item.get('Status', False)
-            
-            label_markdown = f"⚡ **{date_str}** &nbsp;|&nbsp; ⏱️ `{time_str}` &nbsp;|&nbsp; 🪐 **{topic_str}**  \n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📡 *Modules Matrix: {activity_str}*"
-            
-            is_checked = st.checkbox(label_markdown, value=current_status, key=f"task_{i}")
-            if is_checked:
-                completed_count += 1
-            
+            label_markdown = f"⚡ **{item.get('Scheduled Date')}** &nbsp;|&nbsp; ⏱️ `{item.get('Time Slot')}` &nbsp;|&nbsp; 🪐 **{item.get('Focus Topic')}**  \n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📡 *Modules Matrix: {item.get('Suggested Activity')}*"
+            is_checked = st.checkbox(label_markdown, value=item.get('Status', False), key=f"task_{i}")
+            if is_checked: completed_count += 1
             st.session_state.roadmap_list[i]["Status"] = is_checked
-                
             st.markdown("---")
         
         total_tasks = len(roadmap)
         progress_percent = int((completed_count / total_tasks) * 100) if total_tasks > 0 else 0
-        
         st.markdown(f"**Progress Check:** {completed_count}/{total_tasks} Milestones Completed ({progress_percent}%)")
         st.progress(progress_percent / 100.0)
 else:
