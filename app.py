@@ -32,15 +32,34 @@ st.markdown(
 
     /* Core Canvas Deep Background Base */
     html, body, .stApp {
-        background-color: #0c1017 !important;
+        background-color: #040612 !important;
         overflow-x: hidden;
     }
+
+    /* Hardware-Accelerated Smooth Moving Cyber Grid Backdrop */
+    .stApp {
+        background-image: 
+            linear-gradient(rgba(82, 39, 255, 0.012) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(82, 39, 255, 0.012) 1px, transparent 1px) !important;
+        background-size: 60px 60px !important;
+        background-attachment: fixed !important;
+    }
     
-    /* Precise Electric Cyan Typography Accent */
+    /* Continuous looping gradient text effect matching custom React Bits parameters */
     .laser-title {
-        color: #00a2ff !important;
-        font-weight: 800 !important;
+        background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 50%, #b497cf 100%) !important;
+        background-size: 200% 100% !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
         display: inline-block !important;
+        animation: continuousWave 4s ease-in-out infinite !important;
+    }
+
+    @keyframes continuousWave {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
     
     /* Centering CSS Overrides for Streamlit Radio Blocks */
@@ -57,129 +76,395 @@ st.markdown(
         justify-content: center !important;
     }
     
-    /* Glassmorphic Card Wrapper */
+    /* Glassmorphic Card Wrapper with Dynamic Proximity Glow Flare */
     div[data-testid="stForm"] {
         background: rgba(9, 12, 26, 0.6) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
-        border: 1px solid rgba(0, 145, 255, 0.15) !important;
+        border: 1px solid rgba(82, 39, 255, 0.15) !important;
         border-radius: 12px !important;
         padding: 2.5rem !important;
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
         position: relative;
         z-index: 10;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    div[data-testid="stForm"]:hover {
+        border-color: rgba(255, 159, 252, 0.3) !important;
+        box-shadow: 0 0 40px rgba(82, 39, 255, 0.15), 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+        transform: translateY(-2px);
     }
 
     /* Reactive Glow States on Input Focus Fields */
     div[data-testid="stTextInput"] input {
         background: rgba(16, 22, 42, 0.45) !important;
-        border: 1px solid rgba(0, 145, 255, 0.15) !important;
+        border: 1px solid rgba(82, 39, 255, 0.15) !important;
         color: #ffffff !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    div[data-testid="stTextInput"] input:hover {
+        border-color: rgba(255, 159, 252, 0.25) !important;
+        background: rgba(16, 22, 42, 0.55) !important;
+    }
+    div[data-testid="stTextInput"] input:focus {
+        border-color: #ff9ffc !important;
+        box-shadow: 0 0 20px rgba(255, 159, 252, 0.2) !important;
+        background: rgba(16, 22, 42, 0.65) !important;
     }
     
-    /* Target the invisible outer wrapper block to force absolute centering */
-    div[data-testid="element-container"]:has(div[data-testid="stFormSubmitButton"]) {
-        display: flex !important;
-        justify-content: center !important;
-        width: 100% !important;
-        text-align: center !important;
-    }
-    
-    /* Center alignment stack layouts */
+    /* THE FIX: Force Center Alignment on Submit Button Parent Wrapper Layout */
     div[data-testid="stFormSubmitButton"] {
         display: flex !important;
         justify-content: center !important;
         width: 100% !important;
         margin-top: 1.5rem !important;
     }
-    div[data-testid="stFormSubmitButton"] > div {
-        display: flex !important;
-        justify-content: center !important;
-        width: 100% !important;
-    }
     
-    /* Custom Cosmic Submit Button Base Stylesheet */
+    /* THE FIX: Custom Cosmic Submit Button Design and Hover Flare Effects */
     div[data-testid="stFormSubmitButton"] button {
-        display: block !important;
-        margin: 1.5rem auto 0 auto !important;
-        background: linear-gradient(90deg, #0052ff 0%, #00a2ff 100%) !important;
+        background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 100%) !important;
         color: #ffffff !important;
         font-weight: 700 !important;
         border: none !important;
         border-radius: 6px !important;
-        padding: 0.6rem 3.5rem !important;
-        box-shadow: 0 0 15px rgba(0, 145, 255, 0.35) !important;
+        padding: 0.6rem 3rem !important;
+        box-shadow: 0 0 15px rgba(82, 39, 255, 0.35) !important;
         text-transform: uppercase;
         letter-spacing: 1px;
-    }
-    
-    /* ==========================================
-       HIGH-TECH GLOW HOVER EFFECTS ON BUTTONS
-       ========================================== */
-       
-    /* 1. SOLID PRIMARY BUTTONS (Generate Complete Roadmap & Save It) */
-    div.stButton > button[kind="primary"] {
-        background: #0091ff !important;
-        color: #ffffff !important;
-        border: none !important;
-        border-radius: 6px !important;
-        font-weight: 700 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 1px !important;
-        box-shadow: 0 0 18px rgba(0, 145, 255, 0.6) !important;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
-    
-    div.stButton > button[kind="primary"]:hover {
-        background: #00a2ff !important;
-        box-shadow: 0 0 35px rgba(0, 162, 255, 0.9) !important;
-        transform: translateY(-2px) !important;
-        color: #ffffff !important;
-    }
-    
-    /* 2. OUTLINE/GHOST BUTTONS (Log Out & Download Roadmap Spreadsheet) */
-    div.stButton > button:not([kind="primary"]) {
-        background: transparent !important;
-        color: #0091ff !important;
-        border: 1px solid rgba(0, 145, 255, 0.4) !important;
-        border-radius: 6px !important;
-        font-weight: 600 !important;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    }
-    
-    div.stButton > button:not([kind="primary"]):hover {
-        background: rgba(0, 145, 255, 0.08) !important;
-        border-color: #00a2ff !important;
-        box-shadow: 0 0 20px rgba(0, 162, 255, 0.4) !important;
-        color: #ffffff !important;
-        transform: translateY(-1px) !important;
+    div[data-testid="stFormSubmitButton"] button:hover {
+        box-shadow: 0 0 30px rgba(255, 159, 252, 0.6) !important;
+        background: linear-gradient(90deg, #ff9ffc 0%, #b497cf 100%) !important;
+        transform: translateY(-2px) scale(1.02);
     }
     
     /* Interactive Dashboard Telemetry Rows */
     div[data-testid="stCheckbox"] {
         background: rgba(16, 22, 42, 0.4) !important;
-        border: 1px solid rgba(0, 145, 255, 0.15) !important;
-        border-left: 4px solid #0091ff !important;
+        border: 1px solid rgba(82, 39, 255, 0.15) !important;
+        border-left: 4px solid #5227ff !important;
         padding: 1.2rem 1.5rem !important;
         border-radius: 6px !important;
         margin-bottom: 12px !important;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3) !important;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    div[data-testid="stCheckbox"]:hover {
+        background: rgba(16, 22, 42, 0.7) !important;
+        border-color: rgba(255, 159, 252, 0.25) !important;
+        border-left-color: #ffffff !important;
+        box-shadow: 0 0 20px rgba(82, 39, 255, 0.15) !important;
+        transform: translateX(3px);
     }
     
-    /* Progress Bars custom color mapping */
-    div[data-testid="stProgress"] > div > div > div {
-        background: linear-gradient(90deg, #0091ff 0%, #00a2ff 100%) !important;
-        box-shadow: 0 0 12px rgba(0, 145, 255, 0.4);
-    }
-    
-    /* File Uploader styling optimization */
+    /* File/Document Module Configurations */
     div[data-testid="stFileUploader"] {
-        border: 1px dashed rgba(0, 145, 255, 0.3) !important;
-        background: rgba(11, 16, 28, 0.6) !important;
+        border: 1px dashed rgba(82, 39, 255, 0.35) !important;
+        background: rgba(16, 22, 42, 0.3) !important;
+        border-radius: 6px;
+        padding: 6px;
+    }
+    div[data-testid="stProgress"] > div > div > div {
+        background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 100%) !important;
+        box-shadow: 0 0 12px rgba(82, 39, 255, 0.4);
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
+import streamlit.components.v1 as components
+
+def render_galaxy_component(
+    height=340,
+    density=1.4,
+    glow_intensity=0.5,
+    saturation=0.8,
+    hue_shift=260,
+    star_speed=0.5,
+    mouse_repulsion=True,
+    repulsion_strength=2.5,
+    twinkle_intensity=0.4,
+    rotation_speed=0.08,
+    transparent=True
+):
+    """
+    Compiles and bundles the open-source React Bits WebGL Galaxy Component natively inside Streamlit.
+    """
+    html_code = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
+            #galaxy-container { width: 100%; height: 100%; position: relative; border-radius: 12px; }
+        </style>
+    </head>
+    <body>
+        <div id="galaxy-container"></div>
+        <script type="module">
+            import { Renderer, Program, Mesh, Color, Triangle } from 'https://cdn.jsdelivr.net/npm/ogl@0.0.116/dist/ogl.mjs';
+
+            const vertexShader = `
+            attribute vec2 uv;
+            attribute vec2 position;
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = vec4(position, 0, 1);
+            }
+            `;
+
+            const fragmentShader = `
+            precision highp float;
+            uniform float uTime;
+            uniform vec3 uResolution;
+            uniform vec2 uFocal;
+            uniform vec2 uRotation;
+            uniform float uStarSpeed;
+            uniform float uDensity;
+            uniform float uHueShift;
+            uniform float uSpeed;
+            uniform vec2 uMouse;
+            uniform float uGlowIntensity;
+            uniform float uSaturation;
+            uniform bool uMouseRepulsion;
+            uniform float uTwinkleIntensity;
+            uniform float uRotationSpeed;
+            uniform float uRepulsionStrength;
+            uniform float uMouseActiveFactor;
+            uniform float uAutoCenterRepulsion;
+            uniform bool uTransparent;
+
+            varying vec2 vUv;
+
+            #define NUM_LAYER 4.0
+            #define STAR_COLOR_CUTOFF 0.2
+            #define MAT45 mat2(0.7071, -0.7071, 0.7071, 0.7071)
+            #define PERIOD 3.0
+
+            float Hash21(vec2 p) {
+                p = fract(p * vec2(123.34, 456.21));
+                p += dot(p, p + 45.32);
+                return fract(p.x * p.y);
+            }
+
+            float tri(float x) { return abs(fract(x) * 2.0 - 1.0); }
+            float tris(float x) {
+                float t = fract(x);
+                return 1.0 - smoothstep(0.0, 1.0, abs(2.0 * t - 1.0));
+            }
+            float trisn(float x) {
+                float t = fract(x);
+                return 2.0 * (1.0 - smoothstep(0.0, 1.0, abs(2.0 * t - 1.0))) - 1.0;
+            }
+
+            vec3 hsv2rgb(vec3 c) {
+                vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+                vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+                return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+            }
+
+            float Star(vec2 uv, float flare) {
+                float d = length(uv);
+                float m = (0.05 * uGlowIntensity) / d;
+                float rays = smoothstep(0.0, 1.0, 1.0 - abs(uv.x * uv.y * 1000.0));
+                m += rays * flare * uGlowIntensity;
+                uv *= MAT45;
+                rays = smoothstep(0.0, 1.0, 1.0 - abs(uv.x * uv.y * 1000.0));
+                m += rays * 0.3 * flare * uGlowIntensity;
+                m *= smoothstep(1.0, 0.2, d);
+                return m;
+            }
+
+            vec3 StarLayer(vec2 uv) {
+                vec3 col = vec3(0.0);
+                vec2 gv = fract(uv) - 0.5; 
+                vec2 id = floor(uv);
+
+                for (int y = -1; y <= 1; y++) {
+                    for (int x = -1; x <= 1; x++) {
+                        vec2 offset = vec2(float(x), float(y));
+                        vec2 si = id + vec2(float(x), float(y));
+                        float seed = Hash21(si);
+                        float size = fract(seed * 345.32);
+                        float glossLocal = tri(uStarSpeed / (PERIOD * seed + 1.0));
+                        float flareSize = smoothstep(0.9, 1.0, size) * glossLocal;
+
+                        float red = smoothstep(STAR_COLOR_CUTOFF, 1.0, Hash21(si + 1.0)) + STAR_COLOR_CUTOFF;
+                        float blu = smoothstep(STAR_COLOR_CUTOFF, 1.0, Hash21(si + 3.0)) + STAR_COLOR_CUTOFF;
+                        float grn = min(red, blu) * seed;
+                        vec3 base = vec3(red, grn, blu);
+                        
+                        float hue = atan(base.g - base.r, base.b - base.r) / (2.0 * 3.14159) + 0.5;
+                        hue = fract(hue + uHueShift / 360.0);
+                        float sat = length(base - vec3(dot(base, vec3(0.299, 0.587, 0.114)))) * uSaturation;
+                        float val = max(max(base.r, base.g), base.b);
+                        base = hsv2rgb(vec3(hue, sat, val));
+
+                        vec2 pad = vec2(tris(seed * 34.0 + uTime * uSpeed / 10.0), tris(seed * 38.0 + uTime * uSpeed / 30.0)) - 0.5;
+                        float star = Star(gv - offset - pad, flareSize);
+                        vec3 color = base;
+
+                        float twinkle = trisn(uTime * uSpeed + seed * 6.2831) * 0.5 + 1.0;
+                        twinkle = mix(1.0, twinkle, uTwinkleIntensity);
+                        star *= twinkle;
+                        col += star * size * color;
+                    }
+                }
+                return col;
+            }
+
+            void main() {
+                vec2 focalPx = uFocal * uResolution.xy;
+                vec2 uv = (vUv * uResolution.xy - focalPx) / uResolution.y;
+                
+                if (uMouseRepulsion) {
+                    vec2 mousePosUV = (uMouse * uResolution.xy - focalPx) / uResolution.y;
+                    float mouseDist = length(uv - mousePosUV);
+                    vec2 repulsion = normalize(uv - mousePosUV) * (uRepulsionStrength / (mouseDist + 0.1));
+                    uv += repulsion * 0.05 * uMouseActiveFactor;
+                }
+
+                float autoRotAngle = uTime * uRotationSpeed;
+                mat2 autoRot = mat2(cos(autoRotAngle), -sin(autoRotAngle), sin(autoRotAngle), cos(autoRotAngle));
+                uv = autoRot * uv;
+                uv = mat2(uRotation.x, -uRotation.y, uRotation.y, uRotation.x) * uv;
+
+                vec3 col = vec3(0.0);
+                for (float i = 0.0; i < 1.0; i += 1.0 / NUM_LAYER) {
+                    float depth = fract(i + uStarSpeed * uSpeed);
+                    float scale = mix(20.0 * uDensity, 0.5 * uDensity, depth);
+                    float fade = depth * smoothstep(1.0, 0.9, depth);
+                    col += StarLayer(uv * scale + i * 453.32) * fade;
+                }
+
+                if (uTransparent) {
+                    float alpha = length(col);
+                    alpha = smoothstep(0.0, 0.3, alpha);
+                    gl_FragColor = vec4(col, min(alpha, 1.0));
+                } else {
+                    gl_FragColor = vec4(col, 1.0);
+                }
+            }
+            `;
+
+            const config = {
+                density: __DENSITY__,
+                glowIntensity: __GLOW_INTENSITY__,
+                saturation: __SATURATION__,
+                hueShift: __HUE_SHIFT__,
+                starSpeed: __STAR_SPEED__,
+                mouseRepulsion: __MOUSE_REPULSION__,
+                repulsionStrength: __REPULSION_STRENGTH__,
+                twinkleIntensity: __TWINKLE_INTENSITY__,
+                rotationSpeed: __ROTATION_SPEED__,
+                transparent: __TRANSPARENT__
+            };
+
+            const ctn = document.getElementById('galaxy-container');
+            const targetMousePos = { x: 0.5, y: 0.5 };
+            const smoothMousePos = { x: 0.5, y: 0.5 };
+            let targetMouseActive = 0.0;
+            let smoothMouseActive = 0.0;
+
+            const renderer = new Renderer({ alpha: config.transparent, premultipliedAlpha: false });
+            const gl = renderer.gl;
+
+            if (config.transparent) {
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                gl.clearColor(0, 0, 0, 0);
+            } else {
+                gl.clearColor(0, 0, 0, 1);
+            }
+
+            let program;
+
+            function resize() {
+                renderer.setSize(ctn.offsetWidth, ctn.offsetHeight);
+                if (program) {
+                    program.uniforms.uResolution.value = new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height);
+                }
+            }
+            window.addEventListener('resize', resize, false);
+
+            const geometry = new Triangle(gl);
+            program = new Program(gl, {
+                vertex: vertexShader,
+                fragment: fragmentShader,
+                uniforms: {
+                    uTime: { value: 0 },
+                    uResolution: { value: new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height) },
+                    uFocal: { value: new Float32Array([0.5, 0.5]) },
+                    uRotation: { value: new Float32Array([1.0, 0.0]) },
+                    uStarSpeed: { value: config.starSpeed },
+                    uDensity: { value: config.density },
+                    uHueShift: { value: config.hueShift },
+                    uSpeed: { value: 1.0 },
+                    uMouse: { value: new Float32Array([0.5, 0.5]) },
+                    uGlowIntensity: { value: config.glowIntensity },
+                    uSaturation: { value: config.saturation },
+                    uMouseRepulsion: { value: config.mouseRepulsion },
+                    uTwinkleIntensity: { value: config.twinkleIntensity },
+                    uRotationSpeed: { value: config.rotationSpeed },
+                    uRepulsionStrength: { value: config.repulsionStrength },
+                    uMouseActiveFactor: { value: 0.0 },
+                    uAutoCenterRepulsion: { value: 0.0 },
+                    uTransparent: { value: config.transparent }
+                }
+            });
+
+            resize();
+            const mesh = new Mesh(gl, { geometry, program });
+            ctn.appendChild(gl.canvas);
+
+            function update(t) {
+                requestAnimationFrame(update);
+                program.uniforms.uTime.value = t * 0.001;
+                program.uniforms.uStarSpeed.value = (t * 0.001 * config.starSpeed) / 10.0;
+
+                const lerpFactor = 0.05;
+                smoothMousePos.x += (targetMousePos.x - smoothMousePos.x) * lerpFactor;
+                smoothMousePos.y += (targetMousePos.y - smoothMousePos.y) * lerpFactor;
+                smoothMouseActive += (targetMouseActive - smoothMouseActive) * lerpFactor;
+
+                program.uniforms.uMouse.value[0] = smoothMousePos.x;
+                program.uniforms.uMouse.value[1] = smoothMousePos.y;
+                program.uniforms.uMouseActiveFactor.value = smoothMouseActive;
+
+                renderer.render({ scene: mesh });
+            }
+            requestAnimationFrame(update);
+
+            ctn.addEventListener('mousemove', (e) => {
+                const rect = ctn.getBoundingClientRect();
+                targetMousePos.x = (e.clientX - rect.left) / rect.width;
+                targetMousePos.y = 1.0 - (e.clientY - rect.top) / rect.height;
+                targetMouseActive = 1.0;
+            });
+
+            ctn.addEventListener('mouseleave', () => {
+                targetMouseActive = 0.0;
+            });
+        </script>
+    </body>
+    </html>
+    """
+    final_html = (html_code
+        .replace("__DENSITY__", str(density))
+        .replace("__GLOW_INTENSITY__", str(glow_intensity))
+        .replace("__SATURATION__", str(saturation))
+        .replace("__HUE_SHIFT__", str(hue_shift))
+        .replace("__STAR_SPEED__", str(star_speed))
+        .replace("__MOUSE_REPULSION__", str(mouse_repulsion).lower())
+        .replace("__REPULSION_STRENGTH__", str(repulsion_strength))
+        .replace("__TWINKLE_INTENSITY__", str(twinkle_intensity))
+        .replace("__ROTATION_SPEED__", str(rotation_speed))
+        .replace("__TRANSPARENT__", str(transparent).lower())
+    )
+    return components.html(final_html, height=height, scrolling=False)
 
 # Fetch Firebase Configurations from Secrets
 FIREBASE_API_KEY = st.secrets.get("FIREBASE_API_KEY")
@@ -267,27 +552,27 @@ def logout():
     st.session_state.roadmap_list = []
     st.rerun()
 
-def convert_to_csv(data_list):
-    df = pd.DataFrame(data_list)
-    return df.to_csv(index=False).encode('utf-8')
-
 # ==========================================
 #  INTERFACE ROUTING: AUTHENTICATION PORTAL
 # ==========================================
 if not st.session_state.auth_state:
-    st.write("<br><br>", unsafe_allow_html=True)
-    
+    st.write("<br>", unsafe_allow_html=True)
     st.markdown(
         """
-        <div style="text-align: center; width: 100%; margin-bottom: 25px;">
-            <h2 class="laser-title" style="font-size: 3.5rem; font-weight: 800; margin: 0; letter-spacing: -1px;">
-                Welcome Portal
-            </h2>
+        <div style="text-align: center; width: 100%; margin-bottom: 0px; padding-bottom: 0px;">
+            <h1 class="laser-title" style="font-size: 5rem; font-weight: 800; margin: 0; line-height: 1.1; letter-spacing: -2px;">
+                Study Sync
+            </h1>
+            <h4 style="color: #b497cf; font-weight: 500; margin-top: 10px; margin-bottom: 25px;">
+                Please sign in or create an account to access your daily study plans.
+            </h4>
         </div>
         """, 
         unsafe_allow_html=True
     )
+    st.markdown("<hr style='margin-top:0px; margin-bottom:20px; border-color:rgba(82, 39, 255, 0.2);'>", unsafe_allow_html=True)
     
+    # Balanced 3-column grid positioning layout cards dead center
     left_space, center_auth_col, right_space = st.columns([1, 1.6, 1], gap="medium")
     
     with center_auth_col:
@@ -364,18 +649,23 @@ if not st.session_state.auth_state:
                             st.rerun()
                         else:
                             st.error(f"Error: {result['message']}")
+
+    # Render interactive React Bits WebGL engine layer directly framing elements
+    st.write("<br>", unsafe_allow_html=True)
+    render_galaxy_component()
     st.stop()
 
 # ==========================================
 #  INTERFACE ROUTING: CORE APPLICATION
 # ==========================================
-header_col1, header_col2 = st.columns([5, 1.2], gap="small")
+st.markdown("<h1 class='laser-title' style='font-family: \"Plus Jakarta Sans\", sans-serif; font-size: 5rem; margin-bottom: 0px; padding-bottom: 10px; line-height: 1.2; letter-spacing: -2px;'>Study Sync</h1>", unsafe_allow_html=True)
+
+header_col1, header_col2 = st.columns([5, 1], gap="small")
 with header_col1:
-    st.markdown("<h1 class='laser-title' style='font-size: 2.2rem; margin-bottom: 0px; padding-bottom: 2px;'>Study Sync</h1>", unsafe_allow_html=True)
-    st.markdown(f"*Profile Name - ({st.session_state.username})*")
+    st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
 with header_col2:
-    st.write("<br>", unsafe_allow_html=True)
-    if st.button("🚪 Log Out", use_container_width=True, type="secondary"):
+    st.write("<br><br>", unsafe_allow_html=True)
+    if st.button("🚪 Log Out", use_container_width=True):
         logout()
 
 st.markdown("---")
@@ -392,6 +682,10 @@ with config_col3:
 
 generate_btn = st.button("Generate Complete Roadmap", type="primary", use_container_width=True)
 st.markdown("---")
+
+def convert_to_csv(data_list):
+    df = pd.DataFrame(data_list)
+    return df.to_csv(index=False).encode('utf-8')
 
 if generate_btn:
     if not uploaded_file:
@@ -430,7 +724,6 @@ if generate_btn:
                 st.session_state.roadmap_list = roadmap_data
                 st.session_state.generated = True
                 save_user_data_to_firestore(st.session_state.id_token, roadmap_data, st.session_state.username, st.session_state.user_email)
-                st.rerun()
             except Exception as e:
                 st.error(f"App compilation process encountered an evaluation exception: {e}")
 
@@ -441,7 +734,7 @@ if st.session_state.generated:
         completed_count = 0
         save_col, csv_col = st.columns(2)
         with save_col:
-            if st.button("💾 Save It", type="primary", use_container_width=True):
+            if st.button("Save It", type="primary", use_container_width=True):
                 save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email)
                 st.toast("Progress saved successfully!", icon="🔥")
         with csv_col:
