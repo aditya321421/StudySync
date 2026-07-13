@@ -62,6 +62,20 @@ st.markdown(
         100% { background-position: 0% 50%; }
     }
     
+    /* Centering CSS Overrides for Streamlit Radio Blocks */
+    div[data-testid="stRadio"] {
+        text-align: center !important;
+    }
+    div[data-testid="stRadio"] > label {
+        text-align: center !important;
+        display: block !important;
+        color: #b497cf !important;
+        font-weight: 600 !important;
+    }
+    div[data-testid="stRadio"] > div {
+        justify-content: center !important;
+    }
+    
     /* Glassmorphic Card Wrapper with Dynamic Proximity Glow Flare */
     div[data-testid="stForm"] {
         background: rgba(9, 12, 26, 0.6) !important;
@@ -176,8 +190,8 @@ st.markdown(
 import streamlit.components.v1 as components
 
 def render_galaxy_component(
-    height=480,
-    density=1.5,
+    height=340,
+    density=1.4,
     glow_intensity=0.5,
     saturation=0.8,
     hue_shift=260,
@@ -555,7 +569,6 @@ def logout():
 #  INTERFACE ROUTING: AUTHENTICATION PORTAL
 # ==========================================
 if not st.session_state.auth_state:
-    # THE FIX: Header layout shifts directly to the upper center view area
     st.write("<br>", unsafe_allow_html=True)
     st.markdown(
         """
@@ -572,13 +585,10 @@ if not st.session_state.auth_state:
     )
     st.markdown("<hr style='margin-top:0px; margin-bottom:20px; border-color:rgba(82, 39, 255, 0.2);'>", unsafe_allow_html=True)
     
-    # Bottom workspace content column splits
-    panel_col1, panel_col2 = st.columns([1.1, 1], gap="large")
+    # THE FIX: Balanced 3-column wrapper grid focusing layout elements strictly into the center frame
+    left_space, center_auth_col, right_space = st.columns([1, 1.6, 1], gap="medium")
     
-    with panel_col1:
-        render_galaxy_component()
-        
-    with panel_col2:
+    with center_auth_col:
         auth_mode = st.radio("Choose an option:", ["Login", "Sign Up"], horizontal=True)
         
         with st.form("auth_form"):
@@ -652,6 +662,10 @@ if not st.session_state.auth_state:
                             st.rerun()
                         else:
                             st.error(f"Error: {result['message']}")
+
+    # Render cosmic interactive WebGL canvas wrapper framing layout columns below form card
+    st.write("<br>", unsafe_allow_html=True)
+    render_galaxy_component()
     st.stop()
 
 # ==========================================
@@ -702,7 +716,7 @@ if generate_btn:
                 
                 prompt = f"""
                 Analyze this syllabus text:
-                {{pdf_text[:7000]}}
+                {pdf_text[:7000]}
                 Create a highly extensive daily study roadmap from {start_str} to {end_str}.
                 """
                 
