@@ -32,7 +32,7 @@ st.markdown(
 
     /* Core Canvas Deep Background Base */
     html, body, .stApp {
-        background-color: #0c1017 !important;
+        background-color: #040612 !important;
         overflow-x: hidden;
     }
 
@@ -45,15 +45,15 @@ st.markdown(
         background-attachment: fixed !important;
     }
     
-    /* Exact React Bits Diagonal Non-Yoyo 6-Color Gradient Stream */
+    /* Flowing Blue and White Custom Gradient Stream */
     .laser-title {
-        background: linear-gradient(135deg, #3b82f6, #ffffff, #ff0000, #ec4899, #10b981, #06b6d4, #3b82f6) !important;
+        background: linear-gradient(135deg, #0091ff, #ffffff, #0052ff, #ffffff, #0091ff) !important;
         background-size: 200% 200% !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
         background-clip: text !important;
         display: inline-block !important;
-        animation: flow-gradient 2s linear infinite !important;
+        animation: flow-gradient 3s linear infinite !important;
     }
 
     @keyframes flow-gradient {
@@ -116,10 +116,6 @@ st.markdown(
         width: 100% !important;
     }
     
-    /* ==========================================
-       EXACT COLOR EXTRACTIONS & HOVER EFFECTS
-       ========================================== */
-       
     /* 1. SOLID PRIMARY BUTTONS (Submit, Generate Complete Roadmap, Save It) */
     div.stButton > button[kind="primary"], 
     div[data-testid="stFormSubmitButton"] button {
@@ -389,7 +385,7 @@ with header_col1:
     st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
 with header_col2:
     st.write("<br>", unsafe_allow_html=True)
-    if st.button("🚪 Log Out", use_container_width=True, type="secondary"):
+    if st.button("🚪 Log Out", use_container_width=True):
         logout()
 
 st.markdown("---")
@@ -404,7 +400,7 @@ with config_col2:
 with config_col3:
     end_time = st.time_input("Preferred Daily End Time")
 
-generate_btn = st.button("Generate Complete Roadmap", type="primary", use_container_width=True)
+generate_btn = st.button("Generate Complete Roadmap", use_container_width=True)
 st.markdown("---")
 
 if generate_btn:
@@ -455,7 +451,7 @@ if st.session_state.generated:
         completed_count = 0
         save_col, csv_col = st.columns(2)
         with save_col:
-            if st.button("💾 Save It", type="primary", use_container_width=True):
+            if st.button("💾 Save It", use_container_width=True):
                 save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email)
                 st.toast("Progress saved successfully!", icon="🔥")
         with csv_col:
