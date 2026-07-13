@@ -11,42 +11,134 @@ client = Groq()
 # Configure page settings
 st.set_page_config(page_title="Study-Sync | Core Terminal", page_icon="🔄", layout="wide")
 
-# ==========================================
-#  MODERN TECH PURE CSS ANIMATED BACKGROUND
-# ==========================================
+# ========================================================
+#  ENTERPRISE TECH INTERFACE STYLING + GLOW MOUSE TRAILER
+# ========================================================
 st.markdown(
     """
+    <!-- Global Interactive Canvas Layer Layer -->
+    <canvas id="cyber-mouse-glow"></canvas>
+    
+    <script>
+    const canvas = document.getElementById('cyber-mouse-glow');
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Mouse Tracking Vectors
+    let mouse = { x: null, y: null, targetX: null, targetY: null };
+    
+    // Tracks coordinates globally across the entire viewport window interface
+    window.addEventListener('mousemove', (e) => {
+        mouse.targetX = e.clientX;
+        mouse.targetY = e.clientY;
+        if (mouse.x === null) {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        }
+    });
+
+    window.addEventListener('mouseout', () => {
+        mouse.targetX = null;
+        mouse.targetY = null;
+    });
+
+    // Digital Ambient Matrix Particles
+    const particles = [];
+    const particleCount = 60;
+
+    for (let i = 0; i < particleCount; i++) {
+        particles.push({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            radius: Math.random() * 1.5 + 0.5,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5
+        });
+    }
+
+    function drawSystem() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Render digital matrix backdrop particles
+        ctx.fillStyle = 'rgba(0, 242, 254, 0.15)';
+        particles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+            if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        // Calculate smooth cursor interpolation delay (lerping)
+        if (mouse.targetX !== null) {
+            mouse.x += (mouse.targetX - mouse.x) * 0.12;
+            mouse.y += (mouse.targetY - mouse.y) * 0.12;
+
+            // Render a futuristic neon magnetic fluid aura trail tracking the cursor
+            let gradient = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 160);
+            gradient.addColorStop(0, 'rgba(0, 242, 254, 0.08)');
+            gradient.addColorStop(0.5, 'rgba(127, 0, 255, 0.03)');
+            gradient.addColorStop(1, 'rgba(0,0,0,0)');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(mouse.x, mouse.y, 160, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Core holographic laser focal crosshair dot
+            ctx.fillStyle = 'rgba(0, 242, 254, 0.6)';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#00f2fe';
+            ctx.beginPath();
+            ctx.arc(mouse.x, mouse.y, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0; // Reset canvas glow states
+        }
+
+        requestAnimationFrame(drawSystem);
+    }
+    drawSystem();
+    </script>
+
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
     
+    /* Position the interactive background canvas correctly below inputs */
+    #cyber-mouse-glow {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    /* CRITICAL FIX: Make Streamlit backgrounds transparent so canvas is visible */
+    html, body {
+        background-color: #050814 !important;
+    }
+    .stApp {
+        background: transparent !important;
+    }
+
     /* Global Universal Font Unification */
     *, html, body, p, label, input, button, h1, h2, h3, h4, h5, h6, [data-testid="stMarkdownContainer"] {
         font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
     
-    /* Premium Corporate UI Body Stack */
     body, p, label, input, .hud-body {
         font-family: 'Inter', sans-serif !important;
         font-size: 1.2rem !important;
         font-weight: 400;
-    }
-    
-    /* Full Viewport Ambient Cosmic Mesh Background Engine */
-    .stApp {
-        background-color: #060913 !important;
-        background-image: 
-            radial-gradient(at 0% 0%, rgba(0, 242, 254, 0.07) 0px, transparent 50%),
-            radial-gradient(at 100% 100%, rgba(127, 0, 255, 0.08) 0px, transparent 50%),
-            linear-gradient(rgba(255, 255, 255, 0.005) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.005) 1px, transparent 1px) !important;
-        background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px !important;
-        animation: ambientShift 20s ease-in-out infinite alternate !important;
-    }
-
-    /* Elegant CSS Cosmic Drift Animation */
-    @keyframes ambientShift {
-        0% { background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%; }
-        100% { background-position: 10% 5%, -10% -5%, 20px 20px, 20px 20px; }
     }
     
     /* Central Radiant Laser Gradient Text Effect */
@@ -60,17 +152,15 @@ st.markdown(
     
     /* Premium Glassmorphic Form Wrapper for Auth Gate */
     div[data-testid="stForm"] {
-        background: rgba(11, 15, 30, 0.45) !important;
-        backdrop-filter: blur(16px) !important;
-        -webkit-backdrop-filter: blur(16px) !important;
-        border: 1px solid rgba(0, 242, 254, 0.12) !important;
+        background: rgba(11, 15, 30, 0.55) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(0, 242, 254, 0.15) !important;
         border-radius: 12px !important;
         padding: 2.5rem !important;
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
-        transition: border-color 0.5s ease;
-    }
-    div[data-testid="stForm"]:hover {
-        border-color: rgba(0, 242, 254, 0.3) !important;
+        position: relative;
+        z-index: 10;
     }
     
     /* Sleek Telemetry Checkbox Data Cards */
@@ -92,7 +182,7 @@ st.markdown(
         transform: translateX(3px);
     }
     
-    /* Primary Deck Trigger Controllers (Generate & Save Buttons) */
+    /* Primary Trigger Buttons */
     button[data-testid="stBaseButton-primary"] {
         background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%) !important;
         color: #ffffff !important;
@@ -111,7 +201,7 @@ st.markdown(
         transform: translateY(-1px);
     }
     
-    /* Secondary Peripheral Controllers (Logout, Download Buttons) */
+    /* Secondary Action Buttons */
     button[data-testid="stBaseButton-secondary"] {
         background: rgba(16, 22, 42, 0.6) !important;
         color: #00f2fe !important;
@@ -130,7 +220,7 @@ st.markdown(
         box-shadow: 0 0 15px rgba(0, 242, 254, 0.25) !important;
     }
     
-    /* Cyber Matrix Dashed File Dropspace Box */
+    /* File Upload Area */
     div[data-testid="stFileUploader"] {
         border: 1px dashed rgba(0, 242, 254, 0.35) !important;
         background: rgba(16, 22, 42, 0.3) !important;
@@ -138,7 +228,7 @@ st.markdown(
         padding: 6px;
     }
     
-    /* Radiant Glow Progress Loading Bars */
+    /* Progress Bars */
     div[data-testid="stProgress"] > div > div > div {
         background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%) !important;
         box-shadow: 0 0 12px rgba(0, 198, 255, 0.6);
