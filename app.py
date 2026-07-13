@@ -54,9 +54,22 @@ def firebase_auth(email, password, mode="signInWithPassword"):
     except Exception as e:
         return {"success": False, "message": str(e)}
 
-# --- GOOGLE CLOUD FIRESTORE REST API INTERACTIONS ---
+# --- GOOGLE CLOUD FIRESTORE REST API INTERACTIONS (USERNAME-CENTRIC) ---
 def get_email_from_username(username):
-    """Queries Cloud Firestore to resolve a username string back to its registered email address."""
+    """Directly fetches the email address field from the username document."""
+    if not FIREBASE_PROJECT_ID:
+        return None
+    url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{username}"
+    try:
+        res = requests.get(url)
+        if res.status_code == 200 and res.json():
+            return res.json().get("fields", {}).get("email", {}).get("stringValue", None)
+    except Exception:
+        return None
+    return None
+
+def get_username_from_email(email):
+    """Queries Cloud Firestore to locate the username document associated with an email."""
     if not FIREBASE_PROJECT_ID:
         return None
     url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents:runQuery"
@@ -65,9 +78,9 @@ def get_email_from_username(username):
             "from": [{"collectionId": "users"}],
             "where": {
                 "fieldFilter": {
-                    "field": {"fieldPath": "username"},
+                    "field": {"fieldPath": "email"},
                     "op": "EQUAL",
-                    "value": {"stringValue": username}
+                    "value": {"stringValue": email}
                 }
             },
             "limit": 1
@@ -78,19 +91,19 @@ def get_email_from_username(username):
         if res.status_code == 200:
             res_data = res.json()
             if res_data and isinstance(res_data, list) and "document" in res_data[0]:
-                fields = res_data[0]["document"].get("fields", {})
-                return fields.get("email", {}).get("stringValue", None)
+                doc_name = res_data[0]["document"]["name"]
+                return doc_name.split("/")[-1] # The document ID is our username
     except Exception:
         return None
     return None
 
-def save_user_data_to_firestore(uid, id_token, roadmap_list, username, email):
-    """Saves the roadmap list, custom username, and email fields inside the Firestore document."""
+def save_user_data_to_firestore(id_token, roadmap_list, username, email):
+    """Saves data directly into a Firestore document named after the custom Username."""
     if not FIREBASE_PROJECT_ID:
         st.error("Firebase Project ID is missing from Secrets.")
         return False
         
-    url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{uid}"
+    url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{username}"
     
     payload = {
         "fields": {
@@ -113,12 +126,12 @@ def save_user_data_to_firestore(uid, id_token, roadmap_list, username, email):
     except Exception:
         return False
 
-def load_user_data_from_firestore(uid, id_token):
-    """Fetches and decodes the roadmap array and username profile tag from Firestore."""
+def load_user_data_from_firestore(username, id_token):
+    """Fetches data directly from the document named after the Username."""
     if not FIREBASE_PROJECT_ID:
-        return [], ""
+        return []
         
-    url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{uid}"
+    url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{username}"
     headers = {"Authorization": f"Bearer {id_token}"}
     
     try:
@@ -126,11 +139,10 @@ def load_user_data_from_firestore(uid, id_token):
         if res.status_code == 200 and res.json():
             doc_data = res.json()
             roadmap_str = doc_data.get("fields", {}).get("roadmap_json", {}).get("stringValue", "[]")
-            username = doc_data.get("fields", {}).get("username", {}).get("stringValue", "")
-            return json.loads(roadmap_str), username
+            return json.loads(roadmap_str)
     except Exception:
-        return [], ""
-    return [], ""
+        return []
+    return []
 
 # --- LOGOUT UTILITY ---
 def logout():
@@ -188,6 +200,7 @@ if not st.session_state.auth_state:
                     st.error("Please enter your password.")
                 else:
                     resolved_email = email_input.strip()
+                    # If logging in via username field, resolve the email address from that document name
                     if not resolved_email and username_input.strip():
                         with st.spinner("Resolving username matching profile..."):
                             resolved_email = get_email_from_username(username_input.strip())
@@ -204,8 +217,14 @@ if not st.session_state.auth_state:
                         st.session_state.user_uid = result["uid"]
                         st.session_state.id_token = result["idToken"]
                         
-                        cloud_data, cloud_username = load_user_data_from_firestore(result["uid"], result["idToken"])
-                        st.session_state.username = cloud_username if cloud_username else username_input.strip()
+                        # Find the correct username if logged in via email
+                        if email_input.strip():
+                            resolved_username = get_username_from_email(result["email"])
+                            st.session_state.username = resolved_username if resolved_username else result["email"]
+                        else:
+                            st.session_state.username = username_input.strip()
+                            
+                        cloud_data = load_user_data_from_firestore(st.session_state.username, result["idToken"])
                         if cloud_data:
                             st.session_state.roadmap_list = cloud_data
                             st.session_state.generated = True
@@ -230,7 +249,8 @@ if not st.session_state.auth_state:
                         st.session_state.id_token = result["idToken"]
                         st.session_state.username = username_input.strip()
                         
-                        save_user_data_to_firestore(result["uid"], result["idToken"], [], username_input.strip(), result["email"])
+                        # Save the document using the Username string as the document ID key
+                        save_user_data_to_firestore(result["idToken"], [], username_input.strip(), result["email"])
                         
                         st.success("Account created successfully!")
                         st.rerun()
@@ -241,19 +261,17 @@ if not st.session_state.auth_state:
 # ==========================================
 #  INTERFACE ROUTING: CORE APPLICATION
 # ==========================================
-# Upper Header Row with aligned Log Out action
 header_col1, header_col2 = st.columns([5, 1], gap="small")
 with header_col1:
     st.title("🔄 Study-Sync Dashboard")
     st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
 with header_col2:
-    st.write("<br>", unsafe_allow_html=True) # Structural visual adjustment spacing
+    st.write("<br>", unsafe_allow_html=True)
     if st.button("🚪 Log Out", use_container_width=True):
         logout()
 
 st.markdown("---")
 
-# --- CENTRALIZED CONFIGURATION PANEL ON MAIN SCREEN ---
 st.markdown("### ⚡ Configuration Panel")
 config_col1, config_col2, config_col3 = st.columns([2, 1, 1], gap="medium")
 
@@ -354,7 +372,7 @@ if generate_btn:
                 st.session_state.roadmap_list = roadmap_data
                 st.session_state.generated = True
                 
-                save_user_data_to_firestore(st.session_state.user_uid, st.session_state.id_token, roadmap_data, st.session_state.username, st.session_state.user_email)
+                save_user_data_to_firestore(st.session_state.id_token, roadmap_data, st.session_state.username, st.session_state.user_email)
                 
             except Exception as e:
                 st.error(f"App compilation process encountered an evaluation exception: {e}")
@@ -371,7 +389,7 @@ if st.session_state.generated:
         save_col, csv_col = st.columns(2)
         with save_col:
             if st.button("💾 Save Progress to Cloud Firestore", type="primary", use_container_width=True):
-                if save_user_data_to_firestore(st.session_state.user_uid, st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email):
+                if save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email):
                     st.toast("Progress saved successfully to Cloud Firestore!", icon="🔥")
                 else:
                     st.error("Failed to sync progress changes to Firestore collection.")
