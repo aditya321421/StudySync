@@ -96,9 +96,7 @@ st.markdown(
         padding-right: 3rem !important;
     }
     
-    /* ==========================================
-       THE EYE ICON RESKINDED CYBER BLUE STYLE
-       ========================================== */
+    /* THE EYE ICON RESKINDED CYBER BLUE STYLE */
     div[data-testid="stTextInput"] button {
         color: #0091ff !important;
         background: transparent !important;
@@ -470,7 +468,7 @@ if st.session_state.generated:
         completed_count = 0
         save_col, csv_col = st.columns(2)
         with save_col:
-            if st.button("💾 Save It", type="primary", use_container_width=True):
+            if st.button("Save It", type="primary", use_container_width=True):
                 save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email)
                 st.toast("Progress saved successfully!", icon="🔥")
         with csv_col:
