@@ -90,13 +90,20 @@ st.markdown(
         100% { transform: translate(-35vw, -5vh) scale(1.1); }
     }
     
-    /* Central Blue-White Gradient Text Effect */
+    /* DYNAMIC FIX: Continuous looping gradient text effect (Blue -> Dark Blue -> White) */
     .laser-title {
-        background: linear-gradient(90deg, #0052d4 0%, #00c6ff 50%, #ffffff 100%) !important;
+        background: linear-gradient(90deg, #00c6ff 0%, #0044ff 33%, #ffffff 66%, #00c6ff 100%) !important;
+        background-size: 300% auto !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
         font-weight: 800 !important;
-        text-shadow: 0 0 35px rgba(0, 114, 255, 0.25) !important;
+        animation: continuousShine 5s linear infinite !important;
+        text-shadow: 0 0 35px rgba(0, 70, 255, 0.25) !important;
+    }
+
+    @keyframes continuousShine {
+        0% { background-position: 0% center; }
+        100% { background-position: 300% center; }
     }
     
     /* Glassmorphic Card Wrapper with Dynamic Proximity Glow Flare */
@@ -360,16 +367,12 @@ def logout():
 if not st.session_state.auth_state:
     st.markdown(
         """
-        <h1 style='
-            background: linear-gradient(90deg, #0052d4 0%, #00c6ff 55%, #ffffff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        <h1 class="laser-title" style='
             font-family: "Plus Jakarta Sans", sans-serif;
             font-size: 5rem;
             font-weight: 800;
             margin-bottom: 0px;
             padding-bottom: 5px;
-            text-shadow: 0 0 25px rgba(0, 114, 255, 0.2);
             line-height: 1.2;
             letter-spacing: -2px;
         '>
