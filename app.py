@@ -112,31 +112,39 @@ st.markdown(
         background: rgba(16, 22, 42, 0.65) !important;
     }
     
-    /* THE FIX: Force Center Alignment on Submit Button Parent Wrapper Layout */
+    /* FIX: Complete Centering Stack Target on Form Submit Parent and Inner Elements */
     div[data-testid="stFormSubmitButton"] {
         display: flex !important;
         justify-content: center !important;
+        align-items: center !important;
         width: 100% !important;
+        text-align: center !important;
         margin-top: 1.5rem !important;
     }
+    div[data-testid="stFormSubmitButton"] > div {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+    }
     
-    /* THE FIX: Custom Cosmic Submit Button Design and Hover Flare Effects */
+    /* Custom Cosmic Submit Button Design and Hover Flare Effects */
     div[data-testid="stFormSubmitButton"] button {
         background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 100%) !important;
         color: #ffffff !important;
         font-weight: 700 !important;
         border: none !important;
         border-radius: 6px !important;
-        padding: 0.6rem 3rem !important;
+        padding: 0.6rem 3.5rem !important;
         box-shadow: 0 0 15px rgba(82, 39, 255, 0.35) !important;
         text-transform: uppercase;
         letter-spacing: 1px;
+        margin: 0 auto !important;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
     div[data-testid="stFormSubmitButton"] button:hover {
         box-shadow: 0 0 30px rgba(255, 159, 252, 0.6) !important;
         background: linear-gradient(90deg, #ff9ffc 0%, #b497cf 100%) !important;
-        transform: translateY(-2px) scale(1.02);
+        transform: translateY(-2px) scale(1.02) !important;
     }
     
     /* Interactive Dashboard Telemetry Rows */
@@ -644,7 +652,7 @@ if not st.session_state.auth_state:
                             st.session_state.user_uid = result["uid"]
                             st.session_state.id_token = result["idToken"]
                             st.session_state.username = username_input.strip()
-                            save_user_data_to_firestore(result["idToken"], [], username_input.strip(), result["email"])
+                            save_user_data_to_firestore(st.session_state.id_token, [], username_input.strip(), result["email"])
                             st.success("Account created successfully!")
                             st.rerun()
                         else:
