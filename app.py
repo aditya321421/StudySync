@@ -12,7 +12,7 @@ client = Groq()
 st.set_page_config(page_title="Study-Sync | Core Terminal", page_icon="🔄", layout="wide")
 
 # ==========================================
-#  PREMIUM CSS MODERN TECH BACKGROUND ENGINE
+#  PREMIUM ENTERPRISE HOVER INTERFACE STYLING
 # ==========================================
 st.markdown(
     """
@@ -30,66 +30,21 @@ st.markdown(
         font-weight: 400;
     }
 
-    /* Set canvas depth background */
+    /* Core Base Canvas Background Layout */
     html, body, .stApp {
         background-color: #040612 !important;
         overflow-x: hidden;
     }
 
-    /* Hardware-Accelerated Dynamic Moving Cyber Grid Matrix Layout */
+    /* Modern Cyber Grid Backdrop Pattern */
     .stApp {
         background-image: 
             linear-gradient(rgba(0, 242, 254, 0.015) 1px, transparent 1px),
             linear-gradient(90deg, rgba(0, 242, 254, 0.015) 1px, transparent 1px) !important;
-        background-size: 60px 60px !important;
-        animation: cyberGridShift 30s linear infinite !important;
+        background-size: 50px 50px !important;
         background-attachment: fixed !important;
     }
 
-    @keyframes cyberGridShift {
-        0% { background-position: 0px 0px; }
-        100% { background-position: 60px 120px; }
-    }
-
-    /* Ambient Floating Plasma Orbs (Simulating slow dynamic motion) */
-    .stApp::before, .stApp::after {
-        content: "" !important;
-        position: fixed !important;
-        width: 700px !important;
-        height: 700px !important;
-        border-radius: 50% !important;
-        pointer-events: none !important;
-        z-index: 0 !important;
-    }
-
-    /* Cyan Energy Pulse */
-    .stApp::before {
-        background: radial-gradient(circle, rgba(0, 242, 254, 0.07) 0%, rgba(0, 242, 254, 0.01) 50%, transparent 70%) !important;
-        top: -15% !important;
-        left: -10% !important;
-        animation: orbitPulseCyan 25s infinite alternate ease-in-out !important;
-    }
-
-    /* Deep Purple Energy Pulse */
-    .stApp::after {
-        background: radial-gradient(circle, rgba(127, 0, 255, 0.06) 0%, rgba(127, 0, 255, 0.01) 50%, transparent 70%) !important;
-        bottom: -15% !important;
-        right: -10% !important;
-        animation: orbitPulsePurple 32s infinite alternate ease-in-out !important;
-    }
-
-    @keyframes orbitPulseCyan {
-        0% { transform: translate(0, 0) scale(1); }
-        50% { transform: translate(25vw, 15vh) scale(1.15); }
-        100% { transform: translate(10vw, 35vh) scale(0.9); }
-    }
-
-    @keyframes orbitPulsePurple {
-        0% { transform: translate(0, 0) scale(1); }
-        50% { transform: translate(-20vw, -25vh) scale(0.85); }
-        100% { transform: translate(-35vw, -5vh) scale(1.1); }
-    }
-    
     /* Central Radiant Laser Gradient Text Effect */
     .laser-title {
         background: linear-gradient(90deg, #00f2fe 0%, #4facfe 50%, #7f00ff 100%);
@@ -99,24 +54,37 @@ st.markdown(
         text-shadow: 0 0 35px rgba(0, 242, 254, 0.15);
     }
     
-    /* Premium Interactive Form Wrapper with Immediate Hover Glow Flare */
+    /* Glassmorphic Auth Form Container with Dynamic Proximity Flare */
     div[data-testid="stForm"] {
-        background: rgba(9, 12, 26, 0.6) !important;
+        background: rgba(10, 14, 28, 0.6) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
         border: 1px solid rgba(0, 242, 254, 0.15) !important;
         border-radius: 12px !important;
         padding: 2.5rem !important;
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
-        position: relative;
-        z-index: 10;
         transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
-    /* Glow effect lights up immediately when cursor crosses the card perimeter */
+    /* Fires a bright ambient neon shroud around the box immediately on cursor entry */
     div[data-testid="stForm"]:hover {
-        border-color: rgba(0, 242, 254, 0.4) !important;
-        box-shadow: 0 0 40px rgba(0, 242, 254, 0.18), 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+        border-color: rgba(0, 242, 254, 0.45) !important;
+        box-shadow: 0 0 40px rgba(0, 242, 254, 0.22), 0 20px 50px rgba(0, 0, 0, 0.6) !important;
         transform: translateY(-2px);
+    }
+
+    /* High-Tech Glow Enhancements on Input Fields */
+    div[data-testid="stTextInput"] input {
+        background: rgba(16, 22, 42, 0.4) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: #ffffff !important;
+        transition: all 0.3s ease !important;
+    }
+    div[data-testid="stTextInput"] input:hover {
+        border-color: rgba(0, 242, 254, 0.4) !important;
+    }
+    div[data-testid="stTextInput"] input:focus {
+        border-color: #00f2fe !important;
+        box-shadow: 0 0 15px rgba(0, 242, 254, 0.3) !important;
     }
     
     /* Sleek Telemetry Checkbox Data Cards */
@@ -138,11 +106,10 @@ st.markdown(
         transform: translateX(3px);
     }
     
-    /* Primary Trigger Buttons */
+    /* Primary Action Buttons */
     button[data-testid="stBaseButton-primary"] {
         background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%) !important;
         color: #ffffff !important;
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
         font-weight: 700 !important;
         border: none !important;
         border-radius: 5px !important;
@@ -163,7 +130,6 @@ st.markdown(
         color: #00f2fe !important;
         border: 1px solid rgba(0, 242, 254, 0.35) !important;
         border-radius: 5px !important;
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
         font-size: 0.85rem !important;
         font-weight: 600 !important;
         letter-spacing: 0.5px;
