@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit st
 import pypdf
 import json
 import pandas as pd
@@ -45,15 +45,15 @@ st.markdown(
         background-attachment: fixed !important;
     }
     
-    /* Exact React Bits Diagonal Non-Yoyo 6-Color Gradient Stream */
+    /* Flowing Blue and White Custom Gradient Stream */
     .laser-title {
-        background: linear-gradient(135deg, #3b82f6, #ffffff, #ff0000, #ec4899, #10b981, #06b6d4, #3b82f6) !important;
+        background: linear-gradient(135deg, #0091ff, #ffffff, #0052ff, #ffffff, #0091ff) !important;
         background-size: 200% 200% !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
         background-clip: text !important;
         display: inline-block !important;
-        animation: flow-gradient 2s linear infinite !important;
+        animation: flow-gradient 3s linear infinite !important;
     }
 
     @keyframes flow-gradient {
@@ -96,8 +96,13 @@ st.markdown(
         padding-right: 3rem !important;
     }
     
+    /* Container positioning block alignment */
+    div[data-testid="stTextInput"] > div {
+        position: relative !important;
+    }
+    
     /* ==========================================
-       FIX: REMOVE VISIBILITY TEXT & STYLE EYE ICON
+       FIX: HIDDEN LABELS REMOVED & EYE ICON SHOWN
        ========================================== */
     div[data-testid="stTextInput"] button {
         font-size: 0px !important;
@@ -106,24 +111,31 @@ st.markdown(
         border: none !important;
         box-shadow: none !important;
         outline: none !important;
-        transform: none !important;
+        width: 40px !important;
+        height: 40px !important;
+        position: absolute !important;
+        right: 5px !important;
+        top: 2px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 10 !important;
+        padding: 0 !important;
     }
     
-    div[data-testid="stTextInput"] button focus,
-    div[data-testid="stTextInput"] button active {
-        background: transparent !important;
-        box-shadow: none !important;
-    }
-
     div[data-testid="stTextInput"] button svg {
         fill: #0091ff !important;
+        stroke: #0091ff !important;
+        color: #0091ff !important;
         width: 20px !important;
         height: 20px !important;
-        transition: fill 0.2s ease;
+        display: inline-block !important;
     }
 
     div[data-testid="stTextInput"] button:hover svg {
         fill: #00a2ff !important;
+        stroke: #00a2ff !important;
+        color: #00a2ff !important;
     }
     
     /* Target the invisible outer wrapper block to force absolute centering */
