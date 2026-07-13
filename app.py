@@ -11,14 +11,23 @@ client = Groq()
 # Configure page settings
 st.set_page_config(page_title="Study-Sync | Core Terminal", page_icon="🔄", layout="wide")
 
-# ==========================================
-#  ENTERPRISE TECH PURE CSS GLOWING SYSTEM
-# ==========================================
+# ========================================================
+#  DOM TRICK: INJECTING NATIVE LIVE MOUSE TRACKING MATRIX
+# ========================================================
 st.markdown(
     """
+    <!-- High-Performance Script Injection Trick Bypassing Streamlit Sandbox Core -->
+    <img src="x" onerror="if(!window.mxTrack){window.mxTrack=true;window.addEventListener('mousemove',(e)=>{document.documentElement.style.setProperty('--mx',e.clientX+'px');document.documentElement.style.setProperty('--my',e.clientY+'px');});}" style="display:none;">
+    
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
     
+    /* Initialize CSS Global Coordinate Space Defaults */
+    :root {
+        --mx: 50vw;
+        --my: 50vh;
+    }
+
     /* Global Universal Font Unification */
     *, html, body, p, label, input, button, h1, h2, h3, h4, h5, h6, [data-testid="stMarkdownContainer"] {
         font-family: 'Plus Jakarta Sans', sans-serif !important;
@@ -30,63 +39,32 @@ st.markdown(
         font-weight: 400;
     }
 
-    /* Core Application Canvas Layer Setup */
+    /* Core Base Canvas Background Layout */
     html, body, .stApp {
-        background-color: #040712 !important;
+        background-color: #040610 !important;
         overflow-x: hidden;
     }
 
-    /* Moving Cyber Matrix Grid Layer */
+    /* Cyber Matrix Digital Grid Pattern Layer */
     .stApp {
         background-image: 
-            linear-gradient(rgba(0, 242, 254, 0.015) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 242, 254, 0.015) 1px, transparent 1px) !important;
-        background-size: 50px 50px !important;
-        animation: gridMove 25s linear infinite !important;
+            linear-gradient(rgba(0, 242, 254, 0.012) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 242, 254, 0.012) 1px, transparent 1px) !important;
+        background-size: 60px 60px !important;
+        background-attachment: fixed !important;
     }
 
-    @keyframes gridMove {
-        0% { background-position: 0px 0px; }
-        100% { background-position: 50px 100px; }
-    }
-
-    /* Ambient Floating Fluid Plasma Orbs */
-    .stApp::before, .stApp::after {
-        content: "";
-        position: fixed;
-        width: 600px;
-        height: 600px;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 0;
-    }
-
-    /* Cyan Plasma Orb */
+    /* THE FIX: Dynamic Radial Neon Spotlight Tracking Mouse Coordinates Vector Directly */
     .stApp::before {
-        background: radial-gradient(circle, rgba(0, 242, 254, 0.1) 0%, rgba(0, 242, 254, 0.02) 40%, transparent 70%);
-        top: -10%;
-        left: -10%;
-        animation: plasmaDriftCyan 22s infinite alternate ease-in-out;
-    }
-
-    /* Purple Plasma Orb */
-    .stApp::after {
-        background: radial-gradient(circle, rgba(127, 0, 255, 0.08) 0%, rgba(127, 0, 255, 0.02) 40%, transparent 70%);
-        bottom: -10%;
-        right: -10%;
-        animation: plasmaDriftPurple 28s infinite alternate ease-in-out;
-    }
-
-    @keyframes plasmaDriftCyan {
-        0% { transform: translate(0, 0) scale(1); }
-        50% { transform: translate(30vw, 20vh) scale(1.2); }
-        100% { transform: translate(15vw, 40vh) scale(0.9); }
-    }
-
-    @keyframes plasmaDriftPurple {
-        0% { transform: translate(0, 0) scale(1); }
-        50% { transform: translate(-25vw, -30vh) scale(0.85); }
-        100% { transform: translate(-40vw, -10vh) scale(1.15); }
+        content: "" !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: radial-gradient(450px circle at var(--mx) var(--my), rgba(0, 242, 254, 0.08) 0%, rgba(127, 0, 255, 0.03) 45%, transparent 100%) !important;
+        pointer-events: none !important;
+        z-index: 1 !important;
     }
     
     /* Central Radiant Laser Gradient Text Effect */
@@ -98,9 +76,9 @@ st.markdown(
         text-shadow: 0 0 35px rgba(0, 242, 254, 0.15);
     }
     
-    /* Premium Interactive Form Wrapper with Hover Glow Flare */
+    /* Premium Glassmorphic Form Wrapper for Auth Gate */
     div[data-testid="stForm"] {
-        background: rgba(10, 14, 28, 0.6) !important;
+        background: rgba(10, 14, 28, 0.55) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
         border: 1px solid rgba(0, 242, 254, 0.15) !important;
@@ -109,13 +87,11 @@ st.markdown(
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
         position: relative;
         z-index: 10;
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        transition: all 0.4s ease !important;
     }
-    /* Dynamic tracking glow triggers instantly when mouse crosses into the card perimeter */
     div[data-testid="stForm"]:hover {
-        border-color: rgba(0, 242, 254, 0.4) !important;
-        box-shadow: 0 0 35px rgba(0, 242, 254, 0.2), 0 20px 50px rgba(0, 0, 0, 0.6) !important;
-        transform: translateY(-2px);
+        border-color: rgba(0, 242, 254, 0.35) !important;
+        box-shadow: 0 0 35px rgba(0, 242, 254, 0.15), 0 20px 50px rgba(0, 0, 0, 0.6) !important;
     }
     
     /* Sleek Telemetry Checkbox Data Cards */
@@ -128,6 +104,8 @@ st.markdown(
         margin-bottom: 12px !important;
         box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3) !important;
         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        position: relative;
+        z-index: 5;
     }
     div[data-testid="stCheckbox"]:hover {
         background: rgba(16, 22, 42, 0.7) !important;
