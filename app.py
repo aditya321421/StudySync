@@ -12,20 +12,20 @@ client = Groq()
 st.set_page_config(page_title="Study-Sync | Core Terminal", page_icon="🔄", layout="wide")
 
 # ==========================================
-#  MODERN PREMIUM INTERFACE STYLING SYSTEM
+#  ENTERPRISE TECH INTERFACE STYLING SYSTEM
 # ==========================================
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
     
-    /* Modern Geometric Heading Assignments */
+    /* Big Tech Geometric Heading Assignments */
     h1, h2, h3, .hud-header {
-        font-family: 'Space Grotesk', sans-serif !important;
-        letter-spacing: -0.5px;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        letter-spacing: -1px;
     }
     
-    /* Premium Clean Data Display Body Stack */
+    /* Premium Corporate UI Body Stack */
     body, p, label, input, .hud-body {
         font-family: 'Inter', sans-serif !important;
         font-size: 1.2rem !important;
@@ -37,7 +37,7 @@ st.markdown(
         background: linear-gradient(90deg, #00f2fe 0%, #4facfe 50%, #7f00ff 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        font-weight: 700 !important;
+        font-weight: 800 !important;
         text-shadow: 0 0 35px rgba(0, 242, 254, 0.15);
     }
     
@@ -64,7 +64,7 @@ st.markdown(
     button[data-testid="stBaseButton-primary"] {
         background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%) !important;
         color: #ffffff !important;
-        font-family: 'Space Grotesk', sans-serif !important;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
         font-weight: 700 !important;
         border: none !important;
         border-radius: 5px !important;
@@ -85,7 +85,7 @@ st.markdown(
         color: #00f2fe !important;
         border: 1px solid rgba(0, 242, 254, 0.35) !important;
         border-radius: 5px !important;
-        font-family: 'Space Grotesk', sans-serif !important;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
         font-size: 0.85rem !important;
         font-weight: 600 !important;
         letter-spacing: 0.5px;
@@ -270,14 +270,14 @@ if not st.session_state.auth_state:
             background: linear-gradient(45deg, #00c6ff, #0072ff, #7f00ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-family: "Space Grotesk", sans-serif;
+            font-family: "Plus Jakarta Sans", sans-serif;
             font-size: 5rem;
-            font-weight: 700;
+            font-weight: 800;
             margin-bottom: 0px;
             padding-bottom: 5px;
             text-shadow: 0 0 25px rgba(0, 198, 255, 0.1);
             line-height: 1.2;
-            letter-spacing: -1px;
+            letter-spacing: -2px;
         '>
             Study Sync
         </h1>
@@ -367,7 +367,7 @@ if not st.session_state.auth_state:
 # ==========================================
 #  INTERFACE ROUTING: CORE APPLICATION
 # ==========================================
-st.markdown("<h1 class='laser-title' style='font-family: \"Space Grotesk\", sans-serif; font-size: 5rem; margin-bottom: 0px; padding-bottom: 10px; line-height: 1.2; letter-spacing: -1px;'>Study Sync</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='laser-title' style='font-family: \"Plus Jakarta Sans\", sans-serif; font-size: 5rem; margin-bottom: 0px; padding-bottom: 10px; line-height: 1.2; letter-spacing: -2px;'>Study Sync</h1>", unsafe_allow_html=True)
 
 header_col1, header_col2 = st.columns([5, 1], gap="small")
 with header_col1:
