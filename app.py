@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit st
 import pypdf
 import json
 import pandas as pd
@@ -90,20 +90,20 @@ st.markdown(
         100% { transform: translate(-35vw, -5vh) scale(1.1); }
     }
     
-    /* DYNAMIC FIX: Continuous looping gradient text effect (Blue -> Dark Blue -> White) */
+    /* FIX: Continuous looping gradient text effect without text-shadow mask distortion */
     .laser-title {
-        background: linear-gradient(90deg, #00c6ff 0%, #0044ff 33%, #ffffff 66%, #00c6ff 100%) !important;
-        background-size: 300% auto !important;
+        background: linear-gradient(90deg, #00c6ff 0%, #0033cc 33%, #ffffff 66%, #00c6ff 100%) !important;
+        background-size: 300% 100% !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
-        font-weight: 800 !important;
-        animation: continuousShine 5s linear infinite !important;
-        text-shadow: 0 0 35px rgba(0, 70, 255, 0.25) !important;
+        background-clip: text !important;
+        display: inline-block !important;
+        animation: continuousShine 6s linear infinite !important;
     }
 
     @keyframes continuousShine {
-        0% { background-position: 0% center; }
-        100% { background-position: 300% center; }
+        0% { background-position: 0% 50%; }
+        100% { background-position: 300% 50%; }
     }
     
     /* Glassmorphic Card Wrapper with Dynamic Proximity Glow Flare */
