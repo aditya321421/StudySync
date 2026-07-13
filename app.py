@@ -12,23 +12,24 @@ client = Groq()
 st.set_page_config(page_title="Study-Sync | Core Terminal", page_icon="🔄", layout="wide")
 
 # ==========================================
-#  FUTURISTIC HUD INTERFACE SYSTEM STYLING
+#  MODERN PREMIUM INTERFACE STYLING SYSTEM
 # ==========================================
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@500;800&family=Rajdhani:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap');
     
-    /* Base Typography Assignments */
+    /* Modern Geometric Heading Assignments */
     h1, h2, h3, .hud-header {
-        font-family: 'Orbitron', sans-serif !important;
-        letter-spacing: 1px;
+        font-family: 'Space Grotesk', sans-serif !important;
+        letter-spacing: -0.5px;
     }
     
-    /* CRITICAL FIX: Removed 'span' from the global catch-all to eliminate the 'uploadpload' layout bug */
+    /* Premium Clean Data Display Body Stack */
     body, p, label, input, .hud-body {
-        font-family: 'Rajdhani', sans-serif !important;
+        font-family: 'Inter', sans-serif !important;
         font-size: 1.2rem !important;
+        font-weight: 400;
     }
     
     /* Central Radiant Laser Gradient Text Effect */
@@ -36,8 +37,8 @@ st.markdown(
         background: linear-gradient(90deg, #00f2fe 0%, #4facfe 50%, #7f00ff 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        font-weight: 800 !important;
-        text-shadow: 0 0 35px rgba(0, 242, 254, 0.35);
+        font-weight: 700 !important;
+        text-shadow: 0 0 35px rgba(0, 242, 254, 0.15);
     }
     
     /* Sleek Telemetry Checkbox Data Cards */
@@ -63,13 +64,13 @@ st.markdown(
     button[data-testid="stBaseButton-primary"] {
         background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%) !important;
         color: #ffffff !important;
-        font-family: 'Orbitron', sans-serif !important;
+        font-family: 'Space Grotesk', sans-serif !important;
         font-weight: 700 !important;
         border: none !important;
         border-radius: 5px !important;
         box-shadow: 0 0 15px rgba(0, 198, 255, 0.4) !important;
         text-transform: uppercase;
-        letter-spacing: 2px;
+        letter-spacing: 1px;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
     button[data-testid="stBaseButton-primary"]:hover {
@@ -84,10 +85,10 @@ st.markdown(
         color: #00f2fe !important;
         border: 1px solid rgba(0, 242, 254, 0.35) !important;
         border-radius: 5px !important;
-        font-family: 'Orbitron', sans-serif !important;
+        font-family: 'Space Grotesk', sans-serif !important;
         font-size: 0.85rem !important;
         font-weight: 600 !important;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
         transition: all 0.3s ease !important;
     }
     button[data-testid="stBaseButton-secondary"]:hover {
@@ -269,13 +270,14 @@ if not st.session_state.auth_state:
             background: linear-gradient(45deg, #00c6ff, #0072ff, #7f00ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-family: "Audiowide", sans-serif;
+            font-family: "Space Grotesk", sans-serif;
             font-size: 5rem;
-            font-weight: 800;
+            font-weight: 700;
             margin-bottom: 0px;
             padding-bottom: 5px;
-            text-shadow: 0 0 25px rgba(0, 198, 255, 0.2);
+            text-shadow: 0 0 25px rgba(0, 198, 255, 0.1);
             line-height: 1.2;
+            letter-spacing: -1px;
         '>
             Study Sync
         </h1>
@@ -365,7 +367,7 @@ if not st.session_state.auth_state:
 # ==========================================
 #  INTERFACE ROUTING: CORE APPLICATION
 # ==========================================
-st.markdown("<h1 class='laser-title' style='font-family: \"Audiowide\", sans-serif; font-size: 5rem; margin-bottom: 0px; padding-bottom: 10px; line-height: 1.2;'>Study Sync</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='laser-title' style='font-family: \"Space Grotesk\", sans-serif; font-size: 5rem; margin-bottom: 0px; padding-bottom: 10px; line-height: 1.2; letter-spacing: -1px;'>Study Sync</h1>", unsafe_allow_html=True)
 
 header_col1, header_col2 = st.columns([5, 1], gap="small")
 with header_col1:
@@ -493,7 +495,6 @@ if st.session_state.generated:
         
         save_col, csv_col = st.columns(2)
         with save_col:
-            # Fixed: Removed memory card icon cleanly from the string parameter
             if st.button("Save It", type="primary", use_container_width=True):
                 if save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email):
                     st.toast("Progress saved successfully to Cloud Firestore!", icon="🔥")
