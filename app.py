@@ -1,4 +1,4 @@
-import streamlit st
+import streamlit as st
 import pypdf
 import json
 import pandas as pd
@@ -101,9 +101,7 @@ st.markdown(
         position: relative !important;
     }
     
-    /* ==========================================
-       FIX: HIDDEN LABELS REMOVED & EYE ICON SHOWN
-       ========================================== */
+    /* Eye icon alignment and styling integration */
     div[data-testid="stTextInput"] button {
         font-size: 0px !important;
         color: transparent !important;
