@@ -17,7 +17,7 @@ st.set_page_config(page_title="Study-Sync | Core Terminal", page_icon="🔄", la
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=600;700;800&family=Inter:wght=400;500;600&display=swap');
     
     /* Global Universal Font Unification */
     *, html, body, p, label, input, button, h1, h2, h3, h4, h5, h6, [data-testid="stMarkdownContainer"] {
@@ -112,7 +112,28 @@ st.markdown(
         background: rgba(16, 22, 42, 0.65) !important;
     }
     
-    /* Custom Cosmic Submit Button - Block display + Auto margins guarantees absolute centering */
+    /* Target the invisible outer wrapper block to force absolute centering */
+    div[data-testid="element-container"]:has(div[data-testid="stFormSubmitButton"]) {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+        text-align: center !important;
+    }
+    
+    /* Center alignment stack layouts */
+    div[data-testid="stFormSubmitButton"] {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+        margin-top: 1.5rem !important;
+    }
+    div[data-testid="stFormSubmitButton"] > div {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+    }
+    
+    /* Custom Cosmic Submit Button Base Stylesheet */
     div[data-testid="stFormSubmitButton"] button {
         display: block !important;
         margin: 1.5rem auto 0 auto !important;
@@ -127,7 +148,7 @@ st.markdown(
         letter-spacing: 1px;
     }
     
-    /* Frozen hover block preventing unexpected shifting/scaling animations */
+    /* Hover overrides resetting animations */
     div[data-testid="stFormSubmitButton"] button:hover {
         background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 100%) !important;
         box-shadow: 0 0 15px rgba(82, 39, 255, 0.35) !important;
@@ -286,7 +307,7 @@ def render_galaxy_component(
                         float seed = Hash21(si);
                         float size = fract(seed * 345.32);
                         float glossLocal = tri(uStarSpeed / (PERIOD * seed + 1.0));
-                        float flareSize = smoothstep(0.9, 1.0, size) * glossLocal;
+                        flareSize = smoothstep(0.9, 1.0, size) * glossLocal;
 
                         float red = smoothstep(STAR_COLOR_CUTOFF, 1.0, Hash21(si + 1.0)) + STAR_COLOR_CUTOFF;
                         float blu = smoothstep(STAR_COLOR_CUTOFF, 1.0, Hash21(si + 3.0)) + STAR_COLOR_CUTOFF;
@@ -553,15 +574,13 @@ def logout():
 # ==========================================
 if not st.session_state.auth_state:
     st.write("<br>", unsafe_allow_html=True)
+    # SUBTITLE REMOVED: Only the centered looping title remains
     st.markdown(
         """
-        <div style="text-align: center; width: 100%; margin-bottom: 0px; padding-bottom: 0px;">
+        <div style="text-align: center; width: 100%; margin-bottom: 25px; padding-bottom: 0px;">
             <h1 class="laser-title" style="font-size: 5rem; font-weight: 800; margin: 0; line-height: 1.1; letter-spacing: -2px;">
                 Study Sync
             </h1>
-            <h4 style="color: #b497cf; font-weight: 500; margin-top: 10px; margin-bottom: 25px;">
-                Please sign in or create an account to access your daily study plans.
-            </h4>
         </div>
         """, 
         unsafe_allow_html=True
