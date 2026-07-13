@@ -92,7 +92,7 @@ def get_username_from_email(email):
             res_data = res.json()
             if res_data and isinstance(res_data, list) and "document" in res_data[0]:
                 doc_name = res_data[0]["document"]["name"]
-                return doc_name.split("/")[-1] # The document ID is our username
+                return doc_name.split("/")[-1] 
     except Exception:
         return None
     return None
@@ -200,7 +200,6 @@ if not st.session_state.auth_state:
                     st.error("Please enter your password.")
                 else:
                     resolved_email = email_input.strip()
-                    # If logging in via username field, resolve the email address from that document name
                     if not resolved_email and username_input.strip():
                         with st.spinner("Resolving username matching profile..."):
                             resolved_email = get_email_from_username(username_input.strip())
@@ -217,7 +216,6 @@ if not st.session_state.auth_state:
                         st.session_state.user_uid = result["uid"]
                         st.session_state.id_token = result["idToken"]
                         
-                        # Find the correct username if logged in via email
                         if email_input.strip():
                             resolved_username = get_username_from_email(result["email"])
                             st.session_state.username = resolved_username if resolved_username else result["email"]
@@ -249,7 +247,6 @@ if not st.session_state.auth_state:
                         st.session_state.id_token = result["idToken"]
                         st.session_state.username = username_input.strip()
                         
-                        # Save the document using the Username string as the document ID key
                         save_user_data_to_firestore(result["idToken"], [], username_input.strip(), result["email"])
                         
                         st.success("Account created successfully!")
@@ -388,7 +385,8 @@ if st.session_state.generated:
         
         save_col, csv_col = st.columns(2)
         with save_col:
-            if st.button("💾 Save Progress to Cloud Firestore", type="primary", use_container_width=True):
+            # Fixed: Text label shortened exactly to "Save It"
+            if st.button("💾 Save It", type="primary", use_container_width=True):
                 if save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email):
                     st.toast("Progress saved successfully to Cloud Firestore!", icon="🔥")
                 else:
