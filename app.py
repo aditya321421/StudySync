@@ -61,7 +61,6 @@ def save_roadmap_to_firestore(uid, id_token, roadmap_list):
         
     url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{uid}"
     
-    # Firestore REST requires a specific typed field mapping structure
     payload = {
         "fields": {
             "roadmap_json": {
@@ -72,7 +71,6 @@ def save_roadmap_to_firestore(uid, id_token, roadmap_list):
     headers = {"Authorization": f"Bearer {id_token}"}
     
     try:
-        # PATCH creates the document if missing or updates it cleanly if it exists
         res = requests.patch(url, json=payload, headers=headers)
         return res.status_code == 200
     except Exception:
@@ -110,7 +108,23 @@ def logout():
 #  INTERFACE ROUTING: AUTHENTICATION PORTAL
 # ==========================================
 if not st.session_state.auth_state:
-    st.title("🔒 Welcome to Study-Sync")
+    # Custom CSS Gradient Text Injection
+    st.markdown(
+        """
+        <h1 style='
+            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 0px;
+            padding-bottom: 5px;
+        '>
+            Study Sync
+        </h1>
+        """, 
+        unsafe_allow_html=True
+    )
     st.markdown("#### *Please sign in or create an account to access your daily study plans.*")
     st.markdown("---")
     
@@ -137,7 +151,6 @@ if not st.session_state.auth_state:
                     st.session_state.user_uid = result["uid"]
                     st.session_state.id_token = result["idToken"]
                     
-                    # Auto-check and pull data down from Cloud Firestore collection records
                     cloud_data = load_roadmap_from_firestore(result["uid"], result["idToken"])
                     if cloud_data:
                         st.session_state.roadmap_list = cloud_data
@@ -254,7 +267,6 @@ if generate_btn:
                 st.session_state.roadmap_list = roadmap_data
                 st.session_state.generated = True
                 
-                # Auto-save freshly created schedules straight to the cloud database collection
                 save_roadmap_to_firestore(st.session_state.user_uid, st.session_state.id_token, roadmap_data)
                 
             except Exception as e:
@@ -282,7 +294,6 @@ if st.session_state.generated:
             
         st.markdown("---")
         
-        # Safe layout flat loop prevents multi-column segmentation faults
         for i, item in enumerate(roadmap):
             date_str = item.get('Scheduled Date', '')
             time_str = item.get('Time Slot', '')
