@@ -112,6 +112,33 @@ st.markdown(
         background: rgba(16, 22, 42, 0.65) !important;
     }
     
+    /* THE FIX: Force Center Alignment on Submit Button Parent Wrapper Layout */
+    div[data-testid="stFormSubmitButton"] {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+        margin-top: 1.5rem !important;
+    }
+    
+    /* THE FIX: Custom Cosmic Submit Button Design and Hover Flare Effects */
+    div[data-testid="stFormSubmitButton"] button {
+        background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 100%) !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        border: none !important;
+        border-radius: 6px !important;
+        padding: 0.6rem 3rem !important;
+        box-shadow: 0 0 15px rgba(82, 39, 255, 0.35) !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    div[data-testid="stFormSubmitButton"] button:hover {
+        box-shadow: 0 0 30px rgba(255, 159, 252, 0.6) !important;
+        background: linear-gradient(90deg, #ff9ffc 0%, #b497cf 100%) !important;
+        transform: translateY(-2px) scale(1.02);
+    }
+    
     /* Interactive Dashboard Telemetry Rows */
     div[data-testid="stCheckbox"] {
         background: rgba(16, 22, 42, 0.4) !important;
@@ -131,53 +158,13 @@ st.markdown(
         transform: translateX(3px);
     }
     
-    /* Primary Trigger Buttons */
-    button[data-testid="stBaseButton-primary"] {
-        background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 100%) !important;
-        color: #ffffff !important;
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
-        font-weight: 700 !important;
-        border: none !important;
-        border-radius: 5px !important;
-        box-shadow: 0 0 15px rgba(82, 39, 255, 0.3) !important;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    }
-    button[data-testid="stBaseButton-primary"]:hover {
-        box-shadow: 0 0 30px rgba(255, 159, 252, 0.5) !important;
-        background: linear-gradient(90deg, #ff9ffc 0%, #b497cf 100%) !important;
-        transform: translateY(-1px);
-    }
-    
-    /* Secondary Action Buttons */
-    button[data-testid="stBaseButton-secondary"] {
-        background: rgba(16, 22, 42, 0.6) !important;
-        color: #ff9ffc !important;
-        border: 1px solid rgba(82, 39, 255, 0.35) !important;
-        border-radius: 5px !important;
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
-        font-size: 0.85rem !important;
-        font-weight: 600 !important;
-        letter-spacing: 0.5px;
-        transition: all 0.3s ease !important;
-    }
-    button[data-testid="stBaseButton-secondary"]:hover {
-        background: rgba(82, 39, 255, 0.12) !important;
-        border-color: #ff9ffc !important;
-        color: #ffffff !important;
-        box-shadow: 0 0 15px rgba(255, 159, 252, 0.2) !important;
-    }
-    
-    /* File Upload Area */
+    /* File/Document Module Configurations */
     div[data-testid="stFileUploader"] {
         border: 1px dashed rgba(82, 39, 255, 0.35) !important;
         background: rgba(16, 22, 42, 0.3) !important;
         border-radius: 6px;
         padding: 6px;
     }
-    
-    /* Progress Bars */
     div[data-testid="stProgress"] > div > div > div {
         background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 100%) !important;
         box-shadow: 0 0 12px rgba(82, 39, 255, 0.4);
@@ -585,7 +572,7 @@ if not st.session_state.auth_state:
     )
     st.markdown("<hr style='margin-top:0px; margin-bottom:20px; border-color:rgba(82, 39, 255, 0.2);'>", unsafe_allow_html=True)
     
-    # THE FIX: Balanced 3-column wrapper grid focusing layout elements strictly into the center frame
+    # Balanced 3-column grid positioning layout cards dead center
     left_space, center_auth_col, right_space = st.columns([1, 1.6, 1], gap="medium")
     
     with center_auth_col:
@@ -663,7 +650,7 @@ if not st.session_state.auth_state:
                         else:
                             st.error(f"Error: {result['message']}")
 
-    # Render cosmic interactive WebGL canvas wrapper framing layout columns below form card
+    # Render interactive React Bits WebGL engine layer directly framing elements
     st.write("<br>", unsafe_allow_html=True)
     render_galaxy_component()
     st.stop()
