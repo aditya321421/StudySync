@@ -19,6 +19,7 @@ st.markdown(
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
     
+    /* Global Universal Font Unification */
     *, html, body, p, label, input, button, h1, h2, h3, h4, h5, h6, [data-testid="stMarkdownContainer"] {
         font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
@@ -29,11 +30,13 @@ st.markdown(
         font-weight: 400;
     }
 
+    /* Core Canvas Deep Background Base */
     html, body, .stApp {
         background-color: #040612 !important;
         overflow-x: hidden;
     }
 
+    /* Hardware-Accelerated Smooth Moving Cyber Grid Backdrop */
     .stApp {
         background-image: 
             linear-gradient(rgba(82, 39, 255, 0.012) 1px, transparent 1px),
@@ -42,20 +45,20 @@ st.markdown(
         background-attachment: fixed !important;
     }
     
-    /* Flowing Gradient Animation */
+    /* Exact React Bits Diagonal Non-Yoyo 6-Color Gradient Stream */
     .laser-title {
-        background: linear-gradient(90deg, #5227ff, #ff9ffc, #b497cf, #5227ff) !important;
-        background-size: 300% 100% !important;
+        background: linear-gradient(135deg, #3b82f6, #ffffff, #ff0000, #ec4899, #10b981, #06b6d4, #3b82f6) !important;
+        background-size: 200% 200% !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
         background-clip: text !important;
         display: inline-block !important;
-        animation: flow-gradient 6s linear infinite !important;
+        animation: flow-gradient 2s linear infinite !important;
     }
 
     @keyframes flow-gradient {
-        0% { background-position: 0% 50%; }
-        100% { background-position: 100% 50%; }
+        0% { background-position: 0% 0%; }
+        100% { background-position: 200% 200%; }
     }
     
     /* Centering CSS Overrides for Streamlit Radio Blocks */
@@ -92,7 +95,7 @@ st.markdown(
         color: #ffffff !important;
     }
     
-    /* Centered Submit Button Styling */
+    /* Custom Cosmic Submit Button - Block display + Auto margins guarantees absolute centering */
     div[data-testid="stFormSubmitButton"] button {
         display: block !important;
         margin: 1.5rem auto 0 auto !important;
@@ -107,7 +110,7 @@ st.markdown(
         letter-spacing: 1px;
     }
     
-    /* Static Hover (No Animation/Shift) */
+    /* Frozen hover block preventing unexpected shifting/scaling animations */
     div[data-testid="stFormSubmitButton"] button:hover {
         background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 100%) !important;
         box-shadow: 0 0 15px rgba(82, 39, 255, 0.35) !important;
@@ -128,32 +131,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-import streamlit.components.v1 as components
-
-def render_galaxy_component(height=340):
-    html_code = """
-    <div id="galaxy-container" style="width:100%; height:100%; position:relative; border-radius:12px;"></div>
-    <script type="module">
-        import { Renderer, Program, Mesh, Color, Triangle } from 'https://cdn.jsdelivr.net/npm/ogl@0.0.116/dist/ogl.mjs';
-        const ctn = document.getElementById('galaxy-container');
-        const renderer = new Renderer({ alpha: true, premultipliedAlpha: false });
-        const gl = renderer.gl;
-        gl.clearColor(0, 0, 0, 0);
-        function resize() { renderer.setSize(ctn.offsetWidth, ctn.offsetHeight); }
-        window.addEventListener('resize', resize); resize();
-        const geometry = new Triangle(gl);
-        const program = new Program(gl, {
-            vertex: `attribute vec2 uv; attribute vec2 position; varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position, 0, 1); }`,
-            fragment: `precision highp float; uniform float uTime; void main() { gl_FragColor = vec4(0.5, 0.2, 1.0, 0.5); }`
-        });
-        const mesh = new Mesh(gl, { geometry, program });
-        function update(t) { requestAnimationFrame(update); renderer.render({ scene: mesh }); }
-        requestAnimationFrame(update);
-        ctn.appendChild(gl.canvas);
-    </script>
-    """
-    return components.html(html_code, height=height)
 
 # --- APP LOGIC ---
 if "auth_state" not in st.session_state: st.session_state.auth_state = False
@@ -186,8 +163,6 @@ if not st.session_state.auth_state:
             if st.form_submit_button("Submit"):
                 st.session_state.auth_state = True
                 st.rerun()
-    st.write("<br>", unsafe_allow_html=True)
-    render_galaxy_component()
     st.stop()
 
 else:
