@@ -112,29 +112,10 @@ st.markdown(
         background: rgba(16, 22, 42, 0.65) !important;
     }
     
-    /* Target the invisible outer wrapper block to force absolute centering */
-    div[data-testid="element-container"]:has(div[data-testid="stFormSubmitButton"]) {
-        display: flex !important;
-        justify-content: center !important;
-        width: 100% !important;
-        text-align: center !important;
-    }
-    
-    /* Center alignment stack layouts */
-    div[data-testid="stFormSubmitButton"] {
-        display: flex !important;
-        justify-content: center !important;
-        width: 100% !important;
-        margin-top: 1.5rem !important;
-    }
-    div[data-testid="stFormSubmitButton"] > div {
-        display: flex !important;
-        justify-content: center !important;
-        width: 100% !important;
-    }
-    
-    /* Custom Cosmic Submit Button Base Stylesheet */
+    /* Custom Cosmic Submit Button - Block display + Auto margins guarantees absolute centering */
     div[data-testid="stFormSubmitButton"] button {
+        display: block !important;
+        margin: 1.5rem auto 0 auto !important;
         background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 100%) !important;
         color: #ffffff !important;
         font-weight: 700 !important;
@@ -146,7 +127,7 @@ st.markdown(
         letter-spacing: 1px;
     }
     
-    /* FIXED: Statically freeze the hover state to eliminate scaling and switching animations */
+    /* Frozen hover block preventing unexpected shifting/scaling animations */
     div[data-testid="stFormSubmitButton"] button:hover {
         background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 100%) !important;
         box-shadow: 0 0 15px rgba(82, 39, 255, 0.35) !important;
