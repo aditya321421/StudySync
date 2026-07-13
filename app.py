@@ -12,7 +12,7 @@ client = Groq()
 st.set_page_config(page_title="Study-Sync | Core Terminal", page_icon="🔄", layout="wide")
 
 # ==========================================
-#  PREMIUM CSS MODERN TECH BACKGROUND ENGINE
+#  ENTERPRISE TECH HIGH-RESPONSIVE STYLING
 # ==========================================
 st.markdown(
     """
@@ -30,13 +30,13 @@ st.markdown(
         font-weight: 400;
     }
 
-    /* Set canvas depth background */
+    /* Core Canvas Deep Background Base */
     html, body, .stApp {
         background-color: #040612 !important;
         overflow-x: hidden;
     }
 
-    /* Hardware-Accelerated Dynamic Moving Cyber Grid Matrix Layout */
+    /* Hardware-Accelerated Smooth Moving Cyber Grid Backdrop */
     .stApp {
         background-image: 
             linear-gradient(rgba(0, 242, 254, 0.015) 1px, transparent 1px),
@@ -51,7 +51,7 @@ st.markdown(
         100% { background-position: 60px 120px; }
     }
 
-    /* Ambient Floating Plasma Orbs (Simulating slow dynamic motion) */
+    /* Ambient Floating Plasma Nebulas */
     .stApp::before, .stApp::after {
         content: "" !important;
         position: fixed !important;
@@ -62,7 +62,7 @@ st.markdown(
         z-index: 0 !important;
     }
 
-    /* Cyan Energy Pulse */
+    /* Cyan Nebula Shift */
     .stApp::before {
         background: radial-gradient(circle, rgba(0, 242, 254, 0.07) 0%, rgba(0, 242, 254, 0.01) 50%, transparent 70%) !important;
         top: -15% !important;
@@ -70,7 +70,7 @@ st.markdown(
         animation: orbitPulseCyan 25s infinite alternate ease-in-out !important;
     }
 
-    /* Deep Purple Energy Pulse */
+    /* Purple Nebula Shift */
     .stApp::after {
         background: radial-gradient(circle, rgba(127, 0, 255, 0.06) 0%, rgba(127, 0, 255, 0.01) 50%, transparent 70%) !important;
         bottom: -15% !important;
@@ -90,7 +90,7 @@ st.markdown(
         100% { transform: translate(-35vw, -5vh) scale(1.1); }
     }
     
-    /* Central Radiant Laser Gradient Text Effect */
+    /* Central Radiant Laser Title Gradient */
     .laser-title {
         background: linear-gradient(90deg, #00f2fe 0%, #4facfe 50%, #7f00ff 100%);
         -webkit-background-clip: text;
@@ -99,7 +99,7 @@ st.markdown(
         text-shadow: 0 0 35px rgba(0, 242, 254, 0.15);
     }
     
-    /* Premium Interactive Form Wrapper with Immediate Hover Glow Flare */
+    /* Glassmorphic Card Wrapper with Dynamic Proximity Glow Flare */
     div[data-testid="stForm"] {
         background: rgba(9, 12, 26, 0.6) !important;
         backdrop-filter: blur(20px) !important;
@@ -112,14 +112,30 @@ st.markdown(
         z-index: 10;
         transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
-    /* Glow effect lights up immediately when cursor crosses the card perimeter */
     div[data-testid="stForm"]:hover {
-        border-color: rgba(0, 242, 254, 0.4) !important;
+        border-color: rgba(0, 242, 254, 0.45) !important;
         box-shadow: 0 0 40px rgba(0, 242, 254, 0.18), 0 20px 50px rgba(0, 0, 0, 0.6) !important;
         transform: translateY(-2px);
     }
+
+    /* INTERACTIVE COGNITIVE FX: Reactive Glow States on Input Focus Fields */
+    div[data-testid="stTextInput"] input {
+        background: rgba(16, 22, 42, 0.45) !important;
+        border: 1px solid rgba(0, 242, 254, 0.15) !important;
+        color: #ffffff !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    div[data-testid="stTextInput"] input:hover {
+        border-color: rgba(0, 242, 254, 0.4) !important;
+        background: rgba(16, 22, 42, 0.6) !important;
+    }
+    div[data-testid="stTextInput"] input:focus {
+        border-color: #00f2fe !important;
+        box-shadow: 0 0 20px rgba(0, 242, 254, 0.35) !important;
+        background: rgba(16, 22, 42, 0.7) !important;
+    }
     
-    /* Sleek Telemetry Checkbox Data Cards */
+    /* Interactive Dashboard Telemetry Rows */
     div[data-testid="stCheckbox"] {
         background: rgba(16, 22, 42, 0.4) !important;
         border: 1px solid rgba(0, 242, 254, 0.15) !important;
