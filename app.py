@@ -11,23 +11,14 @@ client = Groq()
 # Configure page settings
 st.set_page_config(page_title="Study-Sync | Core Terminal", page_icon="🔄", layout="wide")
 
-# ========================================================
-#  DOM TRICK: INJECTING NATIVE LIVE MOUSE TRACKING MATRIX
-# ========================================================
+# ==========================================
+#  PREMIUM CSS MODERN TECH BACKGROUND ENGINE
+# ==========================================
 st.markdown(
     """
-    <!-- High-Performance Script Injection Trick Bypassing Streamlit Sandbox Core -->
-    <img src="x" onerror="if(!window.mxTrack){window.mxTrack=true;window.addEventListener('mousemove',(e)=>{document.documentElement.style.setProperty('--mx',e.clientX+'px');document.documentElement.style.setProperty('--my',e.clientY+'px');});}" style="display:none;">
-    
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
     
-    /* Initialize CSS Global Coordinate Space Defaults */
-    :root {
-        --mx: 50vw;
-        --my: 50vh;
-    }
-
     /* Global Universal Font Unification */
     *, html, body, p, label, input, button, h1, h2, h3, h4, h5, h6, [data-testid="stMarkdownContainer"] {
         font-family: 'Plus Jakarta Sans', sans-serif !important;
@@ -39,32 +30,64 @@ st.markdown(
         font-weight: 400;
     }
 
-    /* Core Base Canvas Background Layout */
+    /* Set canvas depth background */
     html, body, .stApp {
-        background-color: #040610 !important;
+        background-color: #040612 !important;
         overflow-x: hidden;
     }
 
-    /* Cyber Matrix Digital Grid Pattern Layer */
+    /* Hardware-Accelerated Dynamic Moving Cyber Grid Matrix Layout */
     .stApp {
         background-image: 
-            linear-gradient(rgba(0, 242, 254, 0.012) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 242, 254, 0.012) 1px, transparent 1px) !important;
+            linear-gradient(rgba(0, 242, 254, 0.015) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 242, 254, 0.015) 1px, transparent 1px) !important;
         background-size: 60px 60px !important;
+        animation: cyberGridShift 30s linear infinite !important;
         background-attachment: fixed !important;
     }
 
-    /* THE FIX: Dynamic Radial Neon Spotlight Tracking Mouse Coordinates Vector Directly */
-    .stApp::before {
+    @keyframes cyberGridShift {
+        0% { background-position: 0px 0px; }
+        100% { background-position: 60px 120px; }
+    }
+
+    /* Ambient Floating Plasma Orbs (Simulating slow dynamic motion) */
+    .stApp::before, .stApp::after {
         content: "" !important;
         position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        background: radial-gradient(450px circle at var(--mx) var(--my), rgba(0, 242, 254, 0.08) 0%, rgba(127, 0, 255, 0.03) 45%, transparent 100%) !important;
+        width: 700px !important;
+        height: 700px !important;
+        border-radius: 50% !important;
         pointer-events: none !important;
-        z-index: 1 !important;
+        z-index: 0 !important;
+    }
+
+    /* Cyan Energy Pulse */
+    .stApp::before {
+        background: radial-gradient(circle, rgba(0, 242, 254, 0.07) 0%, rgba(0, 242, 254, 0.01) 50%, transparent 70%) !important;
+        top: -15% !important;
+        left: -10% !important;
+        animation: orbitPulseCyan 25s infinite alternate ease-in-out !important;
+    }
+
+    /* Deep Purple Energy Pulse */
+    .stApp::after {
+        background: radial-gradient(circle, rgba(127, 0, 255, 0.06) 0%, rgba(127, 0, 255, 0.01) 50%, transparent 70%) !important;
+        bottom: -15% !important;
+        right: -10% !important;
+        animation: orbitPulsePurple 32s infinite alternate ease-in-out !important;
+    }
+
+    @keyframes orbitPulseCyan {
+        0% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(25vw, 15vh) scale(1.15); }
+        100% { transform: translate(10vw, 35vh) scale(0.9); }
+    }
+
+    @keyframes orbitPulsePurple {
+        0% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(-20vw, -25vh) scale(0.85); }
+        100% { transform: translate(-35vw, -5vh) scale(1.1); }
     }
     
     /* Central Radiant Laser Gradient Text Effect */
@@ -76,9 +99,9 @@ st.markdown(
         text-shadow: 0 0 35px rgba(0, 242, 254, 0.15);
     }
     
-    /* Premium Glassmorphic Form Wrapper for Auth Gate */
+    /* Premium Interactive Form Wrapper with Immediate Hover Glow Flare */
     div[data-testid="stForm"] {
-        background: rgba(10, 14, 28, 0.55) !important;
+        background: rgba(9, 12, 26, 0.6) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
         border: 1px solid rgba(0, 242, 254, 0.15) !important;
@@ -87,11 +110,13 @@ st.markdown(
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
         position: relative;
         z-index: 10;
-        transition: all 0.4s ease !important;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
+    /* Glow effect lights up immediately when cursor crosses the card perimeter */
     div[data-testid="stForm"]:hover {
-        border-color: rgba(0, 242, 254, 0.35) !important;
-        box-shadow: 0 0 35px rgba(0, 242, 254, 0.15), 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+        border-color: rgba(0, 242, 254, 0.4) !important;
+        box-shadow: 0 0 40px rgba(0, 242, 254, 0.18), 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+        transform: translateY(-2px);
     }
     
     /* Sleek Telemetry Checkbox Data Cards */
@@ -104,8 +129,6 @@ st.markdown(
         margin-bottom: 12px !important;
         box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3) !important;
         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        position: relative;
-        z-index: 5;
     }
     div[data-testid="stCheckbox"]:hover {
         background: rgba(16, 22, 42, 0.7) !important;
