@@ -90,21 +90,21 @@ st.markdown(
         100% { transform: translate(-35vw, -5vh) scale(1.1); }
     }
     
-    /* EXACT CONFIGURATION MATCH: Continuous React Bits Infinite Text Loop Gradient (#5227ff -> #ff9ffc -> #b497cf) */
-    .laser-title {
-        background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 33%, #b497cf 66%, #5227ff 100%) !important;
-        background-size: 300% 100% !important;
+    /* CRITICAL FIX: Enhanced specificity wave gradient that bypasses iframe render blocks (#5227ff -> #ff9ffc -> #b497cf) */
+    h1.laser-title {
+        background: linear-gradient(90deg, #5227ff 0%, #ff9ffc 50%, #b497cf 100%) !important;
+        background-size: 200% auto !important;
         -webkit-background-clip: text !important;
         -webkit-text-fill-color: transparent !important;
         background-clip: text !important;
         display: inline-block !important;
-        animation: continuousShine 5s linear infinite !important;
-        text-shadow: 0 0 45px rgba(255, 159, 252, 0.1) !important;
+        animation: continuousWave 4s ease-in-out infinite !important;
     }
 
-    @keyframes continuousShine {
+    @keyframes continuousWave {
         0% { background-position: 0% 50%; }
-        100% { background-position: 300% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
     
     /* Glassmorphic Card Wrapper with Dynamic Proximity Glow Flare */
