@@ -9,7 +9,109 @@ from groq import Groq
 client = Groq()
 
 # Configure page settings
-st.set_page_config(page_title="Study-Sync | Dashboard", page_icon="🔄", layout="wide")
+st.set_page_config(page_title="Study-Sync | Core Terminal", page_icon="🔄", layout="wide")
+
+# ==========================================
+#  FUTURISTIC HUD INTERFACE SYSTEM STYLING
+# ==========================================
+st.markdown(
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&family=Rajdhani:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap');
+    
+    /* Base Typography Assignments */
+    h1, h2, h3, .hud-header {
+        font-family: 'Orbitron', sans-serif !important;
+        letter-spacing: 1px;
+    }
+    body, p, span, label, input, .hud-body {
+        font-family: 'Rajdhani', sans-serif !important;
+        font-size: 1.15rem !important;
+    }
+    
+    /* Central Radiant Laser Gradient Text Effect */
+    .laser-title {
+        background: linear-gradient(90deg, #00f2fe 0%, #4facfe 50%, #7f00ff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800 !important;
+        text-shadow: 0 0 25px rgba(0, 242, 254, 0.25);
+    }
+    
+    /* Sleek Telemetry Checkbox Data Cards */
+    div[data-testid="stCheckbox"] {
+        background: rgba(16, 22, 42, 0.4) !important;
+        border: 1px solid rgba(0, 242, 254, 0.15) !important;
+        border-left: 4px solid #00f2fe !important;
+        padding: 1.2rem 1.5rem !important;
+        border-radius: 6px !important;
+        margin-bottom: 12px !important;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3) !important;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    div[data-testid="stCheckbox"]:hover {
+        background: rgba(16, 22, 42, 0.7) !important;
+        border-color: rgba(0, 242, 254, 0.4) !important;
+        border-left-color: #7f00ff !important;
+        box-shadow: 0 0 20px rgba(0, 242, 254, 0.2) !important;
+        transform: translateX(3px);
+    }
+    
+    /* Primary Deck Trigger Controllers (Generate & Save Buttons) */
+    button[data-testid="stBaseButton-primary"] {
+        background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%) !important;
+        color: #ffffff !important;
+        font-family: 'Orbitron', sans-serif !important;
+        font-weight: 700 !important;
+        border: none !important;
+        border-radius: 5px !important;
+        box-shadow: 0 0 15px rgba(0, 198, 255, 0.4) !important;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    button[data-testid="stBaseButton-primary"]:hover {
+        box-shadow: 0 0 30px rgba(0, 198, 255, 0.7) !important;
+        background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%) !important;
+        transform: translateY(-1px);
+    }
+    
+    /* Secondary Peripheral Controllers (Logout, Download Buttons) */
+    button[data-testid="stBaseButton-secondary"] {
+        background: rgba(16, 22, 42, 0.6) !important;
+        color: #00f2fe !important;
+        border: 1px solid rgba(0, 242, 254, 0.35) !important;
+        border-radius: 5px !important;
+        font-family: 'Orbitron', sans-serif !important;
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+        letter-spacing: 1px;
+        transition: all 0.3s ease !important;
+    }
+    button[data-testid="stBaseButton-secondary"]:hover {
+        background: rgba(0, 242, 254, 0.12) !important;
+        border-color: #00f2fe !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 15px rgba(0, 242, 254, 0.25) !important;
+    }
+    
+    /* Cyber Matrix Dashed File Dropspace Box */
+    div[data-testid="stFileUploader"] {
+        border: 1px dashed rgba(0, 242, 254, 0.35) !important;
+        background: rgba(16, 22, 42, 0.3) !important;
+        border-radius: 6px;
+        padding: 6px;
+    }
+    
+    /* Radiant Glow Progress Loading Bars */
+    div[data-testid="stProgress"] > div > div > div {
+        background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%) !important;
+        box-shadow: 0 0 12px rgba(0, 198, 255, 0.6);
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Fetch Firebase Configurations from Secrets
 FIREBASE_API_KEY = st.secrets.get("FIREBASE_API_KEY")
@@ -162,13 +264,15 @@ if not st.session_state.auth_state:
     st.markdown(
         """
         <h1 style='
-            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            background: linear-gradient(45deg, #00c6ff, #0072ff, #7f00ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            font-family: "Orbitron", sans-serif;
             font-size: 3.5rem;
             font-weight: 800;
             margin-bottom: 0px;
             padding-bottom: 5px;
+            text-shadow: 0 0 25px rgba(0, 198, 255, 0.2);
         '>
             Study Sync
         </h1>
@@ -260,7 +364,7 @@ if not st.session_state.auth_state:
 # ==========================================
 header_col1, header_col2 = st.columns([5, 1], gap="small")
 with header_col1:
-    st.title("🔄 Study-Sync Dashboard")
+    st.markdown("<h1 class='laser-title' style='font-size: 3.2rem; margin-bottom: 0px;'>🔄 Study-Sync Dashboard</h1>", unsafe_allow_html=True)
     st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
 with header_col2:
     st.write("<br>", unsafe_allow_html=True)
@@ -385,7 +489,6 @@ if st.session_state.generated:
         
         save_col, csv_col = st.columns(2)
         with save_col:
-            # Fixed: Text label shortened exactly to "Save It"
             if st.button("💾 Save It", type="primary", use_container_width=True):
                 if save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email):
                     st.toast("Progress saved successfully to Cloud Firestore!", icon="🔥")
@@ -397,6 +500,7 @@ if st.session_state.generated:
             
         st.markdown("---")
         
+        # Futuristic data-stream label layout
         for i, item in enumerate(roadmap):
             date_str = item.get('Scheduled Date', '')
             time_str = item.get('Time Slot', '')
@@ -404,7 +508,8 @@ if st.session_state.generated:
             activity_str = item.get('Suggested Activity', '')
             current_status = item.get('Status', False)
             
-            label_markdown = f"🗓️ **{date_str}** | ⏰ {time_str} | 📘 **{topic_str}**\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📝 *{activity_str}*"
+            # Formatted with high-tech separation dividers and monospaced code blocks for study times
+            label_markdown = f"⚡ **{date_str}** &nbsp;|&nbsp; ⏱️ `{time_str}` &nbsp;|&nbsp; 🪐 **{topic_str}**  \n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📡 *Modules Matrix: {activity_str}*"
             
             is_checked = st.checkbox(label_markdown, value=current_status, key=f"task_{i}")
             if is_checked:
