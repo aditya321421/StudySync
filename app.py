@@ -55,8 +55,37 @@ def firebase_auth(email, password, mode="signInWithPassword"):
         return {"success": False, "message": str(e)}
 
 # --- GOOGLE CLOUD FIRESTORE REST API INTERACTIONS ---
-def save_user_data_to_firestore(uid, id_token, roadmap_list, username):
-    """Saves both the roadmap list and the custom username inside the Firestore document."""
+def get_email_from_username(username):
+    """Queries Cloud Firestore to resolve a username string back to its registered email address."""
+    if not FIREBASE_PROJECT_ID:
+        return None
+    url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents:runQuery"
+    payload = {
+        "structuredQuery": {
+            "from": [{"collectionId": "users"}],
+            "where": {
+                "fieldFilter": {
+                    "field": {"fieldPath": "username"},
+                    "op": "EQUAL",
+                    "value": {"stringValue": username}
+                }
+            },
+            "limit": 1
+        }
+    }
+    try:
+        res = requests.post(url, json=payload)
+        if res.status_code == 200:
+            res_data = res.json()
+            if res_data and isinstance(res_data, list) and "document" in res_data[0]:
+                fields = res_data[0]["document"].get("fields", {})
+                return fields.get("email", {}).get("stringValue", None)
+    except Exception:
+        return None
+    return None
+
+def save_user_data_to_firestore(uid, id_token, roadmap_list, username, email):
+    """Saves the roadmap list, custom username, and email fields inside the Firestore document."""
     if not FIREBASE_PROJECT_ID:
         st.error("Firebase Project ID is missing from Secrets.")
         return False
@@ -70,6 +99,9 @@ def save_user_data_to_firestore(uid, id_token, roadmap_list, username):
             },
             "username": {
                 "stringValue": username
+            },
+            "email": {
+                "stringValue": email
             }
         }
     }
@@ -82,7 +114,7 @@ def save_user_data_to_firestore(uid, id_token, roadmap_list, username):
         return False
 
 def load_user_data_from_firestore(uid, id_token):
-    """Fetches and decodes both the roadmap array and the custom username field from Firestore."""
+    """Fetches and decodes the roadmap array and username profile tag from Firestore."""
     if not FIREBASE_PROJECT_ID:
         return [], ""
         
@@ -137,57 +169,82 @@ if not st.session_state.auth_state:
     auth_mode = st.radio("Choose an option:", ["Login", "Sign Up"], horizontal=True)
     
     with st.form("auth_form"):
-        # Conditionally render the Username field only during Sign Up
-        username_input = ""
-        if auth_mode == "Sign Up":
+        if auth_mode == "Login":
+            login_input = st.text_input("Username or Email Address", placeholder="Enter your username or email")
+            password = st.text_input("Password", type="password")
+        else:
             username_input = st.text_input("Username", placeholder="e.g., alex_codes")
+            email_input = st.text_input("Email Address", placeholder="name@example.com")
+            password = st.text_input("Password", type="password")
             
-        email = st.text_input("Email Address")
-        password = st.text_input("Password", type="password")
         submit_btn = st.form_submit_button("Submit")
         
         if submit_btn:
-            if not email or not password:
-                st.error("Please fill out all required credentials fields.")
-            elif auth_mode == "Sign Up" and not username_input.strip():
-                st.error("Please provide a custom username profile tag.")
-            elif len(password) < 6:
-                st.error("Password must be at least 6 characters long.")
-            else:
-                mode_action = "signInWithPassword" if auth_mode == "Login" else "signUp"
-                with st.spinner("Verifying credentials with Firebase Auth..."):
-                    result = firebase_auth(email, password, mode=mode_action)
-                
-                if result["success"]:
-                    st.session_state.auth_state = True
-                    st.session_state.user_email = result["email"]
-                    st.session_state.user_uid = result["uid"]
-                    st.session_state.id_token = result["idToken"]
+            # Process Form Logic
+            if auth_mode == "Login":
+                if not login_input or not password:
+                    st.error("Please fill out all required fields.")
+                else:
+                    resolved_email = login_input.strip()
+                    # Resolve username to email address if no '@' symbol is present
+                    if "@" not in resolved_email:
+                        with st.spinner("Resolving username matching profile..."):
+                            resolved_email = get_email_from_username(resolved_email)
+                        if not resolved_email:
+                            st.error("Username profile record not found. Use your raw Email Address instead.")
+                            st.stop()
                     
-                    if auth_mode == "Sign Up":
-                        # For new sign ups, save their chosen username immediately
-                        st.session_state.username = username_input.strip()
-                        save_user_data_to_firestore(result["uid"], result["idToken"], [], username_input.strip())
-                    else:
-                        # For existing users logging in, load their profile and roadmap from Firestore
+                    with st.spinner("Verifying credentials with Firebase Auth..."):
+                        result = firebase_auth(resolved_email, password, mode="signInWithPassword")
+                    
+                    if result["success"]:
+                        st.session_state.auth_state = True
+                        st.session_state.user_email = result["email"]
+                        st.session_state.user_uid = result["uid"]
+                        st.session_state.id_token = result["idToken"]
+                        
                         cloud_data, cloud_username = load_user_data_from_firestore(result["uid"], result["idToken"])
-                        st.session_state.username = cloud_username if cloud_username else result["email"]
+                        st.session_state.username = cloud_username if cloud_username else login_input.strip()
                         if cloud_data:
                             st.session_state.roadmap_list = cloud_data
                             st.session_state.generated = True
-                        
-                    st.success(f"Welcome back!")
-                    st.rerun()
+                            
+                        st.success("Logged in successfully!")
+                        st.rerun()
+                    else:
+                        st.error(f"Error: {result['message']}")
+            else:
+                # Sign Up Flow Processing Engine
+                if not username_input.strip() or not email_input.strip() or not password:
+                    st.error("Please provide all registration fields.")
+                elif len(password) < 6:
+                    st.error("Password must be at least 6 characters long.")
                 else:
-                    st.error(f"Error: {result['message']}")
+                    with st.spinner("Creating profile account with Firebase Auth..."):
+                        result = firebase_auth(email_input.strip(), password, mode="signUp")
+                    
+                    if result["success"]:
+                        st.session_state.auth_state = True
+                        st.session_state.user_email = result["email"]
+                        st.session_state.user_uid = result["uid"]
+                        st.session_state.id_token = result["idToken"]
+                        st.session_state.username = username_input.strip()
+                        
+                        # Register initial blank map document alongside user metadata vectors
+                        save_user_data_to_firestore(result["uid"], result["idToken"], [], username_input.strip(), result["email"])
+                        
+                        st.success("Account created successfully!")
+                        st.rerun()
+                    else:
+                        st.error(f"Error: {result['message']}")
     st.stop()
 
 # ==========================================
 #  INTERFACE ROUTING: CORE APPLICATION
 # ==========================================
 st.title("🔄 Study-Sync Dashboard")
-# Personalized greeting using the student's unique username
-st.markdown(f"#### *Welcome back, **{st.session_state.username if st.session_state.username else st.session_state.user_email}**!*")
+# Updated custom profile display template layout view metric matching user configuration criteria
+st.markdown(f"#### *Profile Name - (**{st.session_state.username}**)*")
 st.markdown("---")
 
 # Sidebar Controls
@@ -288,8 +345,7 @@ if generate_btn:
                 st.session_state.roadmap_list = roadmap_data
                 st.session_state.generated = True
                 
-                # Auto-save layout data configuration along with the active profile username
-                save_user_data_to_firestore(st.session_state.user_uid, st.session_state.id_token, roadmap_data, st.session_state.username)
+                save_user_data_to_firestore(st.session_state.user_uid, st.session_state.id_token, roadmap_data, st.session_state.username, st.session_state.user_email)
                 
             except Exception as e:
                 st.error(f"App compilation process encountered an evaluation exception: {e}")
@@ -306,7 +362,7 @@ if st.session_state.generated:
         save_col, csv_col = st.columns(2)
         with save_col:
             if st.button("💾 Save Progress to Cloud Firestore", type="primary", use_container_width=True):
-                if save_user_data_to_firestore(st.session_state.user_uid, st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username):
+                if save_user_data_to_firestore(st.session_state.user_uid, st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email):
                     st.toast("Progress saved successfully to Cloud Firestore!", icon="🔥")
                 else:
                     st.error("Failed to sync progress changes to Firestore collection.")
