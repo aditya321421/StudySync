@@ -424,7 +424,7 @@ if generate_btn:
     if not uploaded_file:
         st.error("Please upload a course document first!")
     else:
-        with st.spinner("Analyzing syllabus and crafting an extended 45-50 day roadmap..."):
+        with st.spinner("Analyzing syllabus payload and structuring database matrix nodes..."):
             try:
                 reader = pypdf.PdfReader(uploaded_file)
                 pdf_text = ""
@@ -434,16 +434,21 @@ if generate_btn:
                 start_str = start_time.strftime("%I:%M %p")
                 end_str = end_time.strftime("%I:%M %p")
                 
+                # REPAIRED: Strict format requirements injected back into prompt payload framework
                 prompt = f"""
-                Analyze this syllabus text:
+                Analyze this course syllabus text comprehensively:
                 {pdf_text[:7000]}
-                Create a highly extensive daily study roadmap from {start_str} to {end_str}.
+                
+                Create a highly extensive daily study roadmap structured from {start_str} to {end_str}.
+                Provide specific tracking nodes. You must return a JSON object containing a top-level key array named "roadmap".
+                Each inner array element object must strictly contain these fields:
+                "Scheduled Date", "Time Slot", "Focus Topic", and "Suggested Activity".
                 """
                 
                 response = client.chat.completions.create(
                     model="llama-3.1-8b-instant",
                     messages=[
-                        {"role": "system", "content": "You are a precise computer program that outputs raw JSON objects without code blocks."},
+                        {"role": "system", "content": "You are a precise computer program that outputs clean raw JSON object data matching schemas perfectly without code blocks or markdown wrapper elements."},
                         {"role": "user", "content": prompt}
                     ],
                     response_format={"type": "json_object"},
@@ -454,6 +459,7 @@ if generate_btn:
                 raw_json = json.loads(response.choices[0].message.content)
                 roadmap_data = raw_json.get("roadmap", [])
                 for item in roadmap_data: item["Status"] = False
+                
                 st.session_state.roadmap_list = roadmap_data
                 st.session_state.generated = True
                 save_user_data_to_firestore(st.session_state.id_token, roadmap_data, st.session_state.username, st.session_state.user_email)
@@ -473,7 +479,7 @@ if st.session_state.generated:
                 st.toast("Progress saved successfully!", icon="🔥")
         with csv_col:
             csv_bytes = convert_to_csv(st.session_state.roadmap_list)
-            st.download_button("📊 Download Roadmap Spreadsheet (.csv)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
+            st.download_button("DOWNLOAD ROADMAP SPREADSHEET (.CSV)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
             
         st.markdown("---")
         for i, item in enumerate(roadmap):
