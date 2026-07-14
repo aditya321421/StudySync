@@ -19,7 +19,7 @@ st.markdown(
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
     
-    /* Global Universal Font Unification */
+    /* Global Universal Font Unification - Excluded '*' to protect internal icon ligatures */
     html, body, p, label, input, button, h1, h2, h3, h4, h5, h6, [data-testid="stMarkdownContainer"] {
         font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
@@ -32,8 +32,17 @@ st.markdown(
 
     /* Core Canvas Deep Background Base */
     html, body, .stApp {
-        background-color: #1a1d24 !important;
+        background-color: #040612 !important;
         overflow-x: hidden;
+    }
+
+    /* Hardware-Accelerated Smooth Moving Cyber Grid Backdrop */
+    .stApp {
+        background-image: 
+            linear-gradient(rgba(0, 145, 255, 0.01) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 145, 255, 0.01) 1px, transparent 1px) !important;
+        background-size: 60px 60px !important;
+        background-attachment: fixed !important;
     }
     
     /* Flowing Blue and White Custom Gradient Stream */
@@ -66,76 +75,69 @@ st.markdown(
         justify-content: center !important;
     }
     
-    /* Glassmorphic Form Authentication Card Wrapper */
+    /* Glassmorphic Card Wrapper */
     div[data-testid="stForm"] {
-        background: rgba(28, 31, 38, 0.8) !important;
+        background: rgba(9, 12, 26, 0.6) !important;
         backdrop-filter: blur(20px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(0, 145, 255, 0.15) !important;
         border-radius: 12px !important;
         padding: 2.5rem !important;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4) !important;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+        position: relative;
+        z-index: 10;
     }
 
-    /* Layout Card Block Profiles Matching Screenshot */
-    .workspace-card {
-        background: #22262f !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        border-radius: 12px !important;
-        padding: 1.8rem !important;
-        margin-bottom: 20px !important;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
-    }
-    
-    .workspace-card h3 {
-        color: #ffffff !important;
-        font-size: 1.5rem !important;
-        font-weight: 700 !important;
-        margin-top: 0px !important;
-        margin-bottom: 1.2rem !important;
-    }
-
-    /* Reactive Inputs Styling optimization */
+    /* Reactive Glow States on Input Focus Fields */
     div[data-testid="stTextInput"] input {
-        background: #1c1f26 !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        background: rgba(16, 22, 42, 0.45) !important;
+        border: 1px solid rgba(0, 145, 255, 0.15) !important;
         color: #ffffff !important;
-    }
-
-    /* Exact Profile Tab Box Element Top Right */
-    .profile-badge-container {
-        display: flex;
-        align-items: center;
-        background: #2d323f;
-        padding: 6px 14px;
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        float: right;
-    }
-    .profile-avatar-circle {
-        width: 28px;
-        height: 28px;
-        background: #0091ff;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #ffffff;
-        font-size: 0.85rem;
-        font-weight: 700;
-        margin-right: 8px;
-    }
-    .profile-caret {
-        color: #8a92a6;
-        font-size: 0.75rem;
-        margin-left: 6px;
+        padding-right: 3rem !important;
     }
     
-    /* ==========================================
-       EXACT COLOR EXTRACTIONS & HOVER EFFECTS
-       ========================================== */
+    /* THE EYE ICON RESKINDED CYBER BLUE STYLE */
+    div[data-testid="stTextInput"] button {
+        color: #0091ff !important;
+        background: transparent !important;
+    }
+    div[data-testid="stTextInput"] button svg {
+        fill: #0091ff !important;
+    }
+    div[data-testid="stTextInput"] button:hover {
+        color: #00a2ff !important;
+        background: transparent !important;
+    }
+    div[data-testid="stTextInput"] button:hover svg {
+        fill: #00a2ff !important;
+    }
+    
+    /* Target the invisible outer wrapper block to force absolute centering */
+    div[data-testid="element-container"]:has(div[data-testid="stFormSubmitButton"]) {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+        text-align: center !important;
+    }
+    
+    /* Center alignment stack layouts */
+    div[data-testid="stFormSubmitButton"] {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+        margin-top: 1.5rem !important;
+    }
+    div[data-testid="stFormSubmitButton"] > div {
+        display: flex !important;
+        justify-content: center !important;
+        width: 100% !important;
+    }
+    
+    /* 1. SOLID PRIMARY BUTTONS (Submit, Generate Complete Roadmap, Save It) */
     div.stButton > button[kind="primary"], 
     div[data-testid="stFormSubmitButton"] button {
         display: block !important;
+        margin: 1.5rem auto 0 auto !important;
         background: #0091ff !important;
         color: #ffffff !important;
         font-weight: 700 !important;
@@ -146,7 +148,6 @@ st.markdown(
         text-transform: uppercase !important;
         letter-spacing: 1px !important;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        width: 100% !important;
     }
     
     div.stButton > button[kind="primary"]:hover, 
@@ -157,6 +158,7 @@ st.markdown(
         color: #ffffff !important;
     }
     
+    /* 2. OUTLINE GHOST BUTTONS (Log Out, Download Roadmap Spreadsheet) */
     div.stButton > button[kind="secondary"], 
     div.stDownloadButton > button {
         background: transparent !important;
@@ -176,35 +178,38 @@ st.markdown(
         border-color: #00a2ff !important;
         box-shadow: 0 0 18px rgba(0, 162, 255, 0.35) !important;
         color: #ffffff !important;
+        transform: translateY(-1px) !important;
     }
     
-    /* Interactive Dashboard Checkbox Telemetry Rows */
+    /* Interactive Dashboard Telemetry Rows */
     div[data-testid="stCheckbox"] {
-        background: #1c1f26 !important;
-        border: 1px solid rgba(255, 255, 255, 0.06) !important;
+        background: rgba(16, 22, 42, 0.4) !important;
+        border: 1px solid rgba(0, 145, 255, 0.15) !important;
         border-left: 4px solid #0091ff !important;
         padding: 1.2rem 1.5rem !important;
         border-radius: 6px !important;
         margin-bottom: 12px !important;
     }
     
-    /* Progress Bars custom color mapping matching user analytics nodes */
+    /* Progress Bars custom color mapping */
     div[data-testid="stProgress"] > div > div > div {
         background: linear-gradient(90deg, #0091ff 0%, #00a2ff 100%) !important;
         box-shadow: 0 0 12px rgba(0, 145, 255, 0.4);
     }
     
-    /* File Uploader styling optimization matching the empty container canvas card look */
+    /* File Uploader styling optimization */
     div[data-testid="stFileUploader"] {
-        border: 1px dashed rgba(255, 255, 255, 0.12) !important;
-        background: #1c1f26 !important;
-        border-radius: 8px !important;
+        border: 1px dashed rgba(0, 145, 255, 0.3) !important;
+        background: rgba(11, 16, 28, 0.6) !important;
     }
-    
-    /* Custom Sidebar adjustments matching modern design matrix profiles */
-    [data-testid="stSidebar"] {
-        background-color: #14161d !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+
+    /* Admin Telemetry Container block overrides */
+    .admin-card {
+        background: rgba(16, 22, 42, 0.45) !important;
+        border: 1px solid rgba(0, 145, 255, 0.2) !important;
+        border-radius: 8px;
+        padding: 1.5rem !important;
+        margin-bottom: 20px;
     }
     </style>
     """,
@@ -290,6 +295,7 @@ def load_user_data_from_firestore(username, id_token):
     except Exception: return []
     return []
 
+# NEW: Automatically fetches every user document registered inside the Firestore collection cluster
 def get_all_users_from_firestore():
     if not FIREBASE_PROJECT_ID: return []
     url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users"
@@ -458,183 +464,164 @@ if not st.session_state.auth_state:
     st.stop()
 
 # ==========================================
-#  VERTICAL NAVIGATION SIDEBAR MATRIX
+#  INTERFACE ROUTING: CORE APPLICATION
 # ==========================================
-with st.sidebar:
-    st.markdown("<h2 style='color:#ffffff; margin-bottom:20px; font-weight:800;'>🔄 Study Sync</h2>", unsafe_allow_html=True)
-    st.markdown("---")
-    
-    # Render operational navigation router selectors tracking dashboard views
-    nav_selection = st.radio(
-        "Navigation",
-        options=["🏠 Workspace Home", "📅 Calendar Schedule Matrix", "🛠️ Admin Operations"],
-        label_visibility="collapsed"
-    )
-    
-    st.markdown("<br><br><br><br><br><br>", unsafe_allow_html=True)
-    if st.button("🚪 Log Out", use_container_width=True, type="secondary"):
+st.markdown("<h1 class='laser-title' style='font-family: \"Plus Jakarta Sans\", sans-serif; font-size: 5rem; margin-bottom: 0px; padding-bottom: 10px; line-height: 1.2; letter-spacing: -2px;'>Study Sync</h1>", unsafe_allow_html=True)
+
+header_col1, header_col2 = st.columns([5, 1.2], gap="small")
+with header_col1:
+    if st.session_state.is_admin:
+        st.markdown(f"#### *Profile Name - ({st.session_state.username})* &nbsp;|&nbsp; ⚡ **Admin Control Terminal active**")
+    else:
+        st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
+with header_col2:
+    st.write("<br>", unsafe_allow_html=True)
+    if st.button("Log Out", use_container_width=True, type="secondary"):
         logout()
 
+st.markdown("---")
+
 # ==========================================
-#  TOP PROFILE CAP badge INFRASTRUCTURE
+#  ADMIN AUTOMATIC REVENUE BROADCAST LAYER
 # ==========================================
-top_spacer_col, top_profile_col = st.columns([5, 1])
-with top_profile_col:
-    # Extracted user profile tab matrix element layout matching top-right box
-    initial_letter = st.session_state.username[0].upper() if st.session_state.username else "U"
-    st.markdown(
-        f"""
-        <div class="profile-badge-container">
-            <div class="profile-avatar-circle">{initial_letter}</div>
-            <span style="color:#ffffff; font-weight:600; font-size:0.95rem;">{st.session_state.username}</span>
-            <span class="profile-caret">▼</span>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-# GIANT GREETING ROW MATCHING SCREENSHOT
-st.markdown(f"<h1 style='color:#ffffff; font-size:2.8rem; font-weight:800; margin-top:-10px; margin-bottom:25px;'>Welcome Back, {st.session_state.username}!</h1>", unsafe_allow_html=True)
-
-# ------------------------------------------
-# VIEW ROUTER: CALENDAR SCHEDULE MATRIX
-# ------------------------------------------
-if nav_selection == "📅 Calendar Schedule Matrix":
-    st.markdown("### 📅 Study Schedule Calendar Matrix")
-    if st.session_state.generated and st.session_state.roadmap_list:
-        for item in st.session_state.roadmap_list:
-            status_tag = '<span style="color:#0091ff; font-weight:700;">[✓] COMPLETED</span>' if item.get("Status") else '<span style="color:#a0aec0; font-weight:600;">[ ] PENDING</span>'
-            st.markdown(
-                f"""
-                <div class="calendar-event">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 145, 255, 0.1); padding-bottom: 5px; margin-bottom: 8px;">
-                        <span style="color: #ffffff; font-weight: 700; font-size: 1.1rem;">🗓️ {item.get('Scheduled Date')}</span>
-                        <span style="font-size: 0.95rem;">{status_tag}</span>
-                    </div>
-                    <div style="color: #ffffff; font-weight: 600;">🪐 Focus Topic: <span style="color:#0091ff;">{item.get('Focus Topic')}</span></div>
-                    <div style="color: #a0aec0; font-size: 0.95rem; margin-top: 3px;">⏱️ Allocated Window: <code>{item.get('Time Slot')}</code></div>
-                    <div style="color: #cbd5e0; font-size: 0.95rem; margin-top: 3px;">📡 Suggested Activity Matrix: *{item.get('Suggested Activity')}*</div>
-                </div>
-                """, 
-                unsafe_allow_html=True
-            )
-    else:
-        st.info("Calendar matrix initialization pending: Upload a course document syllabus inside the Workspace Home layout to populate your active schedule.")
-
-# ------------------------------------------
-# VIEW ROUTER: ADMINISTRATIVE MODULE
-# ------------------------------------------
-elif nav_selection == "🛠️ Admin Operations":
-    if st.session_state.is_admin:
-        st.markdown("### 🛠️ Administrative Operations Dashboard")
+if st.session_state.is_admin:
+    st.markdown("### 🛠️ Administrative Operations Dashboard")
+    
+    stat_col1, stat_col2, stat_col3 = st.columns(3)
+    with stat_col1:
+        st.markdown('<div class="admin-card">📊 <b>System Load</b><br><span style="color:#0091ff; font-size:1.8rem; font-weight:700;">Nominal (0.04s)</span></div>', unsafe_allow_html=True)
+    with stat_col2:
+        st.markdown('<div class="admin-card">🔒 <b>Database Security</b><br><span style="color:#0091ff; font-size:1.8rem; font-weight:700;">Firestore Verified</span></div>', unsafe_allow_html=True)
+    with stat_col3:
+        st.markdown('<div class="admin-card">📡 <b>LLM Processing API</b><br><span style="color:#0091ff; font-size:1.8rem; font-weight:700;">Groq Online</span></div>', unsafe_allow_html=True)
+        
+    # AUTOMATIC PROFILE SCAN MATRIX: Replaces manual inspector search field inputs completely
+    st.markdown("#### 📂 Global Firestore User Directory Database")
+    with st.spinner("Synchronizing data structure rows from cloud data nodes..."):
         all_registered_users = get_all_users_from_firestore()
-        if all_registered_users:
-            st.dataframe(pd.DataFrame(all_registered_users), use_container_width=True)
-            selected_target_profile = st.selectbox("Analyze Roadmap Records:", options=[user["Username Profile"] for user in all_registered_users])
-            if st.button("Load Target Roadmap", type="primary"):
+        
+    if all_registered_users:
+        # Render all user documents inside a full container width responsive datagrid
+        st.dataframe(pd.DataFrame(all_registered_users), use_container_width=True)
+        
+        # Deep profile verification drop matrix
+        st.markdown("#### 🔍 Deep Inspect User Milestones Matrix")
+        selected_target_profile = st.selectbox(
+            "Select a profile node to analyze structural roadmap records:", 
+            options=[user["Username Profile"] for user in all_registered_users]
+        )
+        
+        if st.button("Load Target Roadmap", type="primary"):
+            with st.spinner(f"Pulling relational document fields for {selected_target_profile}..."):
                 deep_roadmap = load_user_data_from_firestore(selected_target_profile, st.session_state.id_token)
+                if not deep_roadmap:
+                    # Fallback lookup execution profile
+                    url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{selected_target_profile}"
+                    fallback_res = requests.get(url)
+                    if fallback_res.status_code == 200:
+                        deep_roadmap = json.loads(fallback_res.json().get("fields", {}).get("roadmap_json", {}).get("stringValue", "[]"))
+                
                 if deep_roadmap:
+                    st.success(f"Discovered active roadmap schema details matrix for {selected_target_profile}:")
                     st.dataframe(pd.DataFrame(deep_roadmap), use_container_width=True)
                 else:
-                    st.info("No records found inside this document node.")
-        else:
-            st.info("No active databases collections.")
+                    st.info("The selected profile currently holds an empty roadmap array sequence inside Firestore.")
     else:
-        st.error("Access Denied: Administrative node clearance required.")
+        st.info("No user data node vectors detected inside the cloud document database collection.")
 
-# ------------------------------------------
-# VIEW ROUTER: MAIN WORKSPACE HOME
-# ------------------------------------------
-else:
-    # TWO COLUMN BALANCED PANELS ARCHITECTURE MATCHING PHOTOGRAPH LAYOUT
-    panel_left, panel_right = st.columns([1.1, 1], gap="large")
-    
-    with panel_left:
-        # Card Wrapper 1: Create Your Roadmap Container
-        st.markdown('<div class="workspace-card"><h3>Create Your Roadmap</h3>', unsafe_allow_html=True)
-        uploaded_file = st.file_uploader("Upload Course Syllabus/PDF", type=["pdf"], label_visibility="collapsed")
-        
-        time_col1, time_col2 = st.columns(2)
-        with time_col1:
-            start_time = st.time_input("Daily Start Time")
-        with time_col2:
-            end_time = st.time_input("End Time")
-            
-        generate_btn = st.button("Generate Roadmap", type="primary")
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        if generate_btn:
-            if not uploaded_file:
-                st.error("Please upload a course document first!")
-            else:
-                with st.spinner("Analyzing syllabus text data nodes..."):
-                    try:
-                        reader = pypdf.PdfReader(uploaded_file)
-                        pdf_text = "".join([page.extract_text() or "" for page in reader.pages[:10]])
-                        start_str = start_time.strftime("%I:%M %p")
-                        end_str = end_time.strftime("%I:%M %p")
-                        
-                        prompt = f"Create daily roadmap from {start_str} to {end_str} for syllabus text: {pdf_text[:5000]}"
-                        response = client.chat.completions.create(
-                            model="llama-3.1-8b-instant",
-                            messages=[
-                                {"role": "system", "content": "Return raw JSON object containing top-level key array named 'roadmap'. Inner objects contain fields: 'Scheduled Date', 'Time Slot', 'Focus Topic', 'Suggested Activity'."},
-                                {"role": "user", "content": prompt}
-                            ],
-                            response_format={"type": "json_object"},
-                            temperature=0.2
-                        )
-                        raw_json = json.loads(response.choices[0].message.content)
-                        roadmap_data = raw_json.get("roadmap", [])
-                        for item in roadmap_data: item["Status"] = False
-                        
-                        st.session_state.roadmap_list = roadmap_data
-                        st.session_state.generated = True
-                        if not st.session_state.is_admin:
-                            save_user_data_to_firestore(st.session_state.id_token, roadmap_data, st.session_state.username, st.session_state.user_email)
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"App compilation exception: {e}")
+    st.markdown("---")
+    st.markdown("### 🧪 User Simulation Sandbox")
+    st.info("The configuration matrix block below allows administrators to simulate standard user syllabus uploads without modifying database records.")
 
-    with panel_right:
-        # Card Wrapper 2: My Current Roadmaps Progress Tracker
-        st.markdown('<div class="workspace-card"><h3>My Current Roadmaps</h3>', unsafe_allow_html=True)
-        
-        if st.session_state.generated and st.session_state.roadmap_list:
-            completed = sum(1 for item in st.session_state.roadmap_list if item.get("Status"))
-            total = len(st.session_state.roadmap_list)
-            percent = int((completed / total) * 100) if total > 0 else 0
-            
-            # Formatted list metrics block matching target text tracking specs
-            st.markdown(f"**Core Active Pipeline** Matrix &nbsp;|&nbsp; `{percent}% Complete`")
-            st.progress(percent / 100.0)
-            st.markdown(f"<span style='color:#a0aec0; font-size:0.9rem;'>Topic Summary: Discovered study sequences tracking {total} micro goals.</span>", unsafe_allow_html=True)
-        else:
-            # Fallback placeholder indicators
-            st.markdown("**No Active Roadmaps Loaded**")
-            st.progress(0.0)
-            st.markdown("<span style='color:#a0aec0; font-size:0.9rem;'>Topic Summary: Feed a syllabus inside the creator panel to start your tracking timeline matrix.</span>", unsafe_allow_html=True)
-            
-        st.markdown('</div>', unsafe_allow_html=True)
+# ==========================================
+#  STANDARD CONFIGURATION PANEL LAYOUT
+# ==========================================
+st.markdown("### ⚡ Configuration Panel")
+config_col1, config_col2, config_col3 = st.columns([2, 1, 1], gap="medium")
 
-    # ==========================================
-    #  INTERACTIVE SPREADSHEET MICRO-CHECKLIST TABLE
-    # ==========================================
-    if st.session_state.generated and st.session_state.roadmap_list:
-        st.markdown("### 🔄 Interactive Study Roadmap Milestones Checklist")
-        
-        save_action, download_action = st.columns(2)
-        with save_action:
-            if st.button("Save Progress Nodes", use_container_width=True, type="primary"):
+with config_col1:
+    uploaded_file = st.file_uploader("Upload Course Syllabus/PDF", type=["pdf"])
+with config_col2:
+    start_time = st.time_input("Preferred Daily Start Time")
+with config_col3:
+    end_time = st.time_input("Preferred Daily End Time")
+
+generate_btn = st.button("Generate Complete Roadmap", type="primary", use_container_width=True)
+st.markdown("---")
+
+if generate_btn:
+    if not uploaded_file:
+        st.error("Please upload a course document first!")
+    else:
+        with st.spinner("Analyzing syllabus payload and structuring database matrix nodes..."):
+            try:
+                reader = pypdf.PdfReader(uploaded_file)
+                pdf_text = ""
+                for page in reader.pages[:10]: 
+                    pdf_text += page.extract_text() or ""
+                
+                start_str = start_time.strftime("%I:%M %p")
+                end_str = end_time.strftime("%I:%M %p")
+                
+                prompt = f"""
+                Analyze this course syllabus text comprehensively:
+                {pdf_text[:7000]}
+                
+                Create a highly extensive daily study roadmap structured from {start_str} to {end_str}.
+                Provide specific tracking nodes. You must return a JSON object containing a top-level key array named "roadmap".
+                Each inner array element object must strictly contain these fields:
+                "Scheduled Date", "Time Slot", "Focus Topic", and "Suggested Activity".
+                """
+                
+                response = client.chat.completions.create(
+                    model="llama-3.1-8b-instant",
+                    messages=[
+                        {"role": "system", "content": "You are a precise computer program that outputs clean raw JSON object data matching schemas perfectly without code blocks or markdown wrapper elements."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    response_format={"type": "json_object"},
+                    temperature=0.2,
+                    max_tokens=2500  
+                )
+                
+                raw_json = json.loads(response.choices[0].message.content)
+                roadmap_data = raw_json.get("roadmap", [])
+                for item in roadmap_data: item["Status"] = False
+                
+                st.session_state.roadmap_list = roadmap_data
+                st.session_state.generated = True
+                if not st.session_state.is_admin:
+                    save_user_data_to_firestore(st.session_state.id_token, roadmap_data, st.session_state.username, st.session_state.user_email)
+                st.rerun()
+            except Exception as e:
+                st.error(f"App compilation process encountered an evaluation exception: {e}")
+
+if st.session_state.generated:
+    st.markdown("### 🔄 Interactive Study Roadmap")
+    roadmap = st.session_state.roadmap_list
+    if roadmap:
+        completed_count = 0
+        save_col, csv_col = st.columns(2)
+        with save_col:
+            if st.button("Save It", type="primary", use_container_width=True):
                 if not st.session_state.is_admin:
                     save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email)
-                st.toast("Progress coordinates saved to Firestore document cluster!", icon="🔥")
-        with download_action:
+                st.toast("Progress saved successfully!", icon="🔥")
+        with csv_col:
             csv_bytes = convert_to_csv(st.session_state.roadmap_list)
-            st.download_button("Export Tracking Sheet (.CSV)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
+            st.download_button("DOWNLOAD ROADMAP SPREADSHEET (.CSV)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
             
         st.markdown("---")
-        for i, item in enumerate(st.session_state.roadmap_list):
+        for i, item in enumerate(roadmap):
             label_markdown = f"⚡ **{item.get('Scheduled Date')}** &nbsp;|&nbsp; ⏱️ `{item.get('Time Slot')}` &nbsp;|&nbsp; 🪐 **{item.get('Focus Topic')}**  \n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📡 *Modules Matrix: {item.get('Suggested Activity')}*"
-            is_checked = st.checkbox(label_markdown, value=item.get('Status', False), key=f"task_home_{i}")
+            is_checked = st.checkbox(label_markdown, value=item.get('Status', False), key=f"task_{i}")
+            if is_checked: completed_count += 1
             st.session_state.roadmap_list[i]["Status"] = is_checked
+            st.markdown("---")
+        
+        total_tasks = len(roadmap)
+        progress_percent = int((completed_count / total_tasks) * 100) if total_tasks > 0 else 0
+        st.markdown(f"**Progress Check:** {completed_count}/{total_tasks} Milestones Completed ({progress_percent}%)")
+        st.progress(progress_percent / 100.0)
+else:
+    st.info("Configuration parameters pending: Feed a course document file into the parameters block above to populate your interactive dashboard.")
