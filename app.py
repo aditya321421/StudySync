@@ -287,12 +287,41 @@ def save_user_data_to_firestore(id_token, roadmap_list, username, email):
 def load_user_data_from_firestore(username, id_token):
     if not FIREBASE_PROJECT_ID: return []
     url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{username}"
-    headers = {"Authorization": f"Bearer {id_token}"}
+    headers = {"Authorization": f"Bearer {id_token}"} if id_token else {}
     try:
         res = requests.get(url, headers=headers)
         if res.status_code == 200 and res.json():
             return json.loads(res.json().get("fields", {}).get("roadmap_json", {}).get("stringValue", "[]"))
     except Exception: return []
+    return []
+
+# NEW: Automatically fetches every user document registered inside the Firestore collection cluster
+def get_all_users_from_firestore():
+    if not FIREBASE_PROJECT_ID: return []
+    url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users"
+    try:
+        res = requests.get(url)
+        if res.status_code == 200 and res.json():
+            documents = res.json().get("documents", [])
+            parsed_users = []
+            for doc in documents:
+                fields = doc.get("fields", {})
+                doc_id = doc.get("name", "").split("/")[-1]
+                email = fields.get("email", {}).get("stringValue", "N/A")
+                username = fields.get("username", {}).get("stringValue", doc_id)
+                roadmap_raw = fields.get("roadmap_json", {}).get("stringValue", "[]")
+                try:
+                    milestones = len(json.loads(roadmap_raw))
+                except Exception:
+                    milestones = 0
+                parsed_users.append({
+                    "Username Profile": username,
+                    "Associated Email": email,
+                    "Active Milestones Count": milestones
+                })
+            return parsed_users
+    except Exception:
+        return []
     return []
 
 def logout():
@@ -453,12 +482,11 @@ with header_col2:
 st.markdown("---")
 
 # ==========================================
-#  ADMIN CONTROL INTERFACE BRANCH LAYER
+#  ADMIN AUTOMATIC REVENUE BROADCAST LAYER
 # ==========================================
 if st.session_state.is_admin:
     st.markdown("### 🛠️ Administrative Operations Dashboard")
     
-    # Visual Status Telemetry Layout Row
     stat_col1, stat_col2, stat_col3 = st.columns(3)
     with stat_col1:
         st.markdown('<div class="admin-card">📊 <b>System Load</b><br><span style="color:#0091ff; font-size:1.8rem; font-weight:700;">Nominal (0.04s)</span></div>', unsafe_allow_html=True)
@@ -467,23 +495,39 @@ if st.session_state.is_admin:
     with stat_col3:
         st.markdown('<div class="admin-card">📡 <b>LLM Processing API</b><br><span style="color:#0091ff; font-size:1.8rem; font-weight:700;">Groq Online</span></div>', unsafe_allow_html=True)
         
-    # User Database Record Inspector Sub-System
-    st.markdown("#### 🔍 Firestore User Document Inspector")
-    lookup_col1, lookup_col2 = st.columns([3, 1])
-    with lookup_col1:
-        target_user = st.text_input("Enter Target Username Profile to Inspect", placeholder="e.g., alex_codes")
-    with lookup_col2:
-        st.write("<br>", unsafe_allow_html=True)
-        inspect_btn = st.button("Inspect User Node", use_container_width=True)
+    # AUTOMATIC PROFILE SCAN MATRIX: Replaces manual inspector search field inputs completely
+    st.markdown("#### 📂 Global Firestore User Directory Database")
+    with st.spinner("Synchronizing data structure rows from cloud data nodes..."):
+        all_registered_users = get_all_users_from_firestore()
         
-    if inspect_btn and target_user.strip():
-        with st.spinner(f"Pulling data cluster nodes for: {target_user.strip()}..."):
-            user_roadmap = load_user_data_from_firestore(target_user.strip(), st.session_state.id_token)
-            if user_roadmap:
-                st.success(f"Profile connection stable. Discovered {len(user_roadmap)} milestones in Firestore database document.")
-                st.write(pd.DataFrame(user_roadmap))
-            else:
-                st.warning(f"No active roadmap collections found for profile matching '{target_user.strip()}' or missing active token configuration keys.")
+    if all_registered_users:
+        # Render all user documents inside a full container width responsive datagrid
+        st.dataframe(pd.DataFrame(all_registered_users), use_container_width=True)
+        
+        # Deep profile verification drop matrix
+        st.markdown("#### 🔍 Deep Inspect User Milestones Matrix")
+        selected_target_profile = st.selectbox(
+            "Select a profile node to analyze structural roadmap records:", 
+            options=[user["Username Profile"] for user in all_registered_users]
+        )
+        
+        if st.button("Load Target Roadmap", type="primary"):
+            with st.spinner(f"Pulling relational document fields for {selected_target_profile}..."):
+                deep_roadmap = load_user_data_from_firestore(selected_target_profile, st.session_state.id_token)
+                if not deep_roadmap:
+                    # Fallback lookup execution profile
+                    url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{selected_target_profile}"
+                    fallback_res = requests.get(url)
+                    if fallback_res.status_code == 200:
+                        deep_roadmap = json.loads(fallback_res.json().get("fields", {}).get("roadmap_json", {}).get("stringValue", "[]"))
+                
+                if deep_roadmap:
+                    st.success(f"Discovered active roadmap schema details matrix for {selected_target_profile}:")
+                    st.dataframe(pd.DataFrame(deep_roadmap), use_container_width=True)
+                else:
+                    st.info("The selected profile currently holds an empty roadmap array sequence inside Firestore.")
+    else:
+        st.info("No user data node vectors detected inside the cloud document database collection.")
 
     st.markdown("---")
     st.markdown("### 🧪 User Simulation Sandbox")
