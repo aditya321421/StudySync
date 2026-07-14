@@ -211,6 +211,17 @@ st.markdown(
         padding: 1.5rem !important;
         margin-bottom: 20px;
     }
+    
+    /* Premium High-Tech Calendar Event Card Style */
+    .calendar-event {
+        background: rgba(16, 22, 42, 0.45) !important;
+        border: 1px solid rgba(0, 145, 255, 0.15) !important;
+        border-left: 4px solid #0091ff !important;
+        padding: 1.2rem !important;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -289,13 +300,12 @@ def load_user_data_from_firestore(username, id_token):
     url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{username}"
     headers = {"Authorization": f"Bearer {id_token}"} if id_token else {}
     try:
-        res = requests.get(url, headers=headers)
+        res = requests.get(url)
         if res.status_code == 200 and res.json():
             return json.loads(res.json().get("fields", {}).get("roadmap_json", {}).get("stringValue", "[]"))
     except Exception: return []
     return []
 
-# NEW: Automatically fetches every user document registered inside the Firestore collection cluster
 def get_all_users_from_firestore():
     if not FIREBASE_PROJECT_ID: return []
     url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users"
@@ -482,146 +492,175 @@ with header_col2:
 st.markdown("---")
 
 # ==========================================
-#  ADMIN AUTOMATIC REVENUE BROADCAST LAYER
+#  UPPER CENTER WORKSPACE TAB SEGMENTATION
 # ==========================================
-if st.session_state.is_admin:
-    st.markdown("### 🛠️ Administrative Operations Dashboard")
-    
-    stat_col1, stat_col2, stat_col3 = st.columns(3)
-    with stat_col1:
-        st.markdown('<div class="admin-card">📊 <b>System Load</b><br><span style="color:#0091ff; font-size:1.8rem; font-weight:700;">Nominal (0.04s)</span></div>', unsafe_allow_html=True)
-    with stat_col2:
-        st.markdown('<div class="admin-card">🔒 <b>Database Security</b><br><span style="color:#0091ff; font-size:1.8rem; font-weight:700;">Firestore Verified</span></div>', unsafe_allow_html=True)
-    with stat_col3:
-        st.markdown('<div class="admin-card">📡 <b>LLM Processing API</b><br><span style="color:#0091ff; font-size:1.8rem; font-weight:700;">Groq Online</span></div>', unsafe_allow_html=True)
+workspace_tab1, workspace_tab2 = st.tabs(["📊 Dashboard Operations", "📅 Calendar Schedule Matrix"])
+
+# ------------------------------------------
+# TAB 1: DASHBOARD CONTROL SYSTEM
+# ------------------------------------------
+with workspace_tab1:
+    if st.session_state.is_admin:
+        st.markdown("### 🛠️ Administrative Operations Dashboard")
         
-    # AUTOMATIC PROFILE SCAN MATRIX: Replaces manual inspector search field inputs completely
-    st.markdown("#### 📂 Global Firestore User Directory Database")
-    with st.spinner("Synchronizing data structure rows from cloud data nodes..."):
-        all_registered_users = get_all_users_from_firestore()
-        
-    if all_registered_users:
-        # Render all user documents inside a full container width responsive datagrid
-        st.dataframe(pd.DataFrame(all_registered_users), use_container_width=True)
-        
-        # Deep profile verification drop matrix
-        st.markdown("#### 🔍 Deep Inspect User Milestones Matrix")
-        selected_target_profile = st.selectbox(
-            "Select a profile node to analyze structural roadmap records:", 
-            options=[user["Username Profile"] for user in all_registered_users]
-        )
-        
-        if st.button("Load Target Roadmap", type="primary"):
-            with st.spinner(f"Pulling relational document fields for {selected_target_profile}..."):
-                deep_roadmap = load_user_data_from_firestore(selected_target_profile, st.session_state.id_token)
-                if not deep_roadmap:
-                    # Fallback lookup execution profile
-                    url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{selected_target_profile}"
-                    fallback_res = requests.get(url)
-                    if fallback_res.status_code == 200:
-                        deep_roadmap = json.loads(fallback_res.json().get("fields", {}).get("roadmap_json", {}).get("stringValue", "[]"))
-                
-                if deep_roadmap:
-                    st.success(f"Discovered active roadmap schema details matrix for {selected_target_profile}:")
-                    st.dataframe(pd.DataFrame(deep_roadmap), use_container_width=True)
-                else:
-                    st.info("The selected profile currently holds an empty roadmap array sequence inside Firestore.")
-    else:
-        st.info("No user data node vectors detected inside the cloud document database collection.")
-
-    st.markdown("---")
-    st.markdown("### 🧪 User Simulation Sandbox")
-    st.info("The configuration matrix block below allows administrators to simulate standard user syllabus uploads without modifying database records.")
-
-# ==========================================
-#  STANDARD CONFIGURATION PANEL LAYOUT
-# ==========================================
-st.markdown("### ⚡ Configuration Panel")
-config_col1, config_col2, config_col3 = st.columns([2, 1, 1], gap="medium")
-
-with config_col1:
-    uploaded_file = st.file_uploader("Upload Course Syllabus/PDF", type=["pdf"])
-with config_col2:
-    start_time = st.time_input("Preferred Daily Start Time")
-with config_col3:
-    end_time = st.time_input("Preferred Daily End Time")
-
-generate_btn = st.button("Generate Complete Roadmap", type="primary", use_container_width=True)
-st.markdown("---")
-
-if generate_btn:
-    if not uploaded_file:
-        st.error("Please upload a course document first!")
-    else:
-        with st.spinner("Analyzing syllabus payload and structuring database matrix nodes..."):
-            try:
-                reader = pypdf.PdfReader(uploaded_file)
-                pdf_text = ""
-                for page in reader.pages[:10]: 
-                    pdf_text += page.extract_text() or ""
-                
-                start_str = start_time.strftime("%I:%M %p")
-                end_str = end_time.strftime("%I:%M %p")
-                
-                prompt = f"""
-                Analyze this course syllabus text comprehensively:
-                {pdf_text[:7000]}
-                
-                Create a highly extensive daily study roadmap structured from {start_str} to {end_str}.
-                Provide specific tracking nodes. You must return a JSON object containing a top-level key array named "roadmap".
-                Each inner array element object must strictly contain these fields:
-                "Scheduled Date", "Time Slot", "Focus Topic", and "Suggested Activity".
-                """
-                
-                response = client.chat.completions.create(
-                    model="llama-3.1-8b-instant",
-                    messages=[
-                        {"role": "system", "content": "You are a precise computer program that outputs clean raw JSON object data matching schemas perfectly without code blocks or markdown wrapper elements."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    response_format={"type": "json_object"},
-                    temperature=0.2,
-                    max_tokens=2500  
-                )
-                
-                raw_json = json.loads(response.choices[0].message.content)
-                roadmap_data = raw_json.get("roadmap", [])
-                for item in roadmap_data: item["Status"] = False
-                
-                st.session_state.roadmap_list = roadmap_data
-                st.session_state.generated = True
-                if not st.session_state.is_admin:
-                    save_user_data_to_firestore(st.session_state.id_token, roadmap_data, st.session_state.username, st.session_state.user_email)
-                st.rerun()
-            except Exception as e:
-                st.error(f"App compilation process encountered an evaluation exception: {e}")
-
-if st.session_state.generated:
-    st.markdown("### 🔄 Interactive Study Roadmap")
-    roadmap = st.session_state.roadmap_list
-    if roadmap:
-        completed_count = 0
-        save_col, csv_col = st.columns(2)
-        with save_col:
-            if st.button("Save It", type="primary", use_container_width=True):
-                if not st.session_state.is_admin:
-                    save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email)
-                st.toast("Progress saved successfully!", icon="🔥")
-        with csv_col:
-            csv_bytes = convert_to_csv(st.session_state.roadmap_list)
-            st.download_button("DOWNLOAD ROADMAP SPREADSHEET (.CSV)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
+        stat_col1, stat_col2, stat_col3 = st.columns(3)
+        with stat_col1:
+            st.markdown('<div class="admin-card">📊 <b>System Load</b><br><span style="color:#0091ff; font-size:1.8rem; font-weight:700;">Nominal (0.04s)</span></div>', unsafe_allow_html=True)
+        with stat_col2:
+            st.markdown('<div class="admin-card">🔒 <b>Database Security</b><br><span style="color:#0091ff; font-size:1.8rem; font-weight:700;">Firestore Verified</span></div>', unsafe_allow_html=True)
+        with stat_col3:
+            st.markdown('<div class="admin-card">📡 <b>LLM Processing API</b><br><span style="color:#0091ff; font-size:1.8rem; font-weight:700;">Groq Online</span></div>', unsafe_allow_html=True)
             
+        st.markdown("#### 📂 Global Firestore User Directory Database")
+        with st.spinner("Synchronizing data structure rows from cloud data nodes..."):
+            all_registered_users = get_all_users_from_firestore()
+            
+        if all_registered_users:
+            st.dataframe(pd.DataFrame(all_registered_users), use_container_width=True)
+            
+            st.markdown("#### 🔍 Deep Inspect User Milestones Matrix")
+            selected_target_profile = st.selectbox(
+                "Select a profile node to analyze structural roadmap records:", 
+                options=[user["Username Profile"] for user in all_registered_users]
+            )
+            
+            if st.button("Load Target Roadmap", type="primary"):
+                with st.spinner(f"Pulling relational document fields for {selected_target_profile}..."):
+                    deep_roadmap = load_user_data_from_firestore(selected_target_profile, st.session_state.id_token)
+                    if not deep_roadmap:
+                        url = f"https://firestore.googleapis.com/v1/projects/{FIREBASE_PROJECT_ID}/databases/(default)/documents/users/{selected_target_profile}"
+                        fallback_res = requests.get(url)
+                        if fallback_res.status_code == 200:
+                            deep_roadmap = json.loads(fallback_res.json().get("fields", {}).get("roadmap_json", {}).get("stringValue", "[]"))
+                    
+                    if deep_roadmap:
+                        st.success(f"Discovered active roadmap schema details matrix for {selected_target_profile}:")
+                        st.dataframe(pd.DataFrame(deep_roadmap), use_container_width=True)
+                    else:
+                        st.info("The selected profile currently holds an empty roadmap array sequence inside Firestore.")
+        else:
+            st.info("No user data node vectors detected inside the cloud document database collection.")
+
         st.markdown("---")
-        for i, item in enumerate(roadmap):
-            label_markdown = f"⚡ **{item.get('Scheduled Date')}** &nbsp;|&nbsp; ⏱️ `{item.get('Time Slot')}` &nbsp;|&nbsp; 🪐 **{item.get('Focus Topic')}**  \n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📡 *Modules Matrix: {item.get('Suggested Activity')}*"
-            is_checked = st.checkbox(label_markdown, value=item.get('Status', False), key=f"task_{i}")
-            if is_checked: completed_count += 1
-            st.session_state.roadmap_list[i]["Status"] = is_checked
+        st.markdown("### 🧪 User Simulation Sandbox")
+        st.info("The configuration matrix block below allows administrators to simulate standard user syllabus uploads without modifying database records.")
+
+    st.markdown("### ⚡ Configuration Panel")
+    config_col1, config_col2, config_col3 = st.columns([2, 1, 1], gap="medium")
+
+    with config_col1:
+        uploaded_file = st.file_uploader("Upload Course Syllabus/PDF", type=["pdf"])
+    with config_col2:
+        start_time = st.time_input("Preferred Daily Start Time")
+    with config_col3:
+        end_time = st.time_input("Preferred Daily End Time")
+
+    generate_btn = st.button("Generate Complete Roadmap", type="primary", use_container_width=True)
+    st.markdown("---")
+
+    if generate_btn:
+        if not uploaded_file:
+            st.error("Please upload a course document first!")
+        else:
+            with st.spinner("Analyzing syllabus payload and structuring database matrix nodes..."):
+                try:
+                    reader = pypdf.PdfReader(uploaded_file)
+                    pdf_text = ""
+                    for page in reader.pages[:10]: 
+                        pdf_text += page.extract_text() or ""
+                    
+                    start_str = start_time.strftime("%I:%M %p")
+                    end_str = end_time.strftime("%I:%M %p")
+                    
+                    prompt = f"""
+                    Analyze this course syllabus text comprehensively:
+                    {pdf_text[:7000]}
+                    
+                    Create a highly extensive daily study roadmap structured from {start_str} to {end_str}.
+                    Provide specific tracking nodes. You must return a JSON object containing a top-level key array named "roadmap".
+                    Each inner array element object must strictly contain these fields:
+                    "Scheduled Date", "Time Slot", "Focus Topic", and "Suggested Activity".
+                    """
+                    
+                    response = client.chat.completions.create(
+                        model="llama-3.1-8b-instant",
+                        messages=[
+                            {"role": "system", "content": "You are a precise computer program that outputs clean raw JSON object data matching schemas perfectly without code blocks or markdown wrapper elements."},
+                            {"role": "user", "content": prompt}
+                        ],
+                        response_format={"type": "json_object"},
+                        temperature=0.2,
+                        max_tokens=2500  
+                    )
+                    
+                    raw_json = json.loads(response.choices[0].message.content)
+                    roadmap_data = raw_json.get("roadmap", [])
+                    for item in roadmap_data: item["Status"] = False
+                    
+                    st.session_state.roadmap_list = roadmap_data
+                    st.session_state.generated = True
+                    if not st.session_state.is_admin:
+                        save_user_data_to_firestore(st.session_state.id_token, roadmap_data, st.session_state.username, st.session_state.user_email)
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"App compilation process encountered an evaluation exception: {e}")
+
+    if st.session_state.generated:
+        st.markdown("### 🔄 Interactive Study Roadmap")
+        roadmap = st.session_state.roadmap_list
+        if roadmap:
+            completed_count = 0
+            save_col, csv_col = st.columns(2)
+            with save_col:
+                if st.button("Save It", type="primary", use_container_width=True):
+                    if not st.session_state.is_admin:
+                        save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email)
+                    st.toast("Progress saved successfully!", icon="🔥")
+            with csv_col:
+                csv_bytes = convert_to_csv(st.session_state.roadmap_list)
+                st.download_button("DOWNLOAD ROADMAP SPREADSHEET (.CSV)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
+                
             st.markdown("---")
+            for i, item in enumerate(roadmap):
+                label_markdown = f"⚡ **{item.get('Scheduled Date')}** &nbsp;|&nbsp; ⏱️ `{item.get('Time Slot')}` &nbsp;|&nbsp; 🪐 **{item.get('Focus Topic')}**  \n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📡 *Modules Matrix: {item.get('Suggested Activity')}*"
+                is_checked = st.checkbox(label_markdown, value=item.get('Status', False), key=f"task_{i}")
+                if is_checked: completed_count += 1
+                st.session_state.roadmap_list[i]["Status"] = is_checked
+                st.markdown("---")
+            
+            total_tasks = len(roadmap)
+            progress_percent = int((completed_count / total_tasks) * 100) if total_tasks > 0 else 0
+            st.markdown(f"**Progress Check:** {completed_count}/{total_tasks} Milestones Completed ({progress_percent}%)")
+            st.progress(progress_percent / 100.0)
+    else:
+        st.info("Configuration parameters pending: Feed a course document file into the parameters block above to populate your interactive dashboard.")
+
+# ------------------------------------------
+# TAB 2: CALENDAR MATRIX VIEW SYSTEM
+# ------------------------------------------
+with workspace_tab2:
+    st.markdown("### 📅 Study Schedule Calendar Matrix")
+    if st.session_state.generated and st.session_state.roadmap_list:
+        st.markdown("Here is your chronologically structured learning calendar pipeline mapping:")
+        st.write("<br>", unsafe_allow_html=True)
         
-        total_tasks = len(roadmap)
-        progress_percent = int((completed_count / total_tasks) * 100) if total_tasks > 0 else 0
-        st.markdown(f"**Progress Check:** {completed_count}/{total_tasks} Milestones Completed ({progress_percent}%)")
-        st.progress(progress_percent / 100.0)
-else:
-    st.info("Configuration parameters pending: Feed a course document file into the parameters block above to populate your interactive dashboard.")
+        # Render calendar milestone list layout view
+        for item in st.session_state.roadmap_list:
+            status_tag = '<span style="color:#0091ff; font-weight:700;">[✓] COMPLETED</span>' if item.get("Status") else '<span style="color:#a0aec0; font-weight:600;">[ ] PENDING</span>'
+            
+            st.markdown(
+                f"""
+                <div class="calendar-event">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 145, 255, 0.1); padding-bottom: 5px; margin-bottom: 8px;">
+                        <span style="color: #ffffff; font-weight: 700; font-size: 1.1rem;">🗓️ {item.get('Scheduled Date')}</span>
+                        <span style="font-size: 0.95rem;">{status_tag}</span>
+                    </div>
+                    <div style="color: #ffffff; font-weight: 600;">🪐 Focus Topic: <span style="color:#0091ff;">{item.get('Focus Topic')}</span></div>
+                    <div style="color: #a0aec0; font-size: 0.95rem; margin-top: 3px;">⏱️ Allocated Window: <code>{item.get('Time Slot')}</code></div>
+                    <div style="color: #cbd5e0; font-size: 0.95rem; margin-top: 3px;">📡 Suggested Activity Matrix: *{item.get('Suggested Activity')}*</div>
+                </div>
+                """, 
+                unsafe_allow_html=True
+            )
+    else:
+        st.info("Calendar matrix initialization pending: Upload a course document syllabus inside the Dashboard tab to view your active schedule layout.")
