@@ -210,9 +210,12 @@ st.markdown(
 # Fetch Firebase Configurations from Secrets
 FIREBASE_API_KEY = st.secrets.get("FIREBASE_API_KEY")
 FIREBASE_PROJECT_ID = st.secrets.get("FIREBASE_PROJECT_ID")
+ADMIN_EMAIL = st.secrets.get("ADMIN_EMAIL", "admin@studysync.com")
+ADMIN_PASSWORD = st.secrets.get("ADMIN_PASSWORD", "AdminSecure2026")
 
 # Initialize persistent session states
 if "auth_state" not in st.session_state: st.session_state.auth_state = False
+if "is_admin" not in st.session_state: st.session_state.is_admin = False
 if "user_email" not in st.session_state: st.session_state.user_email = ""
 if "username" not in st.session_state: st.session_state.username = ""
 if "user_uid" not in st.session_state: st.session_state.user_uid = ""
@@ -285,6 +288,7 @@ def load_user_data_from_firestore(username, id_token):
 
 def logout():
     st.session_state.auth_state = False
+    st.session_state.is_admin = False
     st.session_state.user_email = ""
     st.session_state.username = ""
     st.session_state.user_uid = ""
@@ -317,17 +321,21 @@ if not st.session_state.auth_state:
     left_space, center_auth_col, right_space = st.columns([1, 1.6, 1], gap="medium")
     
     with center_auth_col:
-        auth_mode = st.radio("Choose an option:", ["Login", "Sign Up"], horizontal=True)
+        # Added "Admin Login" array option selection parameter
+        auth_mode = st.radio("Choose an option:", ["Login", "Sign Up", "Admin Login"], horizontal=True)
         
         with st.form("auth_form"):
             if auth_mode == "Login":
                 username_input = st.text_input("Username", placeholder="Enter your username")
                 email_input = st.text_input("Email Address", placeholder="Enter your email address")
                 password = st.text_input("Password", type="password")
-            else:
+            elif auth_mode == "Sign Up":
                 username_input = st.text_input("Username", placeholder="e.g., alex_codes")
                 email_input = st.text_input("Email Address", placeholder="name@example.com")
                 password = st.text_input("Password", type="password")
+            else:
+                email_input = st.text_input("Admin Email Address", placeholder="admin@studysync.com")
+                password = st.text_input("Admin Security Password", type="password")
                 
             submit_btn = st.form_submit_button("Submit")
             
@@ -370,7 +378,8 @@ if not st.session_state.auth_state:
                             st.rerun()
                         else:
                             st.error(f"Error: {result['message']}")
-                else:
+                            
+                elif auth_mode == "Sign Up":
                     if not username_input.strip() or not email_input.strip() or not password:
                         st.error("Please fill out all registration fields.")
                     elif len(password) < 6:
@@ -390,6 +399,33 @@ if not st.session_state.auth_state:
                             st.rerun()
                         else:
                             st.error(f"Error: {result['message']}")
+                            
+                else:  # Admin Login execution matrix pipeline block
+                    if not email_input.strip() or not password:
+                        st.error("Please provide full administrative entry credentials.")
+                    else:
+                        # Dual Verification Pipeline: Check local Admin secrets overlay layer first
+                        if email_input.strip() == ADMIN_EMAIL and password == ADMIN_PASSWORD:
+                            st.session_state.auth_state = True
+                            st.session_state.is_admin = True
+                            st.session_state.username = "Root_Admin"
+                            st.session_state.user_email = ADMIN_EMAIL
+                            st.success("Administrative core master console access authorized!")
+                            st.rerun()
+                        else:
+                            # Secondary Pipeline Fallback check via backend structural verification
+                            with st.spinner("Verifying administrative node via base network..."):
+                                result = firebase_auth(email_input.strip(), password, mode="signInWithPassword")
+                            if result["success"]:
+                                st.session_state.auth_state = True
+                                st.session_state.is_admin = True
+                                st.session_state.username = "Admin_" + result["email"].split("@")[0]
+                                st.session_state.user_email = result["email"]
+                                st.session_state.id_token = result["idToken"]
+                                st.success("Administrative console operational!")
+                                st.rerun()
+                            else:
+                                st.error("Administrative access denial matching credentials block failure.")
     st.stop()
 
 # ==========================================
@@ -399,7 +435,10 @@ st.markdown("<h1 class='laser-title' style='font-family: \"Plus Jakarta Sans\", 
 
 header_col1, header_col2 = st.columns([5, 1.2], gap="small")
 with header_col1:
-    st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
+    if st.session_state.is_admin:
+        st.markdown(f"#### *Profile Name - ({st.session_state.username})* &nbsp;|&nbsp; ⚡ **Admin Control Terminal active**")
+    else:
+        st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
 with header_col2:
     st.write("<br>", unsafe_allow_html=True)
     if st.button("🚪 Log Out", use_container_width=True, type="secondary"):
@@ -434,7 +473,6 @@ if generate_btn:
                 start_str = start_time.strftime("%I:%M %p")
                 end_str = end_time.strftime("%I:%M %p")
                 
-                # REPAIRED: Strict format requirements injected back into prompt payload framework
                 prompt = f"""
                 Analyze this course syllabus text comprehensively:
                 {pdf_text[:7000]}
@@ -462,7 +500,8 @@ if generate_btn:
                 
                 st.session_state.roadmap_list = roadmap_data
                 st.session_state.generated = True
-                save_user_data_to_firestore(st.session_state.id_token, roadmap_data, st.session_state.username, st.session_state.user_email)
+                if not st.session_state.is_admin:
+                    save_user_data_to_firestore(st.session_state.id_token, roadmap_data, st.session_state.username, st.session_state.user_email)
                 st.rerun()
             except Exception as e:
                 st.error(f"App compilation process encountered an evaluation exception: {e}")
@@ -475,7 +514,8 @@ if st.session_state.generated:
         save_col, csv_col = st.columns(2)
         with save_col:
             if st.button("Save It", type="primary", use_container_width=True):
-                save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email)
+                if not st.session_state.is_admin:
+                    save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email)
                 st.toast("Progress saved successfully!", icon="🔥")
         with csv_col:
             csv_bytes = convert_to_csv(st.session_state.roadmap_list)
