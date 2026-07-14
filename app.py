@@ -476,7 +476,18 @@ if not st.session_state.auth_state:
 # ==========================================
 #  INTERFACE ROUTING: CORE APPLICATION
 # ==========================================
-st.markdown("<h1 class='laser-title' style='font-family: \"Plus Jakarta Sans\", sans-serif; font-size: 5rem; margin-bottom: 0px; padding-bottom: 10px; line-height: 1.2; letter-spacing: -2px;'>Study Sync</h1>", unsafe_allow_html=True)
+
+# FIXED: Title block centered exactly like the login layout canvas screen
+st.markdown(
+    """
+    <div style="text-align: center; width: 100%; margin-bottom: 25px;">
+        <h1 class="laser-title" style="font-size: 5rem; font-weight: 800; margin: 0; letter-spacing: -2px;">
+            Study Sync
+        </h1>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
 
 header_col1, header_col2 = st.columns([5, 1.2], gap="small")
 with header_col1:
@@ -485,19 +496,18 @@ with header_col1:
     else:
         st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
 with header_col2:
-    st.write("<br>", unsafe_allow_html=True)
     if st.button("Log Out", use_container_width=True, type="secondary"):
         logout()
 
 st.markdown("---")
 
 # ==========================================
-#  UPPER CENTER WORKSPACE TAB SEGMENTATION
+#  THREE STAGE SECTION TAB SEGMENTATION
 # ==========================================
-workspace_tab1, workspace_tab2 = st.tabs(["📊 Dashboard Operations", "📅 Calendar Schedule Matrix"])
+workspace_tab1, workspace_tab2, workspace_tab3 = st.tabs(["📊 Dashboard", "📅 Calendar", "🗺️ Roadmap"])
 
 # ------------------------------------------
-# TAB 1: DASHBOARD CONTROL SYSTEM
+# TAB 1: CONFIGURATION & ADMIN CONTROLS
 # ------------------------------------------
 with workspace_tab1:
     if st.session_state.is_admin:
@@ -556,8 +566,7 @@ with workspace_tab1:
         end_time = st.time_input("End Time")
 
     generate_btn = st.button("Generate Complete Roadmap", type="primary", use_container_width=True)
-    st.markdown("---")
-
+    
     if generate_btn:
         if not uploaded_file:
             st.error("Please upload a course document first!")
@@ -605,38 +614,8 @@ with workspace_tab1:
                 except Exception as e:
                     st.error(f"App compilation process encountered an evaluation exception: {e}")
 
-    if st.session_state.generated:
-        st.markdown("### 🔄 Interactive Study Roadmap")
-        roadmap = st.session_state.roadmap_list
-        if roadmap:
-            completed_count = 0
-            save_col, csv_col = st.columns(2)
-            with save_col:
-                if st.button("Save It", type="primary", use_container_width=True):
-                    if not st.session_state.is_admin:
-                        save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email)
-                    st.toast("Progress saved successfully!", icon="🔥")
-            with csv_col:
-                csv_bytes = convert_to_csv(st.session_state.roadmap_list)
-                st.download_button("DOWNLOAD ROADMAP SPREADSHEET (.CSV)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
-                
-            st.markdown("---")
-            for i, item in enumerate(roadmap):
-                label_markdown = f"⚡ **{item.get('Scheduled Date')}** &nbsp;|&nbsp; ⏱️ `{item.get('Time Slot')}` &nbsp;|&nbsp; 🪐 **{item.get('Focus Topic')}**  \n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📡 *Modules Matrix: {item.get('Suggested Activity')}*"
-                is_checked = st.checkbox(label_markdown, value=item.get('Status', False), key=f"task_{i}")
-                if is_checked: completed_count += 1
-                st.session_state.roadmap_list[i]["Status"] = is_checked
-                st.markdown("---")
-            
-            total_tasks = len(roadmap)
-            progress_percent = int((completed_count / total_tasks) * 100) if total_tasks > 0 else 0
-            st.markdown(f"**Progress Check:** {completed_count}/{total_tasks} Milestones Completed ({progress_percent}%)")
-            st.progress(progress_percent / 100.0)
-    else:
-        st.info("Configuration parameters pending: Feed a course document file into the parameters block above to populate your interactive dashboard.")
-
 # ------------------------------------------
-# TAB 2: CALENDAR MATRIX VIEW SYSTEM
+# TAB 2: CALENDAR MATRIX MODULE
 # ------------------------------------------
 with workspace_tab2:
     st.markdown("### 📅 Study Schedule Calendar Matrix")
@@ -644,7 +623,6 @@ with workspace_tab2:
         st.markdown("Here is your chronologically structured learning calendar pipeline mapping:")
         st.write("<br>", unsafe_allow_html=True)
         
-        # Render calendar milestone list layout view
         for item in st.session_state.roadmap_list:
             status_tag = '<span style="color:#0091ff; font-weight:700;">[✓] COMPLETED</span>' if item.get("Status") else '<span style="color:#a0aec0; font-weight:600;">[ ] PENDING</span>'
             
@@ -663,4 +641,40 @@ with workspace_tab2:
                 unsafe_allow_html=True
             )
     else:
-        st.info("Calendar matrix initialization pending: Upload a course document syllabus inside the Dashboard tab to view your active schedule layout.")
+        st.info("Calendar matrix initialization pending: Upload a course document syllabus inside the Dashboard tab to populate your schedule views.")
+
+# ------------------------------------------
+# TAB 3: INTERACTIVE ROADMAP CHECKLIST
+# ------------------------------------------
+with workspace_tab3:
+    st.markdown("### 🗺️ Interactive Study Roadmap Milestones")
+    if st.session_state.generated and st.session_state.roadmap_list:
+        roadmap = st.session_state.roadmap_list
+        
+        completed_count = 0
+        save_col, csv_col = st.columns(2)
+        with save_col:
+            if st.button("Save It", type="primary", use_container_width=True):
+                if not st.session_state.is_admin:
+                    save_user_data_to_firestore(st.session_state.id_token, st.session_state.roadmap_list, st.session_state.username, st.session_state.user_email)
+                st.toast("Progress saved successfully!", icon="🔥")
+        with csv_col:
+            csv_bytes = convert_to_csv(st.session_state.roadmap_list)
+            st.download_button("DOWNLOAD ROADMAP SPREADSHEET (.CSV)", data=csv_bytes, file_name="study_roadmap.csv", mime="text/csv", use_container_width=True)
+            
+        st.markdown("---")
+        
+        # Calculate checklist completion values safely outside interaction frames
+        for i, item in enumerate(roadmap):
+            label_markdown = f"⚡ **{item.get('Scheduled Date')}** &nbsp;|&nbsp; ⏱️ `{item.get('Time Slot')}` &nbsp;|&nbsp; 🪐 **{item.get('Focus Topic')}**  \n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📡 *Modules Matrix: {item.get('Suggested Activity')}*"
+            is_checked = st.checkbox(label_markdown, value=item.get('Status', False), key=f"task_{i}")
+            if is_checked: completed_count += 1
+            st.session_state.roadmap_list[i]["Status"] = is_checked
+            st.markdown("---")
+        
+        total_tasks = len(roadmap)
+        progress_percent = int((completed_count / total_tasks) * 100) if total_tasks > 0 else 0
+        st.markdown(f"**Progress Check:** {completed_count}/{total_tasks} Milestones Completed ({progress_percent}%)")
+        st.progress(progress_percent / 100.0)
+    else:
+        st.info("Roadmap tracking checklist data stream empty: Feed a syllabus document node inside the Dashboard segment panel to load milestones data fields.")
