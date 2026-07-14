@@ -476,8 +476,6 @@ if not st.session_state.auth_state:
 # ==========================================
 #  INTERFACE ROUTING: CORE APPLICATION
 # ==========================================
-
-# FIXED: Title block centered exactly like the login layout canvas screen
 st.markdown(
     """
     <div style="text-align: center; width: 100%; margin-bottom: 25px;">
@@ -575,42 +573,52 @@ with workspace_tab1:
                 try:
                     reader = pypdf.PdfReader(uploaded_file)
                     pdf_text = ""
+                    has_images = False
+                    
+                    # SYSTEM UPDATE: Structural Scan loop checks for embedded images or blank text scans
                     for page in reader.pages[:10]: 
+                        if page.images and len(page.images) > 0:
+                            has_images = True
                         pdf_text += page.extract_text() or ""
                     
-                    start_str = start_time.strftime("%I:%M %p")
-                    end_str = end_time.strftime("%I:%M %p")
-                    
-                    prompt = f"""
-                    Analyze this course syllabus text comprehensively:
-                    {pdf_text[:7000]}
-                    
-                    Create a highly extensive daily study roadmap structured from {start_str} to {end_str}.
-                    Provide specific tracking nodes. You must return a JSON object containing a top-level key array named "roadmap".
-                    Each inner array element object must strictly contain these fields:
-                    "Scheduled Date", "Time Slot", "Focus Topic", and "Suggested Activity".
-                    """
-                    
-                    response = client.chat.completions.create(
-                        model="llama-3.1-8b-instant",
-                        messages=[
-                            {"role": "system", "content": "You are a precise computer program that outputs clean raw JSON object data matching schemas perfectly without code blocks or markdown wrapper elements."},
-                            {"role": "user", "content": prompt}
-                        ],
-                        response_format={"type": "json_object"},
-                        temperature=0.2,
-                        max_tokens=2500  
-                    )
-                    
-                    raw_json = json.loads(response.choices[0].message.content)
-                    roadmap_data = raw_json.get("roadmap", [])
-                    for item in roadmap_data: item["Status"] = False
-                    
-                    st.session_state.roadmap_list = roadmap_data
-                    st.session_state.generated = True
-                    if not st.session_state.is_admin:
-                        save_user_data_to_firestore(st.session_state.id_token, roadmap_data, st.session_state.username, st.session_state.user_email)
-                    st.rerun()
+                    if has_images:
+                        st.error("❌ Generation Error: Images, maps, or diagrams detected within the PDF content. Please upload a structured, text-only syllabus document.")
+                    elif not pdf_text.strip():
+                        st.error("❌ Generation Error: Unable to extract readable text characters. This document matches a flat picture image scan. Please upload a pure digital text PDF file.")
+                    else:
+                        start_str = start_time.strftime("%I:%M %p")
+                        end_str = end_time.strftime("%I:%M %p")
+                        
+                        prompt = f"""
+                        Analyze this course syllabus text comprehensively:
+                        {pdf_text[:7000]}
+                        
+                        Create a highly extensive daily study roadmap structured from {start_str} to {end_str}.
+                        Provide specific tracking nodes. You must return a JSON object containing a top-level key array named "roadmap".
+                        Each inner array element object must strictly contain these fields:
+                        "Scheduled Date", "Time Slot", "Focus Topic", and "Suggested Activity".
+                        """
+                        
+                        response = client.chat.completions.create(
+                            model="llama-3.1-8b-instant",
+                            messages=[
+                                {"role": "system", "content": "You are a precise computer program that outputs clean raw JSON object data matching schemas perfectly without code blocks or markdown wrapper elements."},
+                                {"role": "user", "content": prompt}
+                            ],
+                            response_format={"type": "json_object"},
+                            temperature=0.2,
+                            max_tokens=2500  
+                        )
+                        
+                        raw_json = json.loads(response.choices[0].message.content)
+                        roadmap_data = raw_json.get("roadmap", [])
+                        for item in roadmap_data: item["Status"] = False
+                        
+                        st.session_state.roadmap_list = roadmap_data
+                        st.session_state.generated = True
+                        if not st.session_state.is_admin:
+                            save_user_data_to_firestore(st.session_state.id_token, roadmap_data, st.session_state.username, st.session_state.user_email)
+                        st.rerun()
                 except Exception as e:
                     st.error(f"App compilation process encountered an evaluation exception: {e}")
 
@@ -664,7 +672,6 @@ with workspace_tab3:
             
         st.markdown("---")
         
-        # Calculate checklist completion values safely outside interaction frames
         for i, item in enumerate(roadmap):
             label_markdown = f"⚡ **{item.get('Scheduled Date')}** &nbsp;|&nbsp; ⏱️ `{item.get('Time Slot')}` &nbsp;|&nbsp; 🪐 **{item.get('Focus Topic')}**  \n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📡 *Modules Matrix: {item.get('Suggested Activity')}*"
             is_checked = st.checkbox(label_markdown, value=item.get('Status', False), key=f"task_{i}")
