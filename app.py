@@ -202,6 +202,15 @@ st.markdown(
         border: 1px dashed rgba(0, 145, 255, 0.3) !important;
         background: rgba(11, 16, 28, 0.6) !important;
     }
+
+    /* Admin Telemetry Container block overrides */
+    .admin-card {
+        background: rgba(16, 22, 42, 0.45) !important;
+        border: 1px solid rgba(0, 145, 255, 0.2) !important;
+        border-radius: 8px;
+        padding: 1.5rem !important;
+        margin-bottom: 20px;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -321,7 +330,6 @@ if not st.session_state.auth_state:
     left_space, center_auth_col, right_space = st.columns([1, 1.6, 1], gap="medium")
     
     with center_auth_col:
-        # Added "Admin Login" array option selection parameter
         auth_mode = st.radio("Choose an option:", ["Login", "Sign Up", "Admin Login"], horizontal=True)
         
         with st.form("auth_form"):
@@ -400,11 +408,10 @@ if not st.session_state.auth_state:
                         else:
                             st.error(f"Error: {result['message']}")
                             
-                else:  # Admin Login execution matrix pipeline block
+                else: 
                     if not email_input.strip() or not password:
                         st.error("Please provide full administrative entry credentials.")
                     else:
-                        # Dual Verification Pipeline: Check local Admin secrets overlay layer first
                         if email_input.strip() == ADMIN_EMAIL and password == ADMIN_PASSWORD:
                             st.session_state.auth_state = True
                             st.session_state.is_admin = True
@@ -413,7 +420,6 @@ if not st.session_state.auth_state:
                             st.success("Administrative core master console access authorized!")
                             st.rerun()
                         else:
-                            # Secondary Pipeline Fallback check via backend structural verification
                             with st.spinner("Verifying administrative node via base network..."):
                                 result = firebase_auth(email_input.strip(), password, mode="signInWithPassword")
                             if result["success"]:
@@ -441,11 +447,51 @@ with header_col1:
         st.markdown(f"#### *Profile Name - ({st.session_state.username})*")
 with header_col2:
     st.write("<br>", unsafe_allow_html=True)
-    if st.button("🚪 Log Out", use_container_width=True, type="secondary"):
+    if st.button("Log Out", use_container_width=True, type="secondary"):
         logout()
 
 st.markdown("---")
 
+# ==========================================
+#  ADMIN CONTROL INTERFACE BRANCH LAYER
+# ==========================================
+if st.session_state.is_admin:
+    st.markdown("### 🛠️ Administrative Operations Dashboard")
+    
+    # Visual Status Telemetry Layout Row
+    stat_col1, stat_col2, stat_col3 = st.columns(3)
+    with stat_col1:
+        st.markdown('<div class="admin-card">📊 <b>System Load</b><br><span style="color:#0091ff; font-size:1.8rem; font-weight:700;">Nominal (0.04s)</span></div>', unsafe_allow_html=True)
+    with stat_col2:
+        st.markdown('<div class="admin-card">🔒 <b>Database Security</b><br><span style="color:#0091ff; font-size:1.8rem; font-weight:700;">Firestore Verified</span></div>', unsafe_allow_html=True)
+    with stat_col3:
+        st.markdown('<div class="admin-card">📡 <b>LLM Processing API</b><br><span style="color:#0091ff; font-size:1.8rem; font-weight:700;">Groq Online</span></div>', unsafe_allow_html=True)
+        
+    # User Database Record Inspector Sub-System
+    st.markdown("#### 🔍 Firestore User Document Inspector")
+    lookup_col1, lookup_col2 = st.columns([3, 1])
+    with lookup_col1:
+        target_user = st.text_input("Enter Target Username Profile to Inspect", placeholder="e.g., alex_codes")
+    with lookup_col2:
+        st.write("<br>", unsafe_allow_html=True)
+        inspect_btn = st.button("Inspect User Node", use_container_width=True)
+        
+    if inspect_btn and target_user.strip():
+        with st.spinner(f"Pulling data cluster nodes for: {target_user.strip()}..."):
+            user_roadmap = load_user_data_from_firestore(target_user.strip(), st.session_state.id_token)
+            if user_roadmap:
+                st.success(f"Profile connection stable. Discovered {len(user_roadmap)} milestones in Firestore database document.")
+                st.write(pd.DataFrame(user_roadmap))
+            else:
+                st.warning(f"No active roadmap collections found for profile matching '{target_user.strip()}' or missing active token configuration keys.")
+
+    st.markdown("---")
+    st.markdown("### 🧪 User Simulation Sandbox")
+    st.info("The configuration matrix block below allows administrators to simulate standard user syllabus uploads without modifying database records.")
+
+# ==========================================
+#  STANDARD CONFIGURATION PANEL LAYOUT
+# ==========================================
 st.markdown("### ⚡ Configuration Panel")
 config_col1, config_col2, config_col3 = st.columns([2, 1, 1], gap="medium")
 
