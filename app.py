@@ -551,9 +551,9 @@ with workspace_tab1:
     with config_col1:
         uploaded_file = st.file_uploader("Upload Course Syllabus/PDF", type=["pdf"])
     with config_col2:
-        start_time = st.time_input("Preferred Daily Start Time")
+        start_time = st.time_input("Start Time")
     with config_col3:
-        end_time = st.time_input("Preferred Daily End Time")
+        end_time = st.time_input("End Time")
 
     generate_btn = st.button("Generate Complete Roadmap", type="primary", use_container_width=True)
     st.markdown("---")
